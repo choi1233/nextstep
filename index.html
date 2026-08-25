@@ -1330,9 +1330,9 @@ window.addEventListener('load', function() {
     }, 200);
   }
 
-  /* 로딩 중 스크롤 잠금 */
   var wrap = document.getElementById('scroll-wrap');
-  if (wrap) wrap.style.overflowY = 'hidden';
+  /* 로딩 중 터치 스크롤만 차단 (overflowY 유지 — scrollTop 리셋 방지) */
+  if (wrap) wrap.style.touchAction = 'none';
 
   window.addEventListener('load', function() {
     setTimeout(function() { window._mlDone = true; }, 200);
@@ -1353,7 +1353,7 @@ window.addEventListener('load', function() {
         var _s2z = document.getElementById('s2-scroll-zone');
         wrap.scrollTop = _s2z ? _s2z.offsetTop : window.innerHeight * 2;
       }
-      if (wrap) wrap.style.overflowY = '';
+      if (wrap) wrap.style.touchAction = '';
       onComplete(); return;
     }
     requestAnimationFrame(_poll);
