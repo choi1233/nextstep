@@ -563,6 +563,7 @@ document.addEventListener('DOMContentLoaded', function() {
   /* s1: 모바일 200dvh, PC 110dvh */
   var s1H = 1.1;
   if (window.innerWidth > 500) wrap.scrollTop = window.innerHeight * s1H + 100;
+  else wrap.scrollTop = window.innerHeight * 2; /* 모바일: s1(200dvh) 스킵 → s2 시작 */
 });
 
 /* ── About / Map 버튼 ── */
