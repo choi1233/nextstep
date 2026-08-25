@@ -1176,6 +1176,9 @@ window.addEventListener('load', function() {
       update(p);
     }
     updateCarrier();
+    /* 스크롤 rAF 안에서 3D 렌더를 동기적으로 즉시 실행 — 다운스크롤 끊김 방지 */
+    if (_r3dRafId) { cancelAnimationFrame(_r3dRafId); _r3dRafId = null; }
+    _doRender3d();
     updateNavColor();
     if (p >= 0.995) {
       hasSeenFull = true;
