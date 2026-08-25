@@ -1317,7 +1317,8 @@ window.addEventListener('load', function() {
     setFill(1);
     /* 모바일: 로딩 완료 후 s2로 스크롤 위치 설정 */
     if (wrap && window.innerWidth <= 500) {
-      wrap.scrollTop = window.innerHeight * 2;
+      setTimeout(function() { wrap.scrollTop = window.innerHeight * 2; }, 0);
+      setTimeout(function() { wrap.scrollTop = window.innerHeight * 2; }, 50);
     }
     setTimeout(function() {
       overlay.classList.add('done');
