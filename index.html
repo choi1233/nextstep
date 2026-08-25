@@ -1347,7 +1347,15 @@ window.addEventListener('load', function() {
     displayP += (targetP - displayP) * EASE;
     setFill(displayP);
     /* targetP 1.0 도달 후 displayP 0.98 이상 + 최소 시간 경과 시 완료 */
-    if (targetP >= 1.0 && displayP >= 0.98 && (Date.now() - _startTime) >= MIN_MS) { if (wrap) wrap.style.overflowY = ''; onComplete(); return; }
+    if (targetP >= 1.0 && displayP >= 0.98 && (Date.now() - _startTime) >= MIN_MS) {
+      /* 모바일: overflow 풀기 전에 먼저 스크롤 위치 고정 */
+      if (wrap && window.innerWidth <= 500) {
+        var _s2z = document.getElementById('s2-scroll-zone');
+        wrap.scrollTop = _s2z ? _s2z.offsetTop : window.innerHeight * 2;
+      }
+      if (wrap) wrap.style.overflowY = '';
+      onComplete(); return;
+    }
     requestAnimationFrame(_poll);
   }
   requestAnimationFrame(_poll);
