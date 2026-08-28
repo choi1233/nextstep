@@ -223,7 +223,8 @@
 
       .mobile-br { display: block; }
       #top-nav { padding: 16px 16px; }
-      #s2-text { padding: 0 16px; font-size: clamp(18px, 5vw, 36px); }
+      #s2-text { display: none; }
+      #s2-text-mobile { display: block; padding: 0 16px; font-size: clamp(18px, 5vw, 36px); }
       #s4 { height: 110dvh; }
       #s4-sticky { justify-content: center !important; padding-top: 10dvh; gap: 24px !important; }
       #s3-map  { height: auto !important; max-height: none !important; width: 150vw; max-width: none; align-self: flex-end; margin-right: 16px; }
@@ -504,6 +505,19 @@
 <div id="s2-scroll-zone">
 <section id="s2">
 
+  <!-- 모바일 전용 텍스트 -->
+  <div id="s2-text-mobile" style="display:none; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:400; line-height:1.6; text-align:left;">
+    <span class="inline-nextstep" id="ns-img-m"><img src="main/s2/next step.svg" alt="NEXT STEP" style="height:1.1em;vertical-align:middle;"></span> 여정에 초대합니다.<br><br>
+    이번 비행이 향하는 곳:<br>
+    <a class="pill-btn lit" href="designer/motion/motion.html">모션 디자인</a>,
+    <a class="pill-btn lit" href="designer/character/character.html">캐릭터 디자인</a>,
+    <a class="pill-btn lit" href="designer/package/package.html">패키지 디자인</a>,
+    <a class="pill-btn lit" href="designer/UXUI/UXUI.html">UX/UI 디자인</a><br><br>
+    서로 다른 여정이 시작되는 공항,<br>
+    <a class="pill-btn" id="map-btn-m" href="#">조선대학교 미술대학 미술관</a>에서 출발합니다.<br><br>
+    전시가 궁금하다면 <a class="pill-btn" id="about-btn-m" href="#">개요</a>를 살펴보세요.
+  </div>
+
   <div id="s2-text"><span class="e-initial">E</span>xhibition is a journey to the <span class="inline-nextstep" id="ns-img"><img src="main/s2/next step.svg" alt="NEXT STEP"></span><br>
 Follow your curiosity through <a class="pill-btn" id="about-btn" href="#">About</a>.<br>
 Discover new destinations<br>
@@ -568,17 +582,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* ── About / Map 버튼 ── */
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('about-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    var wrap = document.getElementById('scroll-wrap');
-    wrap.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-  document.getElementById('map-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    var wrap = document.getElementById('scroll-wrap');
-    var s4 = document.getElementById('s4');
-    if (s4) wrap.scrollTo({ top: s4.offsetTop, behavior: 'smooth' });
-  });
+  var wrap = document.getElementById('scroll-wrap');
+  function scrollToTop() { wrap.scrollTo({ top: 0, behavior: 'smooth' }); }
+  function scrollToMap() { var s4 = document.getElementById('s4'); if (s4) wrap.scrollTo({ top: s4.offsetTop, behavior: 'smooth' }); }
+  document.getElementById('about-btn').addEventListener('click', function(e) { e.preventDefault(); scrollToTop(); });
+  document.getElementById('map-btn').addEventListener('click', function(e) { e.preventDefault(); scrollToMap(); });
+  var abm = document.getElementById('about-btn-m'); if (abm) abm.addEventListener('click', function(e) { e.preventDefault(); scrollToTop(); });
+  var mpm = document.getElementById('map-btn-m'); if (mpm) mpm.addEventListener('click', function(e) { e.preventDefault(); scrollToMap(); });
 });
 
 /* ── 글자 쪼개기 ── */
@@ -936,7 +946,7 @@ window.addEventListener('load', function() {
     var animEndST = zoneTop + zoneH - viewH;
     var natTopPx  = getNatTopPx(viewH);
     var carrierH  = getCarrierH(viewH);
-    var riseEndPx = viewH * 0.5 - carrierH * 0.5;
+    var riseEndPx = viewH * 0.5 - carrierH * 0.5 - 50;
     var THRESH    = natTopPx - riseEndPx;
 
     /* ── 통합 tilt: s2 끝(10°, tilt=0) → s5 끝(80°, tilt=-1.75) ── */
