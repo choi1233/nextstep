@@ -121,24 +121,15 @@
     /* ── 로딩 오버레이 (모바일 + PC 공통) ── */
     #mobile-loading {
       position: fixed; inset: 0; z-index: 9999;
-      background: #00ACEB;
-      display: flex; align-items: center; justify-content: center; padding-bottom: 80px;
+      background: #000;
+      display: flex; align-items: center; justify-content: center;
       transition: opacity 0.5s ease;
     }
     #mobile-loading.done { opacity: 0; pointer-events: none; }
-    #ml-text {
-      position: relative;
-      height: 100px; width: auto;
-      user-select: none;
-      transform: translateX(2px);
-    }
-    #ml-base, #ml-fill {
-      height: 100px; width: auto; display: block;
-    }
-    #ml-base { opacity: 1; clip-path: inset(0 100% 0 0); }
-    #ml-fill {
-      position: absolute; top: 0; left: 0;
-      clip-path: inset(0 100% 0 0);
+    #ml-video {
+      width: 130px; height: 130px;
+      object-fit: contain;
+      display: block;
     }
 
     /* ── S2 scroll zone: sticky container ── */
@@ -192,6 +183,8 @@
     }
 
     #s2-text-mobile { display: none; }
+    .m-sticker-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0; }
+    .m-sticker-img { height: 80px; width: auto; display: block; }
     #s2-text {
       font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-weight:400;
@@ -508,14 +501,16 @@
 
   <!-- 모바일 전용 텍스트 -->
   <div id="s2-text-mobile" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:400; line-height:1.6; text-align:left;">
-    <span class="inline-nextstep" id="ns-img-m"><img src="main/s2/next step.svg" alt="NEXT STEP" style="height:1.1em;vertical-align:middle;"></span> 여정에 초대합니다.<br><br>
-    이번 비행이 향하는 곳:<br>
-    <a class="pill-btn lit" href="designer/motion/motion.html">모션 디자인</a>,
-    <a class="pill-btn lit" href="designer/character/character.html">캐릭터 디자인</a>,
-    <a class="pill-btn lit" href="designer/package/package.html">패키지 디자인</a>,
-    <a class="pill-btn lit" href="designer/UXUI/UXUI.html">UX/UI 디자인</a><br><br>
-    서로 다른 여정이 시작되는 공항,<br>
-    <a class="pill-btn" id="map-btn-m" href="#">조선대학교 미술대학 미술관</a>에서 출발합니다.<br><br>
+    <span class="inline-nextstep" id="ns-img-m"><img src="main/s2/next step.svg" alt="NEXT STEP" style="height:1.1em;vertical-align:middle;"></span> 여정에 초대합니다.
+    이번 비행이 향하는 곳:
+    <span class="m-sticker-row">
+      <a href="designer/motion/motion.html"><img src="main/s2/sticker/M_1.png" alt="모션 디자인" class="m-sticker-img"></a>
+      <a href="designer/character/character.html"><img src="main/s2/sticker/C_1.png" alt="캐릭터 디자인" class="m-sticker-img"></a>
+      <a href="designer/package/package.html"><img src="main/s2/sticker/P_1.png" alt="패키지 디자인" class="m-sticker-img"></a>
+      <a href="designer/UXUI/UXUI.html"><img src="main/s2/sticker/U_1.png" alt="UX/UI 디자인" class="m-sticker-img"></a>
+    </span>
+    서로 다른 여정이 시작되는 공항,
+    <a class="pill-btn" id="map-btn-m" href="#">조선대학교 미술대학 미술관</a>에서 출발합니다.
     전시가 궁금하다면 <a class="pill-btn" id="about-btn-m" href="#">개요</a>를 살펴보세요.
   </div>
 
@@ -1007,6 +1002,8 @@ window.addEventListener('load', function() {
         updateShadow(natTopPx, natTopPx, viewH);
       } else {
         resetCarrier();
+        /* hasSeenFull=false여도 s1 구간(rawP<0)이면 3D 캔버스 숨김 */
+        if (rawP < 0 && canvas3d) canvas3d.style.display = 'none';
       }
 
     } else if (rawP > 1.01) {
@@ -1020,8 +1017,10 @@ window.addEventListener('load', function() {
       showAllTextStickers();
 
     } else {
-      /* rawP < -0.01: s1(파란 하늘) — 캐리어 숨김 */
+      /* rawP < -0.5: s1 최상단 — 캐리어 완전 숨김 */
       resetCarrier();
+      carrierFloat.style.display = 'none';
+      if (canvas3d) canvas3d.style.display = 'none';
     }
   }
 
@@ -1295,31 +1294,25 @@ window.addEventListener('load', function() {
 </script>
 <!-- ── 모바일 로딩 오버레이 ── -->
 <div id="mobile-loading" aria-hidden="true">
-  <div id="ml-text">
-    <img id="ml-base" src="main/Splash%20Screen/next%20step2-white.svg" alt="">
-    <img id="ml-fill" src="main/Splash%20Screen/next%20step2-black.svg" alt="">
-  </div>
+  <video id="ml-video" src="Splash%20Screen/loading.mp4" preload="auto" muted playsinline></video>
 </div>
 <script>
 (function() {
   var overlay = document.getElementById('mobile-loading');
-  var fillEl  = document.getElementById('ml-fill');
-  var baseEl  = document.getElementById('ml-base');
-  if (!overlay || !fillEl) return;
+  var vidEl   = document.getElementById('ml-video');
+  if (!overlay) return;
 
   var _done = false;
   var displayP = 0;
   var targetP  = 0;
   var EASE = 0.06; /* 낮을수록 천천히 */
   var MIN_MS = 800; /* 최소 표시 시간 (ms) */
+  var VIDEO_DUR = 10; /* 영상 길이(초) */
   var _startTime = Date.now();
   var _loadReady = false;
 
   function setFill(p) {
-    var blackPct = Math.round((1 - Math.min(p, 1)) * 100);
-    var whitePct = Math.round((1 - Math.min(p + 0.05, 1)) * 100);
-    fillEl.style.clipPath = 'inset(0 ' + blackPct + '% 0 0)';
-    if (baseEl) baseEl.style.clipPath = 'inset(0 ' + whitePct + '% 0 0)';
+    if (vidEl) vidEl.currentTime = Math.min(p, 0.999) * VIDEO_DUR;
   }
 
   function onComplete() {
@@ -1365,7 +1358,14 @@ window.addEventListener('load', function() {
         wrap.scrollTop = _s2z ? _s2z.offsetTop : window.innerHeight * 2;
       }
       if (wrap) wrap.style.touchAction = '';
-      onComplete(); return;
+      /* 영상 끝까지 재생 후 페이드아웃 */
+      if (vidEl) {
+        vidEl.addEventListener('ended', function() { onComplete(); }, { once: true });
+        vidEl.play();
+      } else {
+        onComplete();
+      }
+      return;
     }
     requestAnimationFrame(_poll);
   }
