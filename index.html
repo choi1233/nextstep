@@ -130,6 +130,8 @@
       width: 130px; height: 130px;
       object-fit: contain;
       display: block;
+      opacity: 0;
+      transition: opacity 0.2s ease;
     }
 
     /* ── S2 scroll zone: sticky container ── */
@@ -1312,8 +1314,11 @@ window.addEventListener('load', function() {
   /* currentTime 스크러빙 없이 진행률만 추적 (재생 버튼 UI 방지) */
   function setFill(p) { /* no-op: autoplay로 재생 중 */ }
 
-  /* 영상 끝 이벤트 */
+  /* 영상 이벤트 */
   if (vidEl) {
+    vidEl.addEventListener('canplay', function() {
+      vidEl.style.opacity = '1'; /* 재생 가능해지면 표시 */
+    }, { once: true });
     vidEl.addEventListener('ended', function() {
       _videoEnded = true;
       _tryFinish();
