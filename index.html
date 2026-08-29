@@ -1294,7 +1294,7 @@ window.addEventListener('load', function() {
 </script>
 <!-- ── 모바일 로딩 오버레이 ── -->
 <div id="mobile-loading" aria-hidden="true">
-  <video id="ml-video" src="Splash%20Screen/loading.mp4" preload="auto" muted playsinline></video>
+  <video id="ml-video" src="Splash%20Screen/loading.mp4" preload="auto" autoplay muted playsinline webkit-playsinline></video>
 </div>
 <script>
 (function() {
@@ -1303,16 +1303,29 @@ window.addEventListener('load', function() {
   if (!overlay) return;
 
   var _done = false;
-  var displayP = 0;
-  var targetP  = 0;
-  var EASE = 0.06; /* 낮을수록 천천히 */
+  var _videoEnded = false;
+  var _loadingReady = false;
   var MIN_MS = 1500; /* 최소 표시 시간 (ms) */
-  var VIDEO_DUR = 10; /* 영상 길이(초) */
   var _startTime = Date.now();
   var _loadReady = false;
 
-  function setFill(p) {
-    if (vidEl) vidEl.currentTime = Math.min(p, 0.999) * VIDEO_DUR;
+  /* currentTime 스크러빙 없이 진행률만 추적 (재생 버튼 UI 방지) */
+  function setFill(p) { /* no-op: autoplay로 재생 중 */ }
+
+  /* 영상 끝 이벤트 */
+  if (vidEl) {
+    vidEl.addEventListener('ended', function() {
+      _videoEnded = true;
+      _tryFinish();
+    });
+    vidEl.play().catch(function() {});
+  }
+
+  function _tryFinish() {
+    if (_done) return;
+    if (_videoEnded && _loadingReady && (Date.now() - _startTime) >= MIN_MS) {
+      onComplete();
+    }
   }
 
   function onComplete() {
@@ -1344,27 +1357,15 @@ window.addEventListener('load', function() {
 
   function _poll() {
     if (_done) return;
-    /* 실제 진행률(ratchet) */
-    var raw = window._mlDone ? 1.0 : (window._mlProgress || 0);
-    if (raw > targetP) targetP = raw;
-    /* 부드럽게 추적 */
-    displayP += (targetP - displayP) * EASE;
-    setFill(displayP);
-    /* targetP 1.0 도달 후 displayP 0.98 이상 + 최소 시간 경과 시 완료 */
-    if (targetP >= 1.0 && displayP >= 0.98 && (Date.now() - _startTime) >= MIN_MS) {
+    if (window._mlDone) {
       /* 모바일: overflow 풀기 전에 먼저 스크롤 위치 고정 */
       if (wrap && window.innerWidth <= 500) {
         var _s2z = document.getElementById('s2-scroll-zone');
         wrap.scrollTop = _s2z ? _s2z.offsetTop : window.innerHeight * 2;
       }
       if (wrap) wrap.style.touchAction = '';
-      /* 영상 끝까지 재생 후 페이드아웃 */
-      if (vidEl) {
-        vidEl.addEventListener('ended', function() { onComplete(); }, { once: true });
-        vidEl.play();
-      } else {
-        onComplete();
-      }
+      _loadingReady = true;
+      _tryFinish();
       return;
     }
     requestAnimationFrame(_poll);
