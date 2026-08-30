@@ -118,6 +118,23 @@
       position:relative; z-index:2;
     }
 
+    /* ── 준비중 오버레이 ── */
+    #coming-soon {
+      position: fixed; inset: 0; z-index: 10000;
+      background: #00ACEB;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+    #coming-soon.gone { opacity: 0; pointer-events: none; }
+    #coming-soon-text {
+      font-family: 'Pretendard', sans-serif;
+      font-weight: 600;
+      font-size: clamp(24px, 6vw, 64px);
+      color: #fff;
+      transform: rotate(-15deg);
+      user-select: none;
+    }
+
     /* ── 로딩 오버레이 (모바일 + PC 공통) ── */
     #mobile-loading {
       position: fixed; inset: 0; z-index: 9999;
@@ -1295,9 +1312,40 @@ window.addEventListener('load', function() {
 })();
 </script>
 <!-- ── 모바일 로딩 오버레이 ── -->
+<div id="coming-soon">
+  <span id="coming-soon-text">아직 준비중입니다.</span>
+</div>
 <div id="mobile-loading" aria-hidden="true">
   <video id="ml-video" src="Splash%20Screen/loading.mp4" preload="auto" autoplay muted playsinline webkit-playsinline></video>
 </div>
+<script>
+(function() {
+  var cs = document.getElementById('coming-soon');
+  if (!cs) return;
+  function dismiss() {
+    cs.classList.add('gone');
+    setTimeout(function() { cs.style.display = 'none'; }, 500);
+  }
+  /* PC: v 키 2번 */
+  var vCount = 0, vTimer = null;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'v' || e.key === 'V') {
+      vCount++;
+      clearTimeout(vTimer);
+      if (vCount >= 2) { dismiss(); vCount = 0; return; }
+      vTimer = setTimeout(function() { vCount = 0; }, 2000);
+    }
+  });
+  /* 모바일: 5번 연속 터치 */
+  var tapCount = 0, tapTimer = null;
+  cs.addEventListener('touchstart', function() {
+    tapCount++;
+    clearTimeout(tapTimer);
+    if (tapCount >= 5) { dismiss(); tapCount = 0; return; }
+    tapTimer = setTimeout(function() { tapCount = 0; }, 3000);
+  });
+})();
+</script>
 <script>
 (function() {
   var overlay = document.getElementById('mobile-loading');
