@@ -1328,7 +1328,8 @@ window.addEventListener('load', function() {
 
   function _tryFinish() {
     if (_done) return;
-    if (_videoEnded && _loadingReady && (Date.now() - _startTime) >= MIN_MS) {
+    /* 영상이 끝나면 로딩 완료 여부와 무관하게 닫음 (CDN 대기 방지) */
+    if (_videoEnded && (Date.now() - _startTime) >= MIN_MS) {
       onComplete();
     }
   }
