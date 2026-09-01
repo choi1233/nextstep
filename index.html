@@ -551,9 +551,8 @@
     전시가 궁금하다면 <a class="pill-btn" id="about-btn-m" href="#">개요</a>를 살펴보세요.
   </div>
 
-  <div id="s2-text"><span class="e-initial">E</span>xhibition is a journey to the <span class="inline-nextstep" id="ns-img" style="position:relative;display:inline-flex;">
-      <img id="ns-img-1" src="main/s2/NEXT%20STEP_1.png" alt="NEXT STEP" style="height:80px;width:auto;display:block;-webkit-user-drag:none;pointer-events:none;">
-      <img id="ns-img-2" src="main/s2/NEXT%20STEP_2.png" alt="" style="position:absolute;top:0;left:0;height:100%;width:auto;opacity:0;pointer-events:none;">
+  <div id="s2-text"><span class="e-initial">E</span>xhibition is a journey to the <span class="inline-nextstep" id="ns-img">
+      <img id="ns-img-2" src="main/s2/NEXT%20STEP_2.png" alt="NEXT STEP" style="height:80px;width:auto;display:block;-webkit-user-drag:none;pointer-events:none;filter:grayscale(1);transition:filter 0.1s;">
     </span><br>
 Follow your curiosity through <a class="pill-btn" id="about-btn" href="#">About</a>.<br>
 Discover new destinations<br>
@@ -1099,8 +1098,8 @@ window.addEventListener('load', function() {
 
     /* NEXT STEP: 17% */
     nsImg.classList.toggle('lit', p >= 0.17);
-    /* NEXT STEP 컬러 전환: p 0.5~0.8 구간에서 1→2 */
-    if (nsImg2) nsImg2.style.opacity = Math.max(0, Math.min(1, (p - 0.5) / 0.3));
+    /* NEXT STEP 컬러 전환: p 0.5~0.8 구간에서 grayscale 제거 */
+    if (nsImg2) nsImg2.style.filter = 'grayscale(' + Math.max(0, Math.min(1, 1 - (p - 0.5) / 0.3)) + ')';
 
     /* About: 34%, Map: 95% */
     aboutBtn.classList.toggle('lit', p >= 0.34);
@@ -1539,12 +1538,23 @@ window.addEventListener('load', function() {
     var container = document.getElementById('map-container');
     if (!container) return;
 
-    /* popup */
+    /* popup — fixed, follows cursor */
     var popup = document.createElement('div');
     popup.id = 'map-art-popup';
     var popupImg = document.createElement('img');
     popup.appendChild(popupImg);
-    container.appendChild(popup);
+    document.body.appendChild(popup);
+
+    /* 전역 커서 추적 */
+    var _mx = 0, _my = 0;
+    document.addEventListener('mousemove', function(e) {
+      _mx = e.clientX; _my = e.clientY;
+      if (popup.style.display !== 'none') {
+        popup.style.left = (_mx + 80) + 'px';
+        popup.style.top  = _my + 'px';
+        popup.style.transform = 'translateY(-50%)';
+      }
+    });
 
     /* hotspots */
     Object.keys(MAP_POSITIONS).forEach(function(num) {
@@ -1556,19 +1566,11 @@ window.addEventListener('load', function() {
 
       spot.addEventListener('mouseenter', function() {
         var n = parseInt(num);
-        var src = 'main/s4/art-' + String(n).padStart(2,'0') + '.png';
-        popupImg.src = src;
+        popupImg.src = 'main/s4/art_' + String(n).padStart(2,'0') + '.png';
+        popup.style.left = (_mx + 80) + 'px';
+        popup.style.top  = _my + 'px';
+        popup.style.transform = 'translateY(-50%)';
         popup.style.display = 'block';
-
-        /* position popup: default top-left of hotspot */
-        var px = p.x * 100;
-        var py = p.y * 100;
-        /* shift left if near right edge */
-        var popLeft = (px > 65) ? px - 23 : px + 3;
-        /* shift down if near top edge */
-        var popTop  = (py < 25) ? py + 3  : py - 20;
-        popup.style.left = popLeft + '%';
-        popup.style.top  = popTop  + '%';
       });
 
       spot.addEventListener('mouseleave', function() {
