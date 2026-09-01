@@ -999,7 +999,7 @@ window.addEventListener('load', function() {
         /* rawP=0.83 → natTopPx(기준), rawP=0.1 → -carrierH(완전히 화면 위로) */
         var topPx = -carrierH + ((rawP - 0.1) / (0.83 - 0.1)) * (natTopPx + carrierH);
         carrierEl.style.opacity = '0';
-        if (topPx < -carrierH) {
+        if (topPx < -carrierH + 40) {
           /* 캐리어가 완전히 화면 밖 → 숨김 */
           carrierFloat.style.display = 'none';
           if (canvas3d) canvas3d.style.display = 'none';
