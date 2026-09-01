@@ -55,11 +55,11 @@
 
     /* ══ NAV ══ */
     #nav {
-      flex-shrink:0; display:flex; align-items:flex-start;
+      flex-shrink:0; display:flex; align-items:center;
       justify-content:space-between; padding:16px 16px 12px;
     }
     #nav-logo { cursor:pointer; display:flex; align-items:center; }
-    #nav-logo img { height:44px; width:auto; }
+    #nav-logo img { height:32px; width:auto; }
     #nav-announce {
       display:flex; align-items:center;
       justify-content:center; flex-shrink:0; cursor:pointer;
@@ -177,7 +177,7 @@
 
     /* ══ 사이드바 ══ */
     #gate-label {
-      display:flex; align-items:center; gap:10px; margin-bottom:56px; margin-top:16px;
+      display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:56px; margin-top:16px;
     }
     #gate-text {
       font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -560,10 +560,10 @@
 
     <nav id="nav">
       <div id="nav-logo" onclick="window.location.href='../../index.html'">
-        <img src="gate4.png" alt="UXUI gate" style="height:44px;width:auto;display:block;">
+        <img src="../navbar/next%20step.svg" alt="NEXT STEP!">
       </div>
       <div id="nav-announce" onclick="hideDetailDesktop(); document.getElementById('gallery').scrollTop=0;">
-        <img src="gate arrow.png" alt="arrow" style="height:16px;width:auto;display:block;">
+        <img src="UXUI_symbol.svg" alt="UXUI symbol" style="height:32px;width:auto;display:block;">
       </div>
     </nav>
 
@@ -596,14 +596,7 @@
       <!-- 작품 상세 NAV BAR: 화살표+비행기+GATE1 (좌) / X (우) -->
       <div id="mob-detail-nav">
         <div id="mob-gate-label" onclick="hideDetailMobile()">
-          <svg width="35" height="35" viewBox="0 0 38 38" fill="none">
-            <path d="M21.0089 5.80886C21.4839 5.33394 22.1282 5.06714 22.7999 5.06714C23.4717 5.06714 24.1159 5.33394 24.591 5.80886L35.991 17.2089C36.4659 17.6839 36.7327 18.3282 36.7327 18.9999C36.7327 19.6717 36.4659 20.3159 35.991 20.791L24.591 32.191C24.1132 32.6525 23.4733 32.9078 22.8091 32.902C22.1448 32.8963 21.5094 32.6298 21.0397 32.1601C20.57 31.6904 20.3036 31.055 20.2978 30.3908C20.2921 29.7266 20.5474 29.0867 21.0089 28.6089L27.8666 21.5333H3.79993C3.12805 21.5333 2.48369 21.2664 2.0086 20.7913C1.53351 20.3162 1.2666 19.6718 1.2666 18.9999C1.2666 18.328 1.53351 17.6837 2.0086 17.2086C2.48369 16.7335 3.12805 16.4666 3.79993 16.4666H27.8666L21.0089 9.391C20.5339 8.91593 20.2671 8.27168 20.2671 7.59993C20.2671 6.92818 20.5339 6.28393 21.0089 5.80886Z" fill="#00BFC4"/>
-          </svg>
-          <svg width="42" height="28" viewBox="0 0 43 29" fill="none">
-            <path d="M6.76148 21.375L0 12.6587L2.39923 10.7453L10.0332 14.3594L14.6135 11.5957C11.9962 9.18631 6.45612 4.11239 5.23469 3.09194C4.01327 2.0715 4.72577 1.2495 5.23469 0.96606C6.28163 -0.394536 8.8699 -0.0260409 10.0332 0.328281L23.7742 6.0683C24.8212 6.91867 25.6645 6.42262 25.9554 6.0683C28.2237 4.7077 32.5714 3.94236 34.4617 3.72977H42.75V6.0683L33.1531 11.5957L6.76148 21.375Z" fill="#00BFC4"/>
-            <path d="M3.41992 24.4841C3.41992 23.7114 4.85541 23.085 6.62617 23.085H21.5887C23.3594 23.085 24.7949 23.7114 24.7949 24.4841V26.8159C24.7949 27.5886 23.3594 28.215 21.5887 28.215H6.62617C4.85541 28.215 3.41992 27.5886 3.41992 26.8159V24.4841Z" fill="#00BFC4"/>
-          </svg>
-          <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:32px;font-weight:400;color:#00BFC4;">GATE 4</span>
+          <img src="gate4.png" alt="GATE 4" style="height:44px;width:auto;display:block;">
         </div>
         <div id="mob-close-btn" onclick="hideDetailMobile()">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
@@ -723,14 +716,8 @@
 
   <div id="right">
     <div id="gate-label" onclick="hideDetailDesktop()">
-      <svg width="31" height="31" viewBox="0 0 38 38" fill="none">
-        <path d="M21.0089 5.80886C21.4839 5.33394 22.1282 5.06714 22.7999 5.06714C23.4717 5.06714 24.1159 5.33394 24.591 5.80886L35.991 17.2089C36.4659 17.6839 36.7327 18.3282 36.7327 18.9999C36.7327 19.6717 36.4659 20.3159 35.991 20.791L24.591 32.191C24.1132 32.6525 23.4733 32.9078 22.8091 32.902C22.1448 32.8963 21.5094 32.6298 21.0397 32.1601C20.57 31.6904 20.3036 31.055 20.2978 30.3908C20.2921 29.7266 20.5474 29.0867 21.0089 28.6089L27.8666 21.5333H3.79993C3.12805 21.5333 2.48369 21.2664 2.0086 20.7913C1.53351 20.3162 1.2666 19.6718 1.2666 18.9999C1.2666 18.328 1.53351 17.6837 2.0086 17.2086C2.48369 16.7335 3.12805 16.4666 3.79993 16.4666H27.8666L21.0089 9.391C20.5339 8.91593 20.2671 8.27168 20.2671 7.59993C20.2671 6.92818 20.5339 6.28393 21.0089 5.80886Z" fill="#00BFC4"/>
-      </svg>
-      <svg width="42" height="28" viewBox="0 0 43 29" fill="none">
-        <path d="M6.76148 21.375L0 12.6587L2.39923 10.7453L10.0332 14.3594L14.6135 11.5957C11.9962 9.18631 6.45612 4.11239 5.23469 3.09194C4.01327 2.0715 4.72577 1.2495 5.23469 0.96606C6.28163 -0.394536 8.8699 -0.0260409 10.0332 0.328281L23.7742 6.0683C24.8212 6.91867 25.6645 6.42262 25.9554 6.0683C28.2237 4.7077 32.5714 3.94236 34.4617 3.72977H42.75V6.0683L33.1531 11.5957L6.76148 21.375Z" fill="#00BFC4"/>
-        <path d="M3.41992 24.4841C3.41992 23.7114 4.85541 23.085 6.62617 23.085H21.5887C23.3594 23.085 24.7949 23.7114 24.7949 24.4841V26.8159C24.7949 27.5886 23.3594 28.215 21.5887 28.215H6.62617C4.85541 28.215 3.41992 27.5886 3.41992 26.8159V24.4841Z" fill="#00BFC4"/>
-      </svg>
-      <span id="gate-text">GATE 4</span>
+      <img src="gate4.png" alt="GATE 4" style="height:44px;width:auto;display:block;">
+      <img src="gate arrow.png" alt="arrow" style="height:16px;width:auto;display:block;">
     </div>
 
     <!-- 기본 상태 -->
