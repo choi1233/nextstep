@@ -205,7 +205,7 @@
       font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-weight:400;
       font-size:clamp(18px, 3.5vw, 48px);
-      line-height:1.55;
+      line-height:1.35;
       text-align:center;
       color:#111;
       padding:0 32px;
@@ -1113,10 +1113,16 @@ window.addEventListener('load', function() {
     } else if (rawP > 1.01) {
       /* 검정으로 내려가는 중 — 통합 tilt 사용 */
       var downPx = st - animEndST;
+      var velBoost = scrollDir > 0 ? Math.max(0, _scrollVelocity * 40) : 0; /* 빠른 스크롤 → 위로 더 빠르게 */
       var topPx  = downPx <= THRESH
-        ? natTopPx - downPx                     /* Phase 1: 1:1 위로 */
+        ? natTopPx - downPx - velBoost          /* Phase 1: 속도 반영 */
         : riseEndPx + (downPx - THRESH) * 1.5; /* Phase 2: 1.5배 빠르게 아래로 */
-      showFloatCarrier(topPx, unifiedTilt);
+      if (topPx < -carrierH) {
+        carrierFloat.style.display = 'none';
+        if (canvas3d) canvas3d.style.display = 'none';
+      } else {
+        showFloatCarrier(topPx, unifiedTilt);
+      }
       csM.style.opacity = csU.style.opacity = csC.style.opacity = csP.style.opacity = '0';
       showAllTextStickers();
 
@@ -1266,6 +1272,8 @@ window.addEventListener('load', function() {
   }
 
   var prevScrollTop = 0;
+  var _lastScrollTime = 0;
+  var _scrollVelocity = 0; /* px/ms, 양수=아래 */
   var maxAnimP = (window.innerWidth <= 500) ? 1.0 : 0; /* 모바일: 처음부터 텍스트 완전히 채움 */
   var scrollDir = 1; /* 1=아래, -1=위 */
   var prevRawPc = 0; /* rawP 크로스 감지용 */
@@ -1278,6 +1286,10 @@ window.addEventListener('load', function() {
   });
   function _onScroll() {
     var curST = wrap.scrollTop;
+    var now = performance.now();
+    var dt = now - _lastScrollTime;
+    _scrollVelocity = (dt > 0 && dt < 150) ? (curST - prevScrollTop) / dt : 0;
+    _lastScrollTime = now;
     scrollDir = curST >= prevScrollTop ? 1 : -1;
     prevScrollTop = curST;
     var p = getProgress();
