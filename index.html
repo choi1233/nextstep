@@ -250,6 +250,7 @@
         gap: 0 !important;
       }
       #map-container {
+        position: relative !important;
         width: 100% !important;
         height: 592px !important;
         max-height: 592px !important;
@@ -272,7 +273,7 @@
       }
       #s3-addr {
         position: absolute !important;
-        bottom: 24px !important;
+        bottom: 72px !important;
         left: 16px !important;
         width: 304px !important;
         padding: 0 !important;
@@ -514,6 +515,34 @@
       align-self:stretch;
     }
 
+
+    /* ── Tap the sticker hint ── */
+    @keyframes tap-hint-pulse {
+      0%, 100% { transform: rotate(10deg) scale(1); }
+      50%       { transform: rotate(10deg) scale(1.18); }
+    }
+    #tap-hint {
+      position: fixed;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: #888;
+      letter-spacing: 0.04em;
+      pointer-events: none;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.4s;
+      transform: rotate(10deg) scale(1);
+      transform-origin: left center;
+      white-space: nowrap;
+    }
+    #tap-hint.show {
+      opacity: 1;
+      animation: tap-hint-pulse 1.6s ease-in-out infinite;
+    }
   </style>
 </head>
 <body>
@@ -607,7 +636,8 @@ Find your way to <a class="pill-btn" id="map-btn" href="#">Map</a></div>
 <!-- ── S4: Dark / Map ── -->
 <section id="s4">
   <div id="s4-sticky">
-    <div id="map-container"><img id="s3-map" src="main/s4/map.png" alt="전시 지도"><img id="s3-map-m" src="main/s4/map2_%EC%A7%80%EB%8F%84%20%EC%82%AC%EB%B3%B8.png" alt="전시 지도" style="display:none;height:592px;width:auto;max-width:none;"></div>
+    <div id="map-container"><img id="s3-map" src="main/s4/map.png" alt="전시 지도"><img id="s3-map-m" src="main/s4/map2_%EC%A7%80%EB%8F%84%20%EC%82%AC%EB%B3%B8.png" alt="전시 지도" style="display:none;height:592px;width:auto;max-width:none;">
+    </div>
     <div id="s3-addr">
       전남광주 동구 조선대길 108 (조선대학교 미술대학 3F 미술관)
       <span class="sub">Chosun University 309 3F, Pilmun-daero, Dong-gu, Gwangju</span>
@@ -1144,11 +1174,24 @@ window.addEventListener('load', function() {
 
     /* 스티커: destinations S=45%, 차례로, and d=61% */
     var sThresh = [0.45, 0.47, 0.49, 0.61];
+    var tapHintEl = document.getElementById('tap-hint');
     stickers.forEach(function(st, i) {
       if (!st) return;
       var wasLit = st.classList.contains('lit');
       var shouldLit = p >= sThresh[i];
       st.classList.toggle('lit', shouldLit);
+      /* U(index 3)가 컬러되면 tap-hint 표시 */
+      if (i === 3 && tapHintEl) {
+        tapHintEl.classList.toggle('show', shouldLit);
+        if (shouldLit) {
+          var mSt = document.getElementById('st-M');
+          if (mSt) {
+            var r = mSt.closest('.sticker-link').getBoundingClientRect();
+            tapHintEl.style.top  = (r.top + r.height / 2 - tapHintEl.offsetHeight / 2 - 22) + 'px';
+            tapHintEl.style.left = (r.left - tapHintEl.offsetWidth - 8 - 9) + 'px';
+          }
+        }
+      }
       if (shouldLit && !wasLit && !_stickerPopped[i]) {
         _stickerPopped[i] = true;
         var link = st.closest('.sticker-link');
@@ -1623,5 +1666,13 @@ window.addEventListener('load', function() {
   }
 })();
 </script>
+
+<!-- Tap the sticker hint -->
+<div id="tap-hint" aria-hidden="true">
+  <span id="tap-hint-text">Tap the sticker!</span>
+  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 5H9M9 5L6 2M9 5L6 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
 </body>
 </html>
