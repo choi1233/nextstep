@@ -120,10 +120,7 @@
 
     /* ── 준비중 오버레이 ── */
     #coming-soon {
-      position: fixed; inset: 0; z-index: 10000;
-      background: #00ACEB;
-      display: flex; align-items: center; justify-content: center;
-      transition: opacity 0.5s ease;
+      display: none !important;
     }
     #coming-soon.gone { opacity: 0; pointer-events: none; }
     #coming-soon-text {
@@ -1502,8 +1499,7 @@ window.addEventListener('load', function() {
       var targetTime = getLoadProgress() * vidEl.duration;
       var diff = targetTime - vidEl.currentTime;
       /* diff > 0: 영상이 로딩보다 느림 → 빠르게 / diff < 0: 영상이 빠름 → 느리게 */
-      var rate = diff >  0.12 ? Math.min(4, 1 + diff * 2.5) :
-                 diff < -0.06 ? Math.max(0.2, 1 + diff * 2.5) : 1;
+      var rate = diff > 0.12 ? Math.min(4, 1 + diff * 2.5) : 1;
       if (Math.abs(vidEl.playbackRate - rate) > 0.05) vidEl.playbackRate = rate;
     }
     requestAnimationFrame(_syncLoop);
