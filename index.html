@@ -120,9 +120,23 @@
 
     /* ── 준비중 오버레이 ── */
     #coming-soon {
-      display: none !important;
+      position: fixed; inset: 0; z-index: 10000;
+      background: #00ACEB;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.5s ease;
+      gap: 22px;
+      padding-bottom: 30px; /* 전체 15px 위로 */
     }
     #coming-soon.gone { opacity: 0; pointer-events: none; }
+    #coming-soon-date {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 16px; font-weight: 400; color: #fff; opacity: 0.85;
+    }
+    #coming-soon.gone { opacity: 0; pointer-events: none; }
+    #coming-soon-date {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 16px; font-weight: 400; color: #fff; opacity: 0.85;
+    }
     #coming-soon-text {
       font-family: 'Pretendard', sans-serif;
       font-weight: 600;
@@ -540,6 +554,7 @@
       opacity: 1;
       animation: tap-hint-pulse 1.6s ease-in-out infinite;
     }
+
   </style>
 </head>
 <body>
@@ -1426,6 +1441,7 @@ window.addEventListener('load', function() {
 <!-- ── 모바일 로딩 오버레이 ── -->
 <div id="coming-soon">
   <span id="coming-soon-text">아직 준비중입니다.</span>
+  <span id="coming-soon-date">2026. 09. 15 AM 10:00</span>
 </div>
 <div id="mobile-loading" aria-hidden="true">
   <video id="ml-video" src="Splash%20Screen/loading.mp4?v=1788329328" preload="auto" autoplay muted playsinline webkit-playsinline></video>
