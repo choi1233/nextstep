@@ -1898,13 +1898,9 @@ window.addEventListener('load', function() {
     } else if (atBot && dy < 0) {
       pulling = 'bot';
       applyPull(-Math.min(-dy * RESIST, MAX_PULL));
-    } else {
-      /* 경계 벗어남 — pulling 중이어도 즉시 리셋 */
-      wrap.style.transform  = 'translateY(0)';
-      topOv.style.transform = 'translateY(0)';
-      botOv.style.transform = 'translateY(0)';
-      hideAll();
-      pulling = false;
+    } else if (pulling) {
+      /* 경계 벗어남 — 탄력 있게 복귀 */
+      springBack();
     }
   }, { passive: true });
 
