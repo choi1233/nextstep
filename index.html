@@ -230,20 +230,75 @@
 
       /* ── S1 모바일: 하늘 409 + 흰 910 + 검정 883 ── */
       #s1 {
-        height: 2202px !important;
+        height: 2402px !important; /* 힌트 영역 200px 추가 */
         position: relative !important;
         overflow: visible !important;
         background: #b8d8f0 !important;
       }
       #m-bg-sky, #m-bg-white, #m-bg-black { display: block; }
+      #m-scroll-hint {
+        position: absolute;
+        bottom: 60px;
+        left: 0;
+        width: 100%;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: #fff;
+        font-family: 'Pretendard', sans-serif;
+        font-weight: 400;
+        font-size: 16px;
+        animation: hint-bob 1.6s ease-in-out infinite;
+      }
+      @keyframes hint-bob {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(6px); }
+      }
+      #m-address {
+        position: absolute;
+        bottom: 178px; /* map 하단(2048px) - 24px = 2024px → 2202-2024=178 */
+        left: 0;
+        width: 100%;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        text-align: center;
+      }
+      #m-addr-ko {
+        font-family: 'Pretendard', sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        color: #66C7EC;
+        margin: 0 40px;
+        line-height: 1.3;
+      }
+      #m-addr-en {
+        font-family: 'Pretendard', sans-serif;
+        font-weight: 400;
+        font-size: 16px;
+        color: #66C7EC;
+        margin: 0 44px;
+        line-height: 1.3;
+      }
+      #m-map-wrap {
+        position: absolute;
+        top: 1467px;
+        left: 0;
+        width: 100%;
+        height: 145.25vw; /* 581px @ 400px 화면 기준 */
+        overflow-x: auto;
+        overflow-y: hidden;
+        z-index: 4;
+        -webkit-overflow-scrolling: touch;
+      }
       #m-map {
         display: block;
-        position: absolute;
-        top: 1467px; /* 흰 배경 하단(1339px) + 128px */
-        left: 0;
-        height: 581px;
+        height: 145.25vw;
         width: auto;
-        z-index: 4;
+        margin-right: 16px;
       }
       #m-pin {
         display: block;
@@ -256,7 +311,7 @@
         z-index: 4;
         object-fit: contain;
       }
-      #m-bg-black { position: absolute; top: 1289px; left: 0; width: 100%; height: 933px;  background: #000; z-index: 1; }
+      #m-bg-black { position: absolute; top: 1289px; left: 0; width: 100%; height: 1053px; background: #000; z-index: 1; }
       #m-bg-white { position: absolute; top: 409px;  left: 0; width: 100%; height: 930px;  background: linear-gradient(to bottom, transparent 0%, #fff 130px); z-index: 2; border-radius: 0 0 46px 46px; }
       #s1-inner > * { display: none !important; }
       #s1-right { display: none; }
@@ -265,7 +320,7 @@
         top: 0; left: 0;
         width: 100%; height: 2202px;
         z-index: 3;
-        transform: rotate(8deg) translateY(-10px);
+        transform: rotate(6deg);
         transform-origin: center center;
       }
       #m-poster-wrap {
@@ -277,7 +332,29 @@
       #m-poster {
         width: 100%;
         display: block;
+        position: relative;
+        z-index: 1;
         box-shadow: 8px 4px 29.6px 0 rgba(0,0,0,0.38);
+      }
+      #m-finger-tl {
+        position: absolute;
+        top: 12px;
+        left: -52px;
+        width: 84px;
+        height: 84px;
+        object-fit: contain;
+        z-index: 2;
+        transform: rotate(-6deg) scaleX(-1);
+      }
+      #m-finger-br {
+        position: absolute;
+        bottom: 40px;
+        right: -78px;
+        width: 84px;
+        height: 84px;
+        object-fit: contain;
+        z-index: 0;
+        transform: rotate(-6deg);
       }
       #m-date {
         font-family: 'Pretendard', sans-serif;
@@ -706,12 +783,27 @@
     </div><!-- /m-content-group -->
   </div>
   <div id="m-poster-wrap">
+    <img id="m-finger-tl" src="main/mobile/finger.png" alt="">
     <img id="m-poster" src="main/mobile/POSTER.png" alt="NEXT STEP Poster">
+    <img id="m-finger-br" src="main/mobile/finger.png" alt="">
     <p id="m-date">2026. 09. 01. (TUE)<br>- 09. 25. (SUN)</p>
   </div>
   </div><!-- /m-group -->
   <img id="m-pin" src="main/mobile/pin.png" alt="pin">
-  <img id="m-map" src="main/mobile/map2.png" alt="map">
+  <div id="m-map-wrap">
+    <img id="m-map" src="main/mobile/map2.png" alt="map">
+  </div>
+  <div id="m-scroll-hint">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <line x1="20" y1="12" x2="4" y2="12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      <polyline points="10,6 4,12 10,18" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>졸업 작품 보러가기</span>
+  </div>
+  <div id="m-address">
+    <p id="m-addr-ko">전남광주 동구 조선대길 108&nbsp;&nbsp;(조선대학교 미술대학 3F 미술관)</p>
+    <p id="m-addr-en">Chosun University 309 3F, Pilmun-daero, Dong-gu, Gwangju</p>
+  </div>
   <div id="s1-inner">
     <div id="s1-left">
       <p class="s1-heading">전시개요</p>
