@@ -236,6 +236,16 @@
         background: #b8d8f0 !important;
       }
       #m-bg-sky, #m-bg-white, #m-bg-black { display: block; }
+      #m-transition-overlay {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+        z-index: 9999;
+      }
+      #m-poster-wrap { cursor: pointer; }
       #m-scroll-hint {
         position: fixed;
         bottom: 24px;
@@ -805,7 +815,7 @@
     </div>
     </div><!-- /m-content-group -->
   </div>
-  <div id="m-poster-wrap">
+  <div id="m-poster-wrap" onclick="if(window.innerWidth<=500){location.href='designer/motion/index.html';}">
     <img id="m-finger-tl" src="main/mobile/finger1.png" alt="">
     <img id="m-poster" src="main/mobile/POSTER.png" alt="NEXT STEP Poster">
     <img id="m-finger-br" src="main/mobile/finger2.png" alt="">
@@ -1925,6 +1935,21 @@ window.addEventListener('load', function() {
     initMap();
   }
 })();
+
+/* ── 모바일 흰 배경 / pin 자동 조정 (내용 그룹 밑면 + 24px) ── */
+window.addEventListener('load', function() {
+  if (window.innerWidth > 500) return;
+  var poster = document.getElementById('m-poster-wrap');
+  var s1     = document.getElementById('s1');
+  var bgW    = document.getElementById('m-bg-white');
+  var pin    = document.getElementById('m-pin');
+  if (!poster || !s1 || !bgW) return;
+  var contentBottom = poster.getBoundingClientRect().bottom - s1.getBoundingClientRect().top;
+  var whiteTop = 409;
+  var newH = Math.round(contentBottom + 24 - whiteTop);
+  bgW.style.height = newH + 'px';
+  if (pin) pin.style.top = (whiteTop + newH + 3) + 'px';
+});
 </script>
 
 <!-- Tap the sticker hint -->
