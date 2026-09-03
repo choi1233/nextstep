@@ -339,7 +339,6 @@
       #m-bg-black { position: absolute; top: 1289px; left: 0; right: 0; bottom: 0; background: #000; z-index: 1; }
       #m-bg-white { position: absolute; top: 409px;  left: 0; width: 100%; height: 930px;  background: linear-gradient(to bottom, transparent 0%, #fff 130px); z-index: 2; border-radius: 0 0 46px 46px; }
       #s1-inner > * { display: none !important; }
-      #s1-right { display: none; }
       #m-group {
         position: absolute;
         top: 70px; left: 0;
@@ -471,7 +470,6 @@
       #top-nav, #top-nav-white { display: none !important; }
       #carrier-float, #carrier-3d { display: none !important; }
       #s2-scroll-zone, #s2-top-cap, #s3-trans, #s4, #s5-about { display: none !important; }
-      #s4 { height: auto !important; overflow: visible !important; }
       #s4-sticky {
         position: relative !important;
         top: auto !important;
@@ -495,7 +493,6 @@
         margin: 0 !important;
         align-self: unset !important;
         line-height: 0;
-        position: relative !important;
       }
       #s3-map { display: none !important; }
       #s3-map-m {
@@ -1016,8 +1013,7 @@ window.addEventListener('load', function() {
   var csC = document.getElementById('cs-C');
   var csP = document.getElementById('cs-P');
   var hasSeenFull = false;
-  var glbLoadProgress = 0;
-  var glbLoadDone = false;
+  var _exitPhase1TopPx = null; /* Phase 1 퇴장 위치 추적 — 롤백 시 점프 방지 */
 
   /* 스티커 발사 추적 */
   var stickerDefs = [
@@ -1184,7 +1180,7 @@ window.addEventListener('load', function() {
     var loader = new THREE.GLTFLoader();
     loader.setDRACOLoader(dracoLoader);
     loader.load('main/s2/carrier.glb', function(gltf) {
-      glbLoadDone = true; window._mlDone = true;
+      window._mlDone = true;
       model3d = gltf.scene;
 
       /* 원본 MeshStandardMaterial 유지 → 조명으로 표현 */
@@ -1209,7 +1205,7 @@ window.addEventListener('load', function() {
       /* 로드 완료 후 현재 스크롤 위치로 즉시 렌더 */
       updateCarrier();
     }, function(xhr) {
-      if (xhr.total > 0) { glbLoadProgress = xhr.loaded / xhr.total; window._mlProgress = glbLoadProgress; }
+      if (xhr.total > 0) window._mlProgress = xhr.loaded / xhr.total;
     }, function(e){ console.warn('GLB 로드 실패:', e); });
 
     window.addEventListener('resize', function() {
@@ -1322,8 +1318,7 @@ window.addEventListener('load', function() {
     var animEndST = zoneTop + zoneH - viewH;
     var natTopPx  = getNatTopPx(viewH);
     var carrierH  = getCarrierH(viewH);
-    var riseEndPx = viewH * 0.5 - carrierH * 0.5 - 50;
-    var THRESH    = natTopPx - riseEndPx;
+    var THRESH    = natTopPx - (viewH * 0.5 - carrierH * 0.5 - 50);
 
     /* ── 통합 tilt: s2 끝(10°, tilt=0) → s5 끝(80°, tilt=-1.75) ── */
     var darkEnd = s5El
@@ -1376,10 +1371,19 @@ window.addEventListener('load', function() {
           else resetSticker(def);
         });
       } else if (hasSeenFull) {
-        /* rawP 0.83~1.01: natTopPx에서 tilt=0 유지 — snap 방지 */
+        /* rawP 0.83~1.01: Phase 1에서 롤백 시 부드럽게 natTopPx로 복귀 */
+        var targetTopPx;
+        if (_exitPhase1TopPx !== null && _exitPhase1TopPx < natTopPx) {
+          var t = Math.min(1, (1.01 - rawP) / (1.01 - 0.83));
+          targetTopPx = _exitPhase1TopPx + (natTopPx - _exitPhase1TopPx) * t;
+          if (t >= 1) _exitPhase1TopPx = null;
+        } else {
+          _exitPhase1TopPx = null;
+          targetTopPx = natTopPx;
+        }
         carrierEl.style.opacity = '0';
-        showFloatCarrier(natTopPx, 0);
-        updateShadow(natTopPx, natTopPx, viewH);
+        showFloatCarrier(targetTopPx, 0);
+        updateShadow(targetTopPx, natTopPx, viewH);
       } else {
         resetCarrier();
         /* hasSeenFull=false여도 s1 구간(rawP<0)이면 3D 캔버스 숨김 */
@@ -1387,12 +1391,12 @@ window.addEventListener('load', function() {
       }
 
     } else if (rawP > 1.01) {
-      /* 검정으로 내려가는 중 — 통합 tilt 사용 */
+      /* 검정으로 내려가는 중 — 위로만 퇴장 (Phase 2 제거) */
       var downPx = st - animEndST;
-      var topPx  = downPx <= THRESH
-        ? natTopPx - downPx * 2.5              /* Phase 1: 2.5배 속도로 위로 퇴장 */
-        : riseEndPx + (downPx - THRESH) * 1.5; /* Phase 2: 1.5배 빠르게 아래로 */
+      var topPx  = natTopPx - downPx * 2.5; /* 2.5배 속도로 위로 퇴장 */
+      _exitPhase1TopPx = Math.min(topPx, natTopPx); /* 롤백 대비 현재 위치 추적 */
       if (topPx < -carrierH) {
+        _exitPhase1TopPx = -carrierH;
         carrierFloat.style.display = 'none';
         if (canvas3d) canvas3d.style.display = 'none';
       } else {
@@ -1431,10 +1435,7 @@ window.addEventListener('load', function() {
     if (p === undefined) p = getProgress();
 
     /* E: hasSeenFull 후엔 p 기준으로 색상 복귀 (s2 진입 시 검정, s1 진입 시 회색) */
-    if (eInitialEl) {
-      if (!hasSeenFull) eInitialEl.style.color = p > 0 ? '#111' : '#ABABAB';
-      else eInitialEl.style.color = p > 0 ? '#111' : '#ABABAB';
-    }
+    if (eInitialEl) eInitialEl.style.color = p > 0 ? '#111' : '#ABABAB';
 
     /* 글자: 스크롤 위치 기준 — 내리든 올리든 동일하게 채움 */
     for (var i = 0; i < total; i++) {
@@ -1550,7 +1551,6 @@ window.addEventListener('load', function() {
 
   var prevScrollTop = 0;
   var _lastScrollTime = 0;
-  var _scrollVelocity = 0; /* px/ms, 양수=아래 */
   var maxAnimP = (window.innerWidth <= 500) ? 1.0 : 0; /* 모바일: 처음부터 텍스트 완전히 채움 */
   var scrollDir = 1; /* 1=아래, -1=위 */
   var prevRawPc = 0; /* rawP 크로스 감지용 */
@@ -1565,7 +1565,6 @@ window.addEventListener('load', function() {
     var curST = wrap.scrollTop;
     var now = performance.now();
     var dt = now - _lastScrollTime;
-    _scrollVelocity = (dt > 0 && dt < 150) ? (curST - prevScrollTop) / dt : 0;
     _lastScrollTime = now;
     scrollDir = curST >= prevScrollTop ? 1 : -1;
     prevScrollTop = curST;
