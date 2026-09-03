@@ -328,7 +328,7 @@
       #s1-right { display: none; }
       #m-group {
         position: absolute;
-        top: 0; left: 0;
+        top: 30px; left: 0;
         width: 100%; height: 2202px;
         z-index: 3;
         transform: rotate(10deg) translateX(-10px);
@@ -1974,6 +1974,38 @@ window.addEventListener('load', function() {
   window.addEventListener('load', fixHeight);
   window.addEventListener('resize', fixHeight);
   if (scrollWrap) scrollWrap.addEventListener('scroll', updatePin, { passive: true });
+})();
+</script>
+
+<script>
+/* ── 모바일 오버스크롤 → motion 페이지 ── */
+(function() {
+  if (window.innerWidth > 500) return;
+  var wrap = document.getElementById('scroll-wrap');
+  if (!wrap) return;
+  var startY = 0;
+  var THRESHOLD = 80;
+  var navigating = false;
+
+  wrap.addEventListener('touchstart', function(e) {
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  wrap.addEventListener('touchend', function(e) {
+    if (navigating) return;
+    var endY = e.changedTouches[0].clientY;
+    var delta = endY - startY;
+    var atTop    = wrap.scrollTop <= 0;
+    var atBottom = wrap.scrollTop + wrap.clientHeight >= wrap.scrollHeight - 4;
+
+    if (atTop && delta > THRESHOLD) {
+      navigating = true;
+      window.location.href = 'designer/motion/index.html';
+    } else if (atBottom && delta < -THRESHOLD) {
+      navigating = true;
+      window.location.href = 'designer/motion/index.html';
+    }
+  }, { passive: true });
 })();
 </script>
 
