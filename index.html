@@ -29,7 +29,8 @@
       cursor: auto;
     }
     @media (max-width:500px) {
-      body { background: #b8d8f0; } /* 위 당길 때 하늘색 */
+      body { background: linear-gradient(to bottom, #c8e5f6 0%, #b8d8f0 40%, #000 100%); }
+      /* 위 당김 → 하늘, 아래 당김 → 검정 */
     }
     * { cursor: auto; }
     a, button, [role="button"], .s5-icon-btn, label, select,
@@ -234,7 +235,7 @@
 
       /* ── S1 모바일: 맵 하단까지 ── */
       #s1 {
-        height: calc(1467px + 145.25vw);
+        height: calc(1467px + 115vw) !important;
         position: relative !important;
         overflow: visible !important;
         background: #b8d8f0 !important;
@@ -312,7 +313,7 @@
         top: 1467px;
         left: 0;
         width: 100%;
-        height: 145.25vw; /* 581px @ 400px 화면 기준 */
+        height: 145.25vw;
         overflow-x: auto;
         overflow-y: hidden;
         z-index: 4;
@@ -341,7 +342,7 @@
       #s1-right { display: none; }
       #m-group {
         position: absolute;
-        top: 50px; left: 0;
+        top: 70px; left: 0;
         width: 100%; height: 2202px;
         z-index: 3;
         transform: rotate(10deg) translateX(-10px);
@@ -1659,7 +1660,8 @@ window.addEventListener('load', function() {
     var isMob = window.innerWidth <= 500;
     var nrmSize = isMob ? 256 : 512;
     var app = new PIXI.Application({width:W,height:H,transparent:true,antialias:!isMob,resolution:isMob?1:(window.devicePixelRatio||1),autoDensity:true});
-    app.view.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+    var EXTRA = isMob ? 200 : 0; /* 모바일: 위로 200px 확장해 오버스크롤 노이즈 표시 */
+    app.view.style.cssText='position:absolute;top:'+ (-EXTRA) +'px;left:0;width:100%;height:calc(100% + '+ EXTRA +'px);pointer-events:none;z-index:0;';
     s1El.insertBefore(app.view, s1El.firstChild);
     var bgTex=PIXI.Texture.from(createCloudCanvas(W,H));
     var bgSprite=new PIXI.Sprite(bgTex);bgSprite.width=W;bgSprite.height=H;
@@ -1959,23 +1961,24 @@ window.addEventListener('load', function() {
   var pinEl      = document.getElementById('m-pin');
   var scrollWrap = document.getElementById('scroll-wrap');
 
-  /* 모바일 여부: #m-bg-black이 display:none이면 데스크탑 */
+  /* 모바일 여부: 뷰포트 너비로 직접 판단 */
   function isMobile() {
-    return getComputedStyle(bgBlack).display !== 'none';
+    return window.innerWidth <= 500;
   }
 
   function fixHeight() {
     if (!isMobile()) return;
-    var mapBottom = Math.round(1467 + window.innerWidth * 1.4525);
+    var mapBottom = Math.round(1467 + window.innerWidth * 1.15);
     s1El.style.setProperty('height', mapBottom + 'px', 'important');
   }
 
   function updatePin() {
     if (!isMobile() || !pinEl) return;
     var scrolledIn = scrollWrap.scrollTop;
-    var blackStart = 1289;
-    var blackEnd   = 1489; /* 200px 구간에서 페이드 */
-    var ratio      = (scrolledIn - blackStart) / (blackEnd - blackStart);
+    /* map2가 화면 아래에서 들어오기 시작할 때부터 페이드 */
+    var fadeStart = Math.max(0, 1467 - window.innerHeight);
+    var fadeEnd   = 1467 + window.innerWidth * 0.3;
+    var ratio     = (scrolledIn - fadeStart) / (fadeEnd - fadeStart);
     pinEl.style.opacity = Math.max(0, Math.min(1, 1 - ratio));
   }
 

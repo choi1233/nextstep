@@ -799,8 +799,10 @@ function hideDetailMobile() {
     var authorEl = document.getElementById('mob-author-kr') ||
                    document.getElementById('mob-author-en');
     if (!authorEl) return;
-    /* 저자 요소 하단이 스크롤 top 위로 올라갔으면 전환 */
-    var threshold = authorEl.offsetTop + authorEl.offsetHeight;
+    /* 이름 하단이 나브바 하단을 지날 때 전환 */
+    var navEl = document.getElementById('mob-detail-nav');
+    var navBottom = navEl ? navEl.offsetHeight : 0;
+    var threshold = authorEl.offsetTop + authorEl.offsetHeight - navBottom;
     var past = scrollEl.scrollTop > threshold;
     document.getElementById('mob-nav-gate').style.display = past ? 'none' : 'flex';
     document.getElementById('mob-nav-info').style.display = past ? 'block' : 'none';
