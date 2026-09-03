@@ -230,18 +230,18 @@
 
       /* ── S1 모바일: 하늘 409 + 흰 910 + 검정 883 ── */
       #s1 {
-        height: 2402px !important; /* 힌트 영역 200px 추가 */
+        height: 2098px !important;
         position: relative !important;
         overflow: visible !important;
         background: #b8d8f0 !important;
       }
       #m-bg-sky, #m-bg-white, #m-bg-black { display: block; }
       #m-scroll-hint {
-        position: absolute;
-        bottom: 60px;
+        position: fixed;
+        bottom: 24px;
         left: 0;
         width: 100%;
-        z-index: 5;
+        z-index: 200;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -258,7 +258,7 @@
       }
       #m-address {
         position: absolute;
-        bottom: 178px; /* map 하단(2048px) - 24px = 2024px → 2202-2024=178 */
+        bottom: 24px; /* map 이미지 밑면에서 24px 위 */
         left: 0;
         width: 100%;
         z-index: 5;
@@ -311,7 +311,7 @@
         z-index: 4;
         object-fit: contain;
       }
-      #m-bg-black { position: absolute; top: 1289px; left: 0; width: 100%; height: 1053px; background: #000; z-index: 1; }
+      #m-bg-black { position: absolute; top: 1289px; left: 0; width: 100%; height: 809px; background: #000; z-index: 1; }
       #m-bg-white { position: absolute; top: 409px;  left: 0; width: 100%; height: 930px;  background: linear-gradient(to bottom, transparent 0%, #fff 130px); z-index: 2; border-radius: 0 0 46px 46px; }
       #s1-inner > * { display: none !important; }
       #s1-right { display: none; }
@@ -320,7 +320,7 @@
         top: 0; left: 0;
         width: 100%; height: 2202px;
         z-index: 3;
-        transform: rotate(6deg);
+        transform: rotate(10deg) translateX(-10px);
         transform-origin: center center;
       }
       #m-poster-wrap {
@@ -338,23 +338,23 @@
       }
       #m-finger-tl {
         position: absolute;
-        top: 12px;
-        left: -52px;
-        width: 84px;
-        height: 84px;
+        top: 19px;
+        left: -73px;
+        width: auto;
+        height: 48px;
         object-fit: contain;
         z-index: 2;
-        transform: rotate(-6deg) scaleX(-1);
+        transform: rotate(-10deg);
       }
       #m-finger-br {
         position: absolute;
         bottom: 40px;
-        right: -78px;
-        width: 84px;
-        height: 84px;
+        right: -93px;
+        width: auto;
+        height: 66px;
         object-fit: contain;
         z-index: 0;
-        transform: rotate(-6deg);
+        transform: rotate(-10deg);
       }
       #m-date {
         font-family: 'Pretendard', sans-serif;
@@ -373,7 +373,7 @@
         width: calc((100% - 40px) / 2); /* grid: 좌우마진16+16, 거터8 → 왼쪽 컬럼 */
         display: flex;
         flex-direction: column;
-        gap: 28px;
+        gap: 0;
       }
       #m-content-group {
         position: relative;
@@ -381,29 +381,47 @@
         flex-direction: column;
         gap: 8px;
       }
+      #m-left-panel {
+        position: absolute;
+        right: 100%; /* 패널 오른쪽 = 내용 왼쪽 */
+        bottom: 100%; /* 패널 아래 = 내용 위 */
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start; /* 제76회 왼쪽 = next step 왼쪽 */
+      }
       #m-ns-logo {
         display: block;
         height: 28px;
         width: auto;
+      }
+      #m-committee-wrap {
+        position: relative;
+        display: inline-block;
+      }
+      #m-committee-arrow {
         position: absolute;
-        right: 100%;
-        bottom: 100%;
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+        right: -20px;
+        bottom: 0;
       }
       #m-committee {
         font-family: 'Pretendard', sans-serif;
         font-weight: 600;
-        font-size: 15px;
+        font-size: 10px;
         color: #000;
         line-height: 1.4;
         margin: 0;
-        word-break: keep-all;
+        white-space: nowrap;
       }
       #m-body-text {
         font-family: 'Pretendard', sans-serif;
-        font-weight: 400;
+        font-weight: 500;
         font-size: 13px;
         color: #000;
-        line-height: 1.6;
+        line-height: 20px;
         word-break: keep-all;
       }
       #m-label {
@@ -769,10 +787,15 @@
   <div id="m-bg-white"></div>
   <div id="m-group">
   <div id="m-overview">
-    <p id="m-committee">제 76회 조선대학교 미술대학&nbsp;<br>시각디자인학과 졸업전시</p>
     <div id="m-content-group">
-      <img id="m-ns-logo" src="main/mobile/next step.svg" alt="NEXT STEP">
-      <p id="m-body-text">본 전시는 여행을 떠나기 직전 꿈과 설렘이 가득한 공항을 컨셉으로 진행된다.<br><br>공항은 단순한 이동의 장소가 아니라, 각자가 선택한 목적지와 경로를 바탕으로 가장 높이 날아올라 다음 단계로 나아가기 위해 비행을 준비하고 출발하는 공간이다.<br>탑승을 준비하고 경로를 선택하며 출발에 이르는 일련의 과정은 곧 자신의 삶을 스스로 설계하고 관리하며 앞으로의 방향을 정해 나아가는 과정과 맞닿아 있다.<br><br>이러한 구조는 삶을 돌보고 더 나은 방향으로 나아가는 라이프케어 기반의 웰에이징 여정과 유사하며 따라서 공항은 이번 전시의 주제를 상징적으로 전달할 수 있는 공간적 장치가 된다.</p>
+      <div id="m-left-panel">
+        <div id="m-committee-wrap">
+          <p id="m-committee">제 76회 조선대학교 미술대학&nbsp;<br>시각디자인학과 졸업전시</p>
+          <img id="m-committee-arrow" src="main/mobile/arrow.png" alt="">
+        </div>
+        <img id="m-ns-logo" src="main/mobile/next step.svg" alt="NEXT STEP">
+      </div>
+      <p id="m-body-text">본 전시는 여행을 떠나기 직전 꿈과 설렘이 가득한 공항을 컨셉으로 진행된다.<br><br>공항은 단순한 이동의 장소가 아니라, 각자가 선택한 목적지와 경로를 바탕으로 가장 높이 날아올라 다음 단계로 나아가기 위해 비행을 준비하고 출발하는 공간이다.<br><br>탑승을 준비하고 경로를 선택하며 출발에 이르는 일련의 과정은 곧 자신의 삶을 스스로 설계하고 관리하며 앞으로의 방향을 정해 나아가는 과정과 맞닿아 있다.<br><br>이러한 구조는 삶을 돌보고 더 나은 방향으로 나아가는 라이프케어 기반의 웰에이징 여정과 유사하며 따라서 공항은 이번 전시의 주제를 상징적으로 전달할 수 있는 공간적 장치가 된다.</p>
     <div id="m-label">
       <span id="m-label-text">전시개요</span>
       <svg id="m-label-arrow" viewBox="0 0 8 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -783,26 +806,19 @@
     </div><!-- /m-content-group -->
   </div>
   <div id="m-poster-wrap">
-    <img id="m-finger-tl" src="main/mobile/finger.png" alt="">
+    <img id="m-finger-tl" src="main/mobile/finger1.png" alt="">
     <img id="m-poster" src="main/mobile/POSTER.png" alt="NEXT STEP Poster">
-    <img id="m-finger-br" src="main/mobile/finger.png" alt="">
+    <img id="m-finger-br" src="main/mobile/finger2.png" alt="">
     <p id="m-date">2026. 09. 01. (TUE)<br>- 09. 25. (SUN)</p>
   </div>
   </div><!-- /m-group -->
   <img id="m-pin" src="main/mobile/pin.png" alt="pin">
   <div id="m-map-wrap">
     <img id="m-map" src="main/mobile/map2.png" alt="map">
-  </div>
-  <div id="m-scroll-hint">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <line x1="20" y1="12" x2="4" y2="12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      <polyline points="10,6 4,12 10,18" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <span>졸업 작품 보러가기</span>
-  </div>
-  <div id="m-address">
-    <p id="m-addr-ko">전남광주 동구 조선대길 108&nbsp;&nbsp;(조선대학교 미술대학 3F 미술관)</p>
-    <p id="m-addr-en">Chosun University 309 3F, Pilmun-daero, Dong-gu, Gwangju</p>
+    <div id="m-address">
+      <p id="m-addr-ko">전남광주 동구 조선대길 108&nbsp;&nbsp;(조선대학교 미술대학 3F 미술관)</p>
+      <p id="m-addr-en">Chosun University 309 3F, Pilmun-daero, Dong-gu, Gwangju</p>
+    </div>
   </div>
   <div id="s1-inner">
     <div id="s1-left">
