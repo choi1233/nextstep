@@ -53,7 +53,7 @@
     }
 
     #s1-inner {
-      position: relative; z-index: 1;
+      position: relative; z-index: 4;
       display: grid;
       grid-template-columns: repeat(10, 1fr);
       gap: 24px;
@@ -101,13 +101,14 @@
     .s1-role { text-align: left; }
     .s1-name { text-align: right; }
 
-    /* ── S2: 위 캡 (100px, 흰색, s1 위에 겹침) ── */
+    /* ── S2: 위 캡 (S1 내부 absolute, 하단 그라데이션) ── */
     #s2-top-cap {
-      width:100%; height:100px;
-      background:#fff;
+      position:absolute; bottom:0; left:0; right:0;
+      height:60vh;
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 60%, #fff 100%);
       border-radius: 50px 50px 0 0;
-      position:relative; z-index:2;
-      margin-top:-100px;
+      z-index:2;
+      pointer-events:none;
     }
 
     /* ── S3: 전환 구간 (흰 바탕 → 검정, R값 구간) ── */
@@ -168,7 +169,7 @@
       width:100%;
       height:100vh; height:100dvh;
       overflow:hidden;
-      background:#fff;
+      background: #fff;
       /* border-radius 없음 — 캡이 담당 */
       display:flex; flex-direction:column;
       align-items:center; justify-content:center;
@@ -221,21 +222,21 @@
       max-width:1100px;
     }
     .mobile-br { display: none; }
-    #m-bg-sky, #m-bg-white, #m-bg-black { display: none; }
+    #m-bg-sky, #m-bg-white, #m-bg-black, #m-group, #m-pin, #m-map-wrap { display: none; }
     @media (max-width: 500px) {
       #scroll-wrap {
         overflow-y: auto !important;
         overflow-x: hidden !important;
       }
 
-      /* ── S1 모바일: 하늘 409 + 흰 910 + 검정 883 ── */
+      /* ── S1 모바일: 맵 하단까지 ── */
       #s1 {
-        height: 2098px !important;
+        height: calc(1467px + 145.25vw);
         position: relative !important;
         overflow: visible !important;
         background: #b8d8f0 !important;
       }
-      #m-bg-sky, #m-bg-white, #m-bg-black { display: block; }
+      #m-bg-sky, #m-bg-white, #m-bg-black, #m-group, #m-pin, #m-map-wrap { display: block; }
       #m-transition-overlay {
         position: fixed;
         inset: 0;
@@ -321,7 +322,7 @@
         z-index: 4;
         object-fit: contain;
       }
-      #m-bg-black { position: absolute; top: 1289px; left: 0; width: 100%; height: 809px; background: #000; z-index: 1; }
+      #m-bg-black { position: absolute; top: 1289px; left: 0; right: 0; bottom: 0; background: #000; z-index: 1; }
       #m-bg-white { position: absolute; top: 409px;  left: 0; width: 100%; height: 930px;  background: linear-gradient(to bottom, transparent 0%, #fff 130px); z-index: 2; border-radius: 0 0 46px 46px; }
       #s1-inner > * { display: none !important; }
       #s1-right { display: none; }
@@ -851,10 +852,9 @@
       </ul>
     </div>
   </div>
+  <!-- S1 하단 그라데이션 캡 -->
+  <div id="s2-top-cap"></div>
 </section>
-
-<!-- ── S2: 위 캡 ── -->
-<div id="s2-top-cap"></div>
 
 <!-- ── S2: White (sticky animation zone) ── -->
 <div id="s2-scroll-zone">
@@ -1936,20 +1936,45 @@ window.addEventListener('load', function() {
   }
 })();
 
-/* ── 모바일 흰 배경 / pin 자동 조정 (내용 그룹 밑면 + 24px) ── */
-window.addEventListener('load', function() {
-  if (window.innerWidth > 500) return;
-  var poster = document.getElementById('m-poster-wrap');
-  var s1     = document.getElementById('s1');
-  var bgW    = document.getElementById('m-bg-white');
-  var pin    = document.getElementById('m-pin');
-  if (!poster || !s1 || !bgW) return;
-  var contentBottom = poster.getBoundingClientRect().bottom - s1.getBoundingClientRect().top;
-  var whiteTop = 409;
-  var newH = Math.round(contentBottom + 24 - whiteTop);
-  bgW.style.height = newH + 'px';
-  if (pin) pin.style.top = (whiteTop + newH + 3) + 'px';
-});
+</script>
+
+<script>
+/* ── 모바일 #s1 높이 & pin 페이드 ── */
+(function() {
+  var s1El       = document.getElementById('s1');
+  var bgBlack    = document.getElementById('m-bg-black');
+  var pinEl      = document.getElementById('m-pin');
+  var scrollWrap = document.getElementById('scroll-wrap');
+
+  /* 모바일 여부: #m-bg-black이 display:none이면 데스크탑 */
+  function isMobile() {
+    return getComputedStyle(bgBlack).display !== 'none';
+  }
+
+  function fixHeight() {
+    if (!isMobile()) return;
+    var mapBottom = Math.round(1467 + window.innerWidth * 1.4525);
+    s1El.style.setProperty('height', mapBottom + 'px', 'important');
+  }
+
+  function updatePin() {
+    if (!isMobile() || !pinEl) return;
+    var s1Top      = s1El.getBoundingClientRect().top;
+    var scrolledIn = -s1Top;
+    var blackStart = 1289;
+    var blackMid   = 1289 + (s1El.offsetHeight - 1289) / 2;
+    var ratio      = (scrolledIn - blackStart) / (blackMid - blackStart);
+    pinEl.style.opacity = Math.max(0, Math.min(1, 1 - ratio));
+  }
+
+  if (pinEl) pinEl.style.transition = 'opacity 0.3s ease';
+
+  /* 초기 실행 + 이벤트 */
+  fixHeight();
+  window.addEventListener('load', fixHeight);
+  window.addEventListener('resize', fixHeight);
+  if (scrollWrap) scrollWrap.addEventListener('scroll', updatePin, { passive: true });
+})();
 </script>
 
 <!-- Tap the sticker hint -->

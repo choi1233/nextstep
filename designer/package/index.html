@@ -811,6 +811,11 @@ function renderGallery() {
       kr.addEventListener('mouseenter', function(){ this.textContent = '시디1짱'; });
       kr.addEventListener('mouseleave', function(){ this.textContent = d.name; });
     }
+    if (d.id === 'ryusul') {
+      kr.style.width = 'fit-content';
+      kr.addEventListener('mouseenter', function(){ this.textContent = '포포'; });
+      kr.addEventListener('mouseleave', function(){ this.textContent = d.name; });
+    }
     mod.appendChild(kr);
 
     /* 영어 이름 */
