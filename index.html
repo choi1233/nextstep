@@ -236,6 +236,15 @@
         background: #b8d8f0 !important;
       }
       #m-bg-sky, #m-bg-white, #m-bg-black { display: block; }
+      #m-map {
+        display: block;
+        position: absolute;
+        top: 1467px; /* 흰 배경 하단(1339px) + 128px */
+        left: 0;
+        height: 581px;
+        width: auto;
+        z-index: 4;
+      }
       #m-pin {
         display: block;
         position: absolute;
@@ -256,7 +265,7 @@
         top: 0; left: 0;
         width: 100%; height: 2202px;
         z-index: 3;
-        transform: rotate(11deg) translateY(-10px);
+        transform: rotate(8deg) translateY(-10px);
         transform-origin: center center;
       }
       #m-poster-wrap {
@@ -340,6 +349,7 @@
       }
 
       #top-nav, #top-nav-white { display: none !important; }
+      #carrier-float, #carrier-3d { display: none !important; }
       #s2-scroll-zone, #s2-top-cap, #s3-trans, #s4, #s5-about { display: none !important; }
       #s4 { height: auto !important; overflow: visible !important; }
       #s4-sticky {
@@ -701,6 +711,7 @@
   </div>
   </div><!-- /m-group -->
   <img id="m-pin" src="main/mobile/pin.png" alt="pin">
+  <img id="m-map" src="main/mobile/map2.png" alt="map">
   <div id="s1-inner">
     <div id="s1-left">
       <p class="s1-heading">전시개요</p>
