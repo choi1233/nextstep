@@ -132,16 +132,12 @@
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 16px; font-weight: 400; color: #fff; opacity: 0.85;
     }
-    #coming-soon.gone { opacity: 0; pointer-events: none; }
-    #coming-soon-date {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-size: 16px; font-weight: 400; color: #fff; opacity: 0.85;
-    }
     #coming-soon-text {
       font-family: 'Pretendard', sans-serif;
       font-weight: 600;
       font-size: clamp(24px, 6vw, 64px);
       color: #fff;
+      transform: translateX(8px);
       user-select: none;
     }
 
@@ -225,29 +221,126 @@
       max-width:1100px;
     }
     .mobile-br { display: none; }
+    #m-bg-sky, #m-bg-white, #m-bg-black { display: none; }
     @media (max-width: 500px) {
-      /* ── S1 모바일 ── */
-      #s1 { align-items: flex-start; justify-content: flex-start; height: 200dvh; }
-      #s1-inner {
-        display: flex; flex-direction: column;
-        padding: 80px 16px 0; gap: 16px; align-items: flex-start;
-        width: 100%;
+      #scroll-wrap {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
       }
-      #s1-left {
-        width: calc(50% - 4px); /* 2col, gutter 8px → (100%-8px)/2 */
-        text-align: left;
-      }
-      #s1-poster {
-        width: calc(100vw - 32px); max-width: calc(100vw - 32px);
-        height: auto; max-height: none;
-        align-self: center;
-      }
-      #s1-right { display: none; }
 
-      .mobile-br { display: block; }
-      #top-nav { padding: 16px 16px; }
-      #s2-text { display: none !important; }
-      #s2-text-mobile { display: block !important; padding: 0 16px; font-size: clamp(18px, 5vw, 36px); }
+      /* ── S1 모바일: 하늘 409 + 흰 910 + 검정 883 ── */
+      #s1 {
+        height: 2202px !important;
+        position: relative !important;
+        overflow: visible !important;
+        background: #b8d8f0 !important;
+      }
+      #m-bg-sky, #m-bg-white, #m-bg-black { display: block; }
+      #m-pin {
+        display: block;
+        position: absolute;
+        top: 1342px; /* 흰 배경 하단 + 3px */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 48px;
+        height: 48px;
+        z-index: 4;
+        object-fit: contain;
+      }
+      #m-bg-black { position: absolute; top: 1289px; left: 0; width: 100%; height: 933px;  background: #000; z-index: 1; }
+      #m-bg-white { position: absolute; top: 409px;  left: 0; width: 100%; height: 930px;  background: linear-gradient(to bottom, transparent 0%, #fff 130px); z-index: 2; border-radius: 0 0 46px 46px; }
+      #s1-inner > * { display: none !important; }
+      #s1-right { display: none; }
+      #m-group {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 2202px;
+        z-index: 3;
+        transform: rotate(11deg) translateY(-10px);
+        transform-origin: center center;
+      }
+      #m-poster-wrap {
+        position: absolute;
+        left: 16px; right: 16px;
+        width: calc(100% - 32px);
+        top: 710px;
+      }
+      #m-poster {
+        width: 100%;
+        display: block;
+        box-shadow: 8px 4px 29.6px 0 rgba(0,0,0,0.38);
+      }
+      #m-date {
+        font-family: 'Pretendard', sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        color: #000;
+        line-height: 1.3;
+        text-align: right;
+        margin: 0;
+        padding-top: 4px;
+      }
+      #m-overview {
+        position: absolute;
+        bottom: calc(2202px - (710px - 40px)); /* 라벨 하단 = 포스터 위 40px */
+        left: 16px;
+        width: calc((100% - 40px) / 2); /* grid: 좌우마진16+16, 거터8 → 왼쪽 컬럼 */
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      #m-content-group {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      #m-ns-logo {
+        display: block;
+        height: 28px;
+        width: auto;
+        position: absolute;
+        right: 100%;
+        bottom: 100%;
+      }
+      #m-committee {
+        font-family: 'Pretendard', sans-serif;
+        font-weight: 600;
+        font-size: 15px;
+        color: #000;
+        line-height: 1.4;
+        margin: 0;
+        word-break: keep-all;
+      }
+      #m-body-text {
+        font-family: 'Pretendard', sans-serif;
+        font-weight: 400;
+        font-size: 13px;
+        color: #000;
+        line-height: 1.6;
+        word-break: keep-all;
+      }
+      #m-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      #m-label-text {
+        font-family: 'Pretendard', sans-serif;
+        font-weight: 600;
+        font-size: 24px;
+        color: #000;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      #m-label-arrow {
+        width: 8px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+
+      #top-nav, #top-nav-white { display: none !important; }
+      #s2-scroll-zone, #s2-top-cap, #s3-trans, #s4, #s5-about { display: none !important; }
       #s4 { height: auto !important; overflow: visible !important; }
       #s4-sticky {
         position: relative !important;
@@ -583,6 +676,31 @@
 
 <!-- ── S1: Blue ── -->
 <section id="s1">
+  <!-- 모바일 배경 박스 3단계 -->
+  <div id="m-bg-sky"></div>
+  <div id="m-bg-black"></div>
+  <div id="m-bg-white"></div>
+  <div id="m-group">
+  <div id="m-overview">
+    <p id="m-committee">제 76회 조선대학교 미술대학&nbsp;<br>시각디자인학과 졸업전시</p>
+    <div id="m-content-group">
+      <img id="m-ns-logo" src="main/mobile/next step.svg" alt="NEXT STEP">
+      <p id="m-body-text">본 전시는 여행을 떠나기 직전 꿈과 설렘이 가득한 공항을 컨셉으로 진행된다.<br><br>공항은 단순한 이동의 장소가 아니라, 각자가 선택한 목적지와 경로를 바탕으로 가장 높이 날아올라 다음 단계로 나아가기 위해 비행을 준비하고 출발하는 공간이다.<br>탑승을 준비하고 경로를 선택하며 출발에 이르는 일련의 과정은 곧 자신의 삶을 스스로 설계하고 관리하며 앞으로의 방향을 정해 나아가는 과정과 맞닿아 있다.<br><br>이러한 구조는 삶을 돌보고 더 나은 방향으로 나아가는 라이프케어 기반의 웰에이징 여정과 유사하며 따라서 공항은 이번 전시의 주제를 상징적으로 전달할 수 있는 공간적 장치가 된다.</p>
+    <div id="m-label">
+      <span id="m-label-text">전시개요</span>
+      <svg id="m-label-arrow" viewBox="0 0 8 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="4" y1="15" x2="4" y2="1" stroke="black" stroke-width="1" stroke-linecap="round"/>
+        <polyline points="1,6 4,1 7,6" fill="none" stroke="black" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    </div><!-- /m-content-group -->
+  </div>
+  <div id="m-poster-wrap">
+    <img id="m-poster" src="main/mobile/POSTER.png" alt="NEXT STEP Poster">
+    <p id="m-date">2026. 09. 01. (TUE)<br>- 09. 25. (SUN)</p>
+  </div>
+  </div><!-- /m-group -->
+  <img id="m-pin" src="main/mobile/pin.png" alt="pin">
   <div id="s1-inner">
     <div id="s1-left">
       <p class="s1-heading">전시개요</p>
@@ -672,6 +790,7 @@ Find your way to <a class="pill-btn" id="map-btn" href="#">Map</a></div>
 
 </div><!-- /scroll-wrap -->
 
+
 <canvas id="carrier-3d"></canvas>
 <!-- 캐리어 플로트: 애니메이션용 fixed 복사본 -->
 <div id="carrier-float">
@@ -690,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function() {
   /* s1: 모바일 200dvh, PC 110dvh */
   var s1H = 1.1;
   if (window.innerWidth > 500) wrap.scrollTop = window.innerHeight * s1H + 100;
-  else wrap.scrollTop = window.innerHeight * 2; /* 모바일: s1(200dvh) 스킵 → s2 시작 */
+  else wrap.scrollTop = 1319 - (window.innerHeight - 72); /* 모바일: 검정 박스 72px 보이는 위치 */
 });
 
 /* ── About / Map 버튼 ── */
@@ -1098,8 +1217,8 @@ window.addEventListener('load', function() {
         /* rawP=0.83 → natTopPx(기준), rawP=0.1 → -carrierH(완전히 화면 위로) */
         var topPx = -carrierH + ((rawP - 0.1) / (0.83 - 0.1)) * (natTopPx + carrierH);
         carrierEl.style.opacity = '0';
-        if (topPx < -carrierH + 40) {
-          /* 캐리어가 완전히 화면 밖 → 숨김 */
+        if (topPx < 0) {
+          /* 캐리어 상단이 뷰포트 위로 → 완전 숨김 */
           carrierFloat.style.display = 'none';
           if (canvas3d) canvas3d.style.display = 'none';
         } else {
@@ -1127,9 +1246,8 @@ window.addEventListener('load', function() {
     } else if (rawP > 1.01) {
       /* 검정으로 내려가는 중 — 통합 tilt 사용 */
       var downPx = st - animEndST;
-      var velBoost = scrollDir > 0 ? Math.max(0, _scrollVelocity * 40) : 0; /* 빠른 스크롤 → 위로 더 빠르게 */
       var topPx  = downPx <= THRESH
-        ? natTopPx - downPx - velBoost          /* Phase 1: 속도 반영 */
+        ? natTopPx - downPx * 2.5              /* Phase 1: 2.5배 속도로 위로 퇴장 */
         : riseEndPx + (downPx - THRESH) * 1.5; /* Phase 2: 1.5배 빠르게 아래로 */
       if (topPx < -carrierH) {
         carrierFloat.style.display = 'none';
@@ -1231,6 +1349,7 @@ window.addEventListener('load', function() {
   var s4LockState = 'idle'; /* 'idle' | 'locked' | 'done' */
 
   wrap.addEventListener('wheel', function(e) {
+    if (window.innerWidth <= 500) return; /* 모바일: 스크롤 잠금 비활성화 */
     if ((lockState === 'locked' || s4LockState === 'locked') && e.deltaY > 0) {
       e.preventDefault(); /* 아래 스크롤 차단 */
     }
@@ -1244,6 +1363,7 @@ window.addEventListener('load', function() {
   var touchStartY = 0;
   wrap.addEventListener('touchstart', function(e) { touchStartY = e.touches[0].clientY; }, { passive: true });
   wrap.addEventListener('touchmove', function(e) {
+    if (window.innerWidth <= 500) return; /* 모바일: 스크롤 잠금 비활성화 */
     if ((lockState === 'locked' || s4LockState === 'locked') && e.touches[0].clientY < touchStartY) {
       e.preventDefault();
     }
@@ -1550,12 +1670,11 @@ window.addEventListener('load', function() {
     if (_done) return;
     _done = true;
     if (wrap && window.innerWidth <= 500) {
-      var s2zone = document.getElementById('s2-scroll-zone');
-      var s2top = s2zone ? s2zone.offsetTop : window.innerHeight * 2;
-      wrap.scrollTop = s2top;
-      setTimeout(function() { wrap.scrollTop = s2top; }, 0);
-      setTimeout(function() { wrap.scrollTop = s2top; }, 100);
-      setTimeout(function() { wrap.scrollTop = s2top; }, 300);
+      var mTop = 1319 - (window.innerHeight - 72);
+      wrap.scrollTop = mTop;
+      setTimeout(function() { wrap.scrollTop = mTop; }, 0);
+      setTimeout(function() { wrap.scrollTop = mTop; }, 100);
+      setTimeout(function() { wrap.scrollTop = mTop; }, 300);
     }
     setTimeout(function() {
       overlay.classList.add('done');
@@ -1563,7 +1682,7 @@ window.addEventListener('load', function() {
     }, 200);
   }
 
-  if (wrap) wrap.style.touchAction = 'none';
+  if (wrap && window.innerWidth > 500) wrap.style.touchAction = 'none';
 
   window.addEventListener('load', function() {
     setTimeout(function() { window._mlDone = true; }, 200);
@@ -1573,10 +1692,9 @@ window.addEventListener('load', function() {
     if (_done) return;
     if (window._mlDone || Date.now() - _startTime >= MAX_MS) {
       if (wrap && window.innerWidth <= 500) {
-        var _s2z = document.getElementById('s2-scroll-zone');
-        wrap.scrollTop = _s2z ? _s2z.offsetTop : window.innerHeight * 2;
+        wrap.scrollTop = 1319 - (window.innerHeight - 72);
       }
-      if (wrap) wrap.style.touchAction = '';
+      if (wrap && window.innerWidth > 500) wrap.style.touchAction = '';
       _loadingReady = true;
       _tryFinish();
       return;
