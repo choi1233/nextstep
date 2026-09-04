@@ -1365,7 +1365,7 @@ window.addEventListener('load', function() {
     var EXTRA = window.innerWidth <= 500 ? 200 : 0; /* 모바일: 위로 200px 확장 */
     var W = window.innerWidth, H = s1El.offsetHeight + EXTRA; /* 픽셀 높이 = s1 + EXTRA (압축 방지) */
     var isMob = window.innerWidth <= 500;
-    var nrmSize = isMob ? 256 : 512;
+    var nrmSize = 512; /* 모바일도 512px — 타일 경계 노출 방지 */
     var app = new PIXI.Application({width:W,height:H,transparent:true,antialias:!isMob,resolution:isMob?1:(window.devicePixelRatio||1),autoDensity:true});
     app.view.style.cssText='position:absolute;top:'+ (-EXTRA) +'px;left:0;width:100%;height:calc(100% + '+ EXTRA +'px);pointer-events:none;z-index:0;';
     s1El.insertBefore(app.view, s1El.firstChild);
@@ -1377,7 +1377,7 @@ window.addEventListener('load', function() {
     var dispSprite=new PIXI.Sprite(dispRT);dispSprite.renderable=false;
     app.stage.addChild(dispSprite);app.stage.addChild(bgSprite);
     var dispFilter=new PIXI.filters.DisplacementFilter(dispSprite);
-    dispFilter.scale.set(180,260);bgSprite.filters=[dispFilter];
+    dispFilter.scale.set(180, isMob ? 160 : 260);bgSprite.filters=[dispFilter];
     var mouseX=W/2,mouseY=H/2,curMouseX=0,curMouseY=0,MAX_MOUSE=80;
     var flowX=0,flowY=0,FLOW_SPEED=2.2,FLOW_ANGLE=-35*Math.PI/180;
     window.addEventListener('mousemove',function(e){mouseX=e.clientX;mouseY=e.clientY;});
