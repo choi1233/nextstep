@@ -992,15 +992,13 @@ window.addEventListener('load', function() {
   var stickers = ['st-M','st-C','st-P','st-U'].map(function(id){ return document.getElementById(id); });
   var _stickerPopped = [false, false, false, false];
 
-  /* 캐리어 관련 */
-  var carrierEl   = document.getElementById('s2-carrier');
-  var carrierFloat= document.getElementById('carrier-float');
+  /* 캐리어 */
+  var carrierEl    = document.getElementById('s2-carrier');
+  var carrierFloat = document.getElementById('carrier-float');
   var csM = document.getElementById('cs-M');
   var csU = document.getElementById('cs-U');
   var csC = document.getElementById('cs-C');
   var csP = document.getElementById('cs-P');
-  var hasSeenFull = false;
-  var _exitPhase1TopPx = null; /* Phase 1 퇴장 위치 추적 — 롤백 시 점프 방지 */
 
   /* 스티커 발사 추적 */
   var stickerDefs = [
@@ -1040,9 +1038,8 @@ window.addEventListener('load', function() {
     function step(ts) {
       if (!startTime) startTime = ts;
       var t    = Math.min(1, (ts - startTime) / DURATION);
-      var ease = t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t; /* easeInOut */
+      var ease = t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
 
-      /* 매 프레임 cs-X 현재 위치 추적 → 빠른 스크롤도 정확히 착지 */
       var to = csEl.getBoundingClientRect();
       fly.style.left   = (sx + (to.left   - sx) * ease) + 'px';
       fly.style.top    = (sy + (to.top    - sy) * ease) + 'px';
@@ -1108,8 +1105,6 @@ window.addEventListener('load', function() {
   function resetCarrier() {
     carrierFloat.style.display = 'none';
     carrierEl.style.opacity    = '1';
-    csM.style.opacity = csU.style.opacity = csC.style.opacity = csP.style.opacity = '0';
-    showAllTextStickers();
   }
 
   var s4El      = document.getElementById('s4');
@@ -1146,67 +1141,6 @@ window.addEventListener('load', function() {
     }
   }
 
-  function updateCarrier() {
-    var viewH     = wrap.clientHeight;
-    var st        = wrap.scrollTop;
-    var zoneTop   = zone.offsetTop;
-    var zoneH     = zone.offsetHeight;
-    var animEndST = zoneTop + zoneH - viewH;
-    var natTopPx  = getNatTopPx(viewH);
-    var carrierH  = getCarrierH(viewH);
-    var rawP = getRawProgress();
-
-    if (rawP >= -0.5 && rawP <= 1.01) {
-      if (hasSeenFull && rawP < 0.83) {
-        /* rawP < 0.83: 위로 롤백 — 화면 위로 퇴장 */
-        var topPx = -carrierH + ((rawP - 0.1) / (0.83 - 0.1)) * (natTopPx + carrierH);
-        carrierEl.style.opacity = '0';
-        if (topPx < 0) {
-          carrierFloat.style.display = 'none';
-        } else {
-          showFloatCarrier(topPx);
-        }
-        stickerDefs.forEach(function(def) {
-          if (rawP < def.thresh) launchSticker(def);
-          else resetSticker(def);
-        });
-      } else if (hasSeenFull) {
-        /* rawP 0.83~1.01: 롤백 시 natTopPx로 부드럽게 복귀 */
-        var targetTopPx;
-        if (_exitPhase1TopPx !== null && _exitPhase1TopPx > natTopPx) {
-          var t = Math.min(1, (1.01 - rawP) / (1.01 - 0.83));
-          targetTopPx = _exitPhase1TopPx + (natTopPx - _exitPhase1TopPx) * t;
-          if (t >= 1) _exitPhase1TopPx = null;
-        } else {
-          _exitPhase1TopPx = null;
-          targetTopPx = natTopPx;
-        }
-        carrierEl.style.opacity = '0';
-        showFloatCarrier(targetTopPx);
-      } else {
-        resetCarrier();
-      }
-
-    } else if (rawP > 1.01) {
-      /* 검정 구간 — 아래로 퇴장 */
-      var downPx = st - animEndST;
-      var topPx  = natTopPx + downPx * 2.5;
-      _exitPhase1TopPx = Math.max(topPx, natTopPx);
-      if (topPx > viewH + carrierH) {
-        _exitPhase1TopPx = viewH + carrierH;
-        carrierFloat.style.display = 'none';
-      } else {
-        showFloatCarrier(topPx);
-      }
-      csM.style.opacity = csU.style.opacity = csC.style.opacity = csP.style.opacity = '0';
-      showAllTextStickers();
-
-    } else {
-      /* rawP < -0.5: s1 최상단 */
-      resetCarrier();
-    }
-  }
-
   /*
    * 구간별 progress 매핑 (DOM 텍스트 순서 기준)
    * 0-78:  "This exhibition..." + "Follow..." + "." + "Discover..." (~79자)  → 0%~45%
@@ -1228,7 +1162,7 @@ window.addEventListener('load', function() {
   function update(p) {
     if (p === undefined) p = getProgress();
 
-    /* E: hasSeenFull 후엔 p 기준으로 색상 복귀 (s2 진입 시 검정, s1 진입 시 회색) */
+    /* E: p 기준으로 색상 복귀 (s2 진입 시 검정, s1 진입 시 회색) */
     if (eInitialEl) eInitialEl.style.color = p > 0 ? '#111' : '#ABABAB';
 
     /* 글자: 스크롤 위치 기준 — 내리든 올리든 동일하게 채움 */
@@ -1291,10 +1225,6 @@ window.addEventListener('load', function() {
     if ((lockState === 'locked' || s4LockState === 'locked') && e.deltaY > 0) {
       e.preventDefault(); /* 아래 스크롤 차단 */
     }
-    if (!hasSeenFull && e.deltaY < 0) {
-      e.preventDefault(); /* 위로 스크롤 차단 — 대신 아래로 진행 */
-      wrap.scrollTop += Math.abs(e.deltaY);
-    }
   }, { passive: false });
 
   /* 터치 대응 */
@@ -1304,12 +1234,6 @@ window.addEventListener('load', function() {
     if (window.innerWidth <= 500) return; /* 모바일: 스크롤 잠금 비활성화 */
     if ((lockState === 'locked' || s4LockState === 'locked') && e.touches[0].clientY < touchStartY) {
       e.preventDefault();
-    }
-    if (!hasSeenFull && e.touches[0].clientY > touchStartY) {
-      e.preventDefault(); /* 위로 스크롤 차단 — 대신 아래로 진행 */
-      var delta = e.touches[0].clientY - touchStartY;
-      wrap.scrollTop += delta;
-      touchStartY = e.touches[0].clientY;
     }
   }, { passive: false });
 
@@ -1375,23 +1299,16 @@ window.addEventListener('load', function() {
     } else if (rawPc < -0.05) {
       maxAnimP = 0;
       update(maxAnimP);
-      /* hasSeenFull 후 s1 진입 시 E도 회색 */
+      /* s1 진입 시 E도 회색 */
       if (eInitialEl) eInitialEl.style.color = '#ABABAB';
     } else if (rawPc > 1.0) {
       maxAnimP = 1.0;
       update(1.0);
-    } else if (!hasSeenFull) {
-      /* 첫 방문 (map 미도달): 위아래 모두 maxAnimP 래칫 → E→Map만 채움 */
-      if (p > maxAnimP) maxAnimP = p;
-      update(maxAnimP);
     } else {
-      /* map 한 번 찍은 후: 위로 올리면 p 감소 → Map→E 회색 복귀 (일반 동작) */
       update(p);
     }
-    updateCarrier();
     updateNavColor();
     if (p >= 0.995) {
-      hasSeenFull = true;
       triggerLock();
     } else if (p < 0.98) {
       lockState = 'idle';
@@ -1409,7 +1326,6 @@ window.addEventListener('load', function() {
   }
 
   update(getProgress());
-  updateCarrier();   /* 초기 적용 */
   updateNavColor();  /* 초기 적용 */
 });
 
@@ -1769,7 +1685,7 @@ window.addEventListener('load', function() {
     var scrolledIn = scrollWrap.scrollTop;
     /* map2가 화면 아래에서 들어오기 시작할 때부터 페이드 */
     var fadeStart = Math.max(0, 1467 - window.innerHeight);
-    var fadeEnd   = 1467 + window.innerWidth * 0.3;
+    var fadeEnd   = fadeStart + 450;
     var ratio     = (scrolledIn - fadeStart) / (fadeEnd - fadeStart);
     pinEl.style.opacity = Math.max(0, Math.min(1, 1 - ratio));
   }
