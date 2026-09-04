@@ -16,6 +16,8 @@
     ::-moz-selection { background:#00ACEB; color:#FFFFFF; }
     @font-face { font-family:'Pretendard'; src:url('font/Pretendard-SemiBold.ttf') format('truetype'); font-weight:600; }
     @font-face { font-family:'Pretendard'; src:url('font/Pretendard-Regular.ttf')  format('truetype'); font-weight:400; }
+    @font-face { font-family:'Helvetica Compressed'; src:url('font/helvetica-compressed-5871d14b6903a.otf') format('opentype'); font-weight:400; }
+    @font-face { font-family:'Galada'; src:url('font/Galada-Regular.ttf') format('truetype'); font-weight:400; }
 
     * { margin:0; padding:0; box-sizing:border-box; }
 
@@ -217,7 +219,7 @@
       font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-weight:400;
       font-size:clamp(18px, 3.5vw, 48px);
-      line-height:1.35;
+      line-height:1.2;
       text-align:center;
       color:#111;
       padding:0 32px;
@@ -521,14 +523,13 @@
     /* 인라인 NEXT STEP PNG */
     .inline-nextstep {
       display:inline-flex; align-items:flex-end; gap:4px; vertical-align:bottom;
-      opacity: 0.3;
-      transition: opacity 0.3s;
+      opacity: 0.2;
+      position: relative; left: -15px; top: -3px;
     }
     .inline-nextstep img {
       height:80px; width:auto;
       -webkit-user-drag:none; pointer-events:none;
     }
-    .inline-nextstep.lit { opacity: 1; }
 
     /* pill 버튼 */
     .pill-btn {
@@ -737,8 +738,8 @@
 
     /* ── Tap the sticker hint ── */
     @keyframes tap-hint-pulse {
-      0%, 100% { transform: rotate(10deg) scale(1); }
-      50%       { transform: rotate(10deg) scale(1.18); }
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      50%       { transform: rotate(0deg) scale(1.18); }
     }
     #tap-hint {
       position: fixed;
@@ -754,7 +755,7 @@
       z-index: 200;
       opacity: 0;
       transition: opacity 0.4s;
-      transform: rotate(10deg) scale(1);
+      transform: rotate(0deg) scale(1);
       transform-origin: left center;
       white-space: nowrap;
     }
@@ -875,14 +876,14 @@
     전시가 궁금하다면 <a class="pill-btn" id="about-btn-m" href="#">개요</a>를 살펴보세요.
   </div>
 
-  <div id="s2-text"><span class="e-initial">E</span>xhibition is a journey to the <span class="inline-nextstep" id="ns-img">
-      <img id="ns-img-2" src="main/s2/NEXT%20STEP_2.png" alt="NEXT STEP" style="height:80px;width:auto;display:block;-webkit-user-drag:none;pointer-events:none;filter:grayscale(1);transition:filter 0.1s;">
+  <div id="s2-text"><span class="e-initial">E</span>xhibition is a journey toward the <span class="inline-nextstep" id="ns-img">
+      <img id="ns-img-2" src="main/s2/NEXT%20STEP_2.png" alt="NEXT STEP" style="height:80px;width:auto;display:block;-webkit-user-drag:none;filter:grayscale(1);transition:filter 0.1s;">
     </span><br>
-Follow your curiosity through <a class="pill-btn" id="about-btn" href="#">About</a>.<br>
-Discover new destinations<br>
-<a class="sticker-link" href="designer/motion/motion.html"><span class="sticker-anim" id="st-M"><img src="main/s2/sticker/M_2.png" alt="Motion"><img class="sc" src="main/s2/sticker/M_1.png" alt=""></span></a><a class="sticker-link" href="designer/character/character.html"><span class="sticker-anim" id="st-C"><img src="main/s2/sticker/C_2.png" alt="Character"><img class="sc" src="main/s2/sticker/C_1.png" alt=""></span></a><a class="sticker-link" href="designer/package/package.html"><span class="sticker-anim" id="st-P"><img src="main/s2/sticker/P_2.png" alt="Package"><img class="sc" src="main/s2/sticker/P_1.png" alt=""></span></a><span class="mobile-br"></span>and <a class="sticker-link" href="designer/UXUI/UXUI.html"><span class="sticker-anim" id="st-U"><img src="main/s2/sticker/U_2.png" alt="UXUI"><img class="sc" src="main/s2/sticker/U_1.png" alt=""></span></a>.<br>
-Different routes, different destinations.<br>
-Find your way to <a class="pill-btn" id="map-btn" href="#">Map</a></div>
+We take off from the <a class="pill-btn" id="map-btn" href="#" style="font-family:'Helvetica Compressed',sans-serif;padding-left:17px;position:relative;top:2px;">Map</a> with curiosity,<br>
+discover new destinations<br>
+in <a class="sticker-link" href="designer/motion/motion.html"><span class="sticker-anim" id="st-M"><img src="main/s2/sticker/M_2.png" alt="Motion"><img class="sc" src="main/s2/sticker/M_1.png" alt=""></span></a><a class="sticker-link" href="designer/character/character.html"><span class="sticker-anim" id="st-C"><img src="main/s2/sticker/C_2.png" alt="Character"><img class="sc" src="main/s2/sticker/C_1.png" alt=""></span></a><a class="sticker-link" href="designer/package/package.html"><span class="sticker-anim" id="st-P"><img src="main/s2/sticker/P_2.png" alt="Package"><img class="sc" src="main/s2/sticker/P_1.png" alt=""></span></a><span class="mobile-br"></span> and <a class="sticker-link" href="designer/UXUI/UXUI.html"><span class="sticker-anim" id="st-U"><img src="main/s2/sticker/U_2.png" alt="UXUI"><img class="sc" src="main/s2/sticker/U_1.png" alt=""></span></a>.<br>
+Different routes, different destinations,<br>
+a flight <a class="pill-btn" id="about-btn" href="#" style="font-family:'Galada',cursive;"><span style="position:relative;top:5px;">About</span></a> our future.</div>
 
   <img id="s2-carrier" src="main/s2/carrier.png?v=2" alt="">
 </section>
@@ -946,6 +947,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function scrollToTop() { wrap.scrollTo({ top: 0, behavior: 'smooth' }); }
   function scrollToMap() { var s4 = document.getElementById('s4'); if (s4) wrap.scrollTo({ top: s4.offsetTop, behavior: 'smooth' }); }
   document.getElementById('about-btn').addEventListener('click', function(e) { e.preventDefault(); scrollToTop(); });
+  var nsImgEl = document.getElementById('ns-img');
+  if (nsImgEl) { nsImgEl.style.cursor = 'pointer'; nsImgEl.addEventListener('click', scrollToTop); }
   document.getElementById('map-btn').addEventListener('click', function(e) { e.preventDefault(); scrollToMap(); });
   var abm = document.getElementById('about-btn-m'); if (abm) abm.addEventListener('click', function(e) { e.preventDefault(); scrollToTop(); });
   var mpm = document.getElementById('map-btn-m'); if (mpm) mpm.addEventListener('click', function(e) { e.preventDefault(); scrollToMap(); });
@@ -1144,18 +1147,22 @@ window.addEventListener('load', function() {
 
   /*
    * 구간별 progress 매핑 (DOM 텍스트 순서 기준)
-   * 0-78:  "This exhibition..." + "Follow..." + "." + "Discover..." (~79자)  → 0%~45%
-   * 79-81: " and " (3자)  → 57%~61%   ← 스티커 M,C,P 이후
-   * 82:    "." (1자)      → 63%
-   * 83-120:"Different routes..." (38자)  → 66%~83%
-   * 121-133:"Find your way to" (13자)  → 84%~98%
+   * 0-27:   "xhibition is a journey toward the" (28자)  → 0%~40%
+   * 28-60:  "We take off from the [Map] with curiosity," (33자) → 40%~60%
+   * 61-85:  "discover new destinations\nin" (25자) → 60%~65%
+   * 86-88:  " and " (3자) → 65%~70%
+   * 89:     "." (1자) → 72%
+   * 90-127: "Different routes, different destinations," (38자) → 72%~85%
+   * 128-149:"a flight [About] our future." (22자) → 85%~98%
    */
   function charThreshold(i) {
-    if (i <= 78) return (i / 78) * 0.45;
-    if (i <= 81) return 0.57 + ((i - 79) / 2) * 0.04;
-    if (i === 82) return 0.63;
-    if (i <= 120) return 0.66 + ((i - 83) / 37) * 0.17;
-    return 0.84 + ((i - 121) / 12) * 0.14;
+    if (i <= 27)  return (i / 27) * 0.40;
+    if (i <= 60)  return 0.40 + ((i - 28) / 32) * 0.20;
+    if (i <= 85)  return 0.60 + ((i - 61) / 24) * 0.05;
+    if (i <= 88)  return 0.65 + ((i - 86) / 2)  * 0.05;
+    if (i === 89) return 0.72;
+    if (i <= 127) return 0.72 + ((i - 90) / 37) * 0.13;
+    return        0.85 + ((i - 128) / 21) * 0.13;
   }
 
   var eInitialEl = document.querySelector('.e-initial');
@@ -1171,17 +1178,17 @@ window.addEventListener('load', function() {
       chars[i].style.color = (p > 0 && p >= charThreshold(i)) ? '#111' : '#ABABAB';
     }
 
-    /* NEXT STEP: 17% */
-    nsImg.classList.toggle('lit', p >= 0.17);
-    /* NEXT STEP 컬러 전환: p 0.5~0.8 구간에서 grayscale 제거 */
-    if (nsImg2) nsImg2.style.filter = 'grayscale(' + Math.max(0, Math.min(1, 1 - (p - 0.5) / 0.3)) + ')';
+    /* NEXT STEP: "toward the" 구간(p 0.35~0.40)에서 흑백+흐릿 → 컬러+선명 동시 전환 */
+    var nsT = Math.max(0, Math.min(1, (p - 0.35) / 0.05));
+    nsImg.style.opacity = (0.2 + nsT * 0.8).toFixed(3);
+    if (nsImg2) nsImg2.style.filter = 'grayscale(' + (1 - nsT).toFixed(3) + ')';
 
-    /* About: 34%, Map: 95% */
-    aboutBtn.classList.toggle('lit', p >= 0.34);
-    mapBtn.classList.toggle('lit',   p >= 0.95);
+    /* Map: 50% (Line2), About: 88% (Line6 마지막) */
+    mapBtn.classList.toggle('lit',   p >= 0.50);
+    aboutBtn.classList.toggle('lit', p >= 0.88);
 
-    /* 스티커: destinations S=45%, 차례로, and d=61% */
-    var sThresh = [0.45, 0.47, 0.49, 0.61];
+    /* 스티커: Line4 진입 시 순차 등장 */
+    var sThresh = [0.63, 0.65, 0.67, 0.71];
     var tapHintEl = document.getElementById('tap-hint');
     stickers.forEach(function(st, i) {
       if (!st) return;
@@ -1195,8 +1202,8 @@ window.addEventListener('load', function() {
           var mSt = document.getElementById('st-M');
           if (mSt) {
             var r = mSt.closest('.sticker-link').getBoundingClientRect();
-            tapHintEl.style.top  = (r.top + r.height / 2 - tapHintEl.offsetHeight / 2 - 22) + 'px';
-            tapHintEl.style.left = (r.left - tapHintEl.offsetWidth - 8 - 9) + 'px';
+            tapHintEl.style.top  = (r.top + r.height / 2 - tapHintEl.offsetHeight / 2 - 42 + 15 + 10 + 8 + 3) + 'px';
+            tapHintEl.style.left = (r.left - tapHintEl.offsetWidth - 8 - 9 - 60 + 15 - 5 - 2) + 'px';
           }
         }
       }
