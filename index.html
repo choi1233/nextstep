@@ -525,7 +525,10 @@
       display:inline-flex; align-items:flex-end; gap:4px; vertical-align:bottom;
       opacity: 0.2;
       position: relative; left: -15px; top: -3px;
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
+      transform-origin: center bottom;
     }
+    .inline-nextstep:hover { transform: scale(1.15) rotate(6deg); }
     .inline-nextstep img {
       height:80px; width:auto;
       -webkit-user-drag:none; pointer-events:none;
@@ -543,7 +546,7 @@
     }
     .pill-btn { pointer-events: none; }
     .pill-btn.lit { border-color:#00ACEB; color:#00ACEB; pointer-events: auto; }
-    .e-initial { color:#1A1A1A; } /* 디폴트 검정, fill 애니메이션 제외 */
+    .e-initial { color:#ABABAB; } /* 디폴트 회색, fill 애니메이션과 동일 */
     @media (hover: hover) {
       .pill-btn:hover { background:#00ACEB; border-color:#00ACEB; color:#fff; }
     }
@@ -879,7 +882,7 @@
   <div id="s2-text"><span class="e-initial">E</span>xhibition is a journey toward the <span class="inline-nextstep" id="ns-img">
       <img id="ns-img-2" src="main/s2/NEXT%20STEP_2.png" alt="NEXT STEP" style="height:80px;width:auto;display:block;-webkit-user-drag:none;filter:grayscale(1);transition:filter 0.1s;">
     </span><br>
-We take off from the <a class="pill-btn" id="map-btn" href="#" style="font-family:'Helvetica Compressed',sans-serif;padding-left:17px;position:relative;top:2px;">Map</a> with curiosity,<br>
+We take off from the <a class="pill-btn" id="map-btn" href="#" style="font-family:'Helvetica Compressed',sans-serif;padding-left:17px;position:relative;top:4px;">Map</a> with curiosity,<br>
 discover new destinations<br>
 in <a class="sticker-link" href="designer/motion/motion.html"><span class="sticker-anim" id="st-M"><img src="main/s2/sticker/M_2.png" alt="Motion"><img class="sc" src="main/s2/sticker/M_1.png" alt=""></span></a><a class="sticker-link" href="designer/character/character.html"><span class="sticker-anim" id="st-C"><img src="main/s2/sticker/C_2.png" alt="Character"><img class="sc" src="main/s2/sticker/C_1.png" alt=""></span></a><a class="sticker-link" href="designer/package/package.html"><span class="sticker-anim" id="st-P"><img src="main/s2/sticker/P_2.png" alt="Package"><img class="sc" src="main/s2/sticker/P_1.png" alt=""></span></a><span class="mobile-br"></span> and <a class="sticker-link" href="designer/UXUI/UXUI.html"><span class="sticker-anim" id="st-U"><img src="main/s2/sticker/U_2.png" alt="UXUI"><img class="sc" src="main/s2/sticker/U_1.png" alt=""></span></a>.<br>
 Different routes, different destinations,<br>
@@ -1156,7 +1159,7 @@ window.addEventListener('load', function() {
    * 128-149:"a flight [About] our future." (22자) → 85%~98%
    */
   function charThreshold(i) {
-    if (i <= 27)  return (i / 27) * 0.40;
+    if (i <= 27)  return 0.04 + (i / 27) * 0.36;
     if (i <= 60)  return 0.40 + ((i - 28) / 32) * 0.20;
     if (i <= 85)  return 0.60 + ((i - 61) / 24) * 0.05;
     if (i <= 88)  return 0.65 + ((i - 86) / 2)  * 0.05;
@@ -1171,7 +1174,7 @@ window.addEventListener('load', function() {
     if (p === undefined) p = getProgress();
 
     /* E: p 기준으로 색상 복귀 (s2 진입 시 검정, s1 진입 시 회색) */
-    if (eInitialEl) eInitialEl.style.color = p > 0 ? '#111' : '#ABABAB';
+    if (eInitialEl) eInitialEl.style.color = p >= 0.04 ? '#111' : '#ABABAB';
 
     /* 글자: 스크롤 위치 기준 — 내리든 올리든 동일하게 채움 */
     for (var i = 0; i < total; i++) {
@@ -1188,7 +1191,7 @@ window.addEventListener('load', function() {
     aboutBtn.classList.toggle('lit', p >= 0.88);
 
     /* 스티커: Line4 진입 시 순차 등장 */
-    var sThresh = [0.63, 0.65, 0.67, 0.71];
+    var sThresh = [0.63, 0.65, 0.67, 0.69];
     var tapHintEl = document.getElementById('tap-hint');
     stickers.forEach(function(st, i) {
       if (!st) return;
@@ -1203,7 +1206,7 @@ window.addEventListener('load', function() {
           if (mSt) {
             var r = mSt.closest('.sticker-link').getBoundingClientRect();
             tapHintEl.style.top  = (r.top + r.height / 2 - tapHintEl.offsetHeight / 2 - 42 + 15 + 10 + 8 + 3) + 'px';
-            tapHintEl.style.left = (r.left - tapHintEl.offsetWidth - 8 - 9 - 60 + 15 - 5 - 2) + 'px';
+            tapHintEl.style.left = (r.left - tapHintEl.offsetWidth - 8 - 9 - 60 + 15 - 5 - 2 - 5) + 'px';
           }
         }
       }
