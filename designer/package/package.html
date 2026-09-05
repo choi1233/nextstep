@@ -846,7 +846,10 @@ function renderGallery() {
     photo.className = 'module-photo';
     if (d.photo) {
       var img = document.createElement('img');
-      img.src = d.photo; img.alt = d.name;
+      var left = document.getElementById('left');
+      var isMob = left && left.classList.contains('mobile');
+      img.src = (isMob && d.photo && d.photo.indexOf('Profile/') === 0) ? 'Profile/m/' + d.photo.slice(8) : d.photo;
+      img.alt = d.name;
       photo.appendChild(img);
     }
     (function(designer, module){ photo.addEventListener('click', function(){ showDetail(designer, module); }); })(d, mod);
@@ -910,7 +913,14 @@ function _fillImg(id, src) {
   var el = document.getElementById(id); if (!el) return;
   el.innerHTML = '';
   if (src) {
-    var img = document.createElement('img'); img.src = src; img.alt = '';
+    var left = document.getElementById('left');
+    var isMob = left && left.classList.contains('mobile');
+    var actualSrc = src;
+    if (isMob) {
+      if (src.indexOf('image/') === 0) actualSrc = 'image/m/' + src.slice(6);
+      else if (src.indexOf('Profile/') === 0) actualSrc = 'Profile/m/' + src.slice(8);
+    }
+    var img = document.createElement('img'); img.src = actualSrc; img.alt = '';
     el.appendChild(img);
     el.style.display = '';
   } else {

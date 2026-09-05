@@ -176,7 +176,7 @@
 
     /* ══ 사이드바 ══ */
     #gate-label {
-      display:flex; align-items:center; gap:10px; margin-bottom:56px; margin-top:16px;
+      display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:56px; margin-top:16px;
     }
     #gate-text {
       font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -282,92 +282,216 @@
     /* 클릭된 프로필 하이라이트 */
     .designer-module.selected .module-photo { outline:2px solid #FF3298; }
 
-        /* ══ 뷰포트 자체가 좁을 때 — 오른쪽 패널 숨기기 ══ */
+    /* ══ MOBILE MODE (left panel < 860px) ══ */
+    #left.mobile #nav                { display:none; }
+    #left.mobile #cat-dropdown-wrap  { display:none; }
+    #left.mobile #nav-mobile         { display:flex !important; min-height:40px; align-items:center; }
+    #left.mobile #profiles-grid { grid-template-columns:repeat(2, 1fr); }
+
+    /* 모바일 프로필 nav */
+    #nav-mobile {
+      display:none;
+      flex-shrink:0;
+      align-items:center;
+      justify-content:space-between;
+      padding:0;
+      position:relative;
+    }
+    #nm-logo { display:flex; align-items:center; cursor:pointer; }
+    #nm-logo img { height:30px; width:auto; }
+    #nm-gate {
+      position:absolute; left:50%; transform:translateX(-50%);
+      font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size:20px; font-weight:400; color:#FF3298;
+      white-space:nowrap; pointer-events:none;
+    }
+    #nm-gate.menu-open { background:#FF3298; color:#000; padding:0 6px; }
+    /* 햄버거 버튼 — nav-mobile이 메뉴 위에 오도록 z-index */
+    #nav-mobile {
+      z-index:110;
+      background:rgba(255,255,255,0.10);
+      backdrop-filter:blur(28px) saturate(160%);
+      -webkit-backdrop-filter:blur(28px) saturate(160%);
+      transition:background 0.15s, backdrop-filter 0.15s;
+    }
+    /* 메뉴 열릴 때: nav-mobile 블러 제거 → 메뉴 한 겹만 남음 */
+    #nav-mobile.menu-open {
+      background:transparent;
+      backdrop-filter:none;
+      -webkit-backdrop-filter:none;
+    }
+    #nm-menu-btn {
+      width:40px; height:40px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; margin-top:-8px;
+    }
+    #nm-menu-btn .bar {
+      transform-box:fill-box;
+      transform-origin:center;
+      transition:transform 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+    }
+    #nm-menu-btn.is-open .bar-top { transform:translateY(9px) rotate(45deg); }
+    #nm-menu-btn.is-open .bar-mid { opacity:0; transform:scaleX(0); }
+    #nm-menu-btn.is-open .bar-bot { transform:translateY(-9px) rotate(-45deg); }
+
+    /* 모바일 detail-open: 갤러리 숨기고 mobile-work 표시 */
+    #left.mobile.detail-open #gallery    { display:none !important; }
+    #left.mobile.detail-open #mobile-work { display:flex !important; }
+
+    /* 모바일 작품 상세 뷰 */
+    #mobile-work {
+      display:none;
+      flex-direction:column;
+      flex:1;
+      overflow:hidden;
+    }
+    /* 작품 상세 NAV BAR */
+    #left.mobile.detail-open #nav-mobile { display:none !important; }
+    #mob-detail-nav {
+      flex-shrink:0; display:flex; align-items:center;
+      justify-content:space-between; padding:16px 16px 0;
+    }
+    #mob-gate-label { display:flex; align-items:center; gap:10px; cursor:pointer; }
+    #gate-label { cursor:pointer; }
+    #mob-close-btn {
+      cursor:pointer; display:flex; align-items:center;
+      width:40px; height:40px; justify-content:center; flex-shrink:0;
+    }
+    #mobile-detail-scroll { flex:1; overflow-y:auto; padding:32px 16px 64px; }
+    #mobile-detail-scroll::-webkit-scrollbar { display:none; }
+
+    /* ══ 뷰포트 자체가 좁을 때 — 오른쪽 패널 숨기기 ══ */
     @media (max-width:860px) {
       #divider { display:none !important; }
       #right   { display:none !important; }
       #left    { flex:1 !important; }
     }
 
-    /* ══ MOBILE MODE (#left.mobile, window < 600px) ══ */
-    @media (max-width:599px) {
-      body   { overflow:auto; height:auto; }
-      #layout{ flex-direction:column; height:auto; min-height:100dvh; }
-      #left  { flex:1; overflow:visible; height:auto; }
-      #divider,#right { display:none !important; }
-      #gallery { flex:none; overflow:visible; padding:20px 16px 80px; height:auto; }
-      .designer-module { margin-bottom:32px; }
-      .module-name-kr { font-size:18px; }
-      .module-name-en { font-size:14px; }
-      .designer-module.selected .module-photo { outline:none; }
+    /* 모바일 메뉴 overlay (about/index 동일 스타일) */
+    #mobile-menu {
+      display:flex;
+      position:absolute; top:0; left:0; right:0; /* bottom 없음 — 콘텐츠 높이만큼만 */
+      z-index:100;
+      background:rgba(255,255,255,0.10);
+      backdrop-filter:blur(28px) saturate(160%);
+      -webkit-backdrop-filter:blur(28px) saturate(160%);
+      flex-direction:column;
+      transform:translateY(-105%);
+      transition:transform 360ms cubic-bezier(0.4,0,0.2,1) 130ms;
+      pointer-events:none;
     }
-
-    /* ── #left.mobile: nav 전환 & 2열 그리드 ── */
-    #left.mobile #nav               { display:none; }
-    #left.mobile #cat-dropdown-wrap { display:none; }
-    #left.mobile #nav-mobile        { display:flex !important; min-height:48px; align-items:center; }
-    #left.mobile #profiles-grid     { grid-template-columns:repeat(2,1fr); gap:0 8px; }
-
-    /* ── #left.mobile.detail-open: 갤러리 숨김, 디테일 패널 표시 ── */
-    #left.mobile.detail-open #gallery     { display:none !important; }
-    #left.mobile.detail-open #mobile-work {
-      display:flex !important;
-      position:fixed; inset:0; z-index:200;
-      background:#fff;
+    #left.mobile #mobile-menu.open {
+      transform:translateY(0);
+      transition:transform 380ms cubic-bezier(0.4,0,0.2,1);
+      pointer-events:auto;
     }
-    #left.mobile.detail-open #nav-mobile  { display:none !important; }
-
-    /* ── 모바일 상단 nav ── */
-    #nav-mobile {
-      display:none; flex-shrink:0; align-items:center;
-      justify-content:space-between; padding:0 16px;
-      position:sticky; top:0; z-index:110; height:48px;
-      background:#fff;
-    }
-    #nm-logo { display:flex; align-items:center; cursor:pointer; }
-    #nm-logo img { height:28px; width:auto; }
-
-    /* ── 모바일 디테일 뷰 (#mobile-work) ── */
-    #mobile-work {
-      display:none; flex-direction:column; flex:1; overflow:hidden;
-    }
-    #mob-detail-nav {
+    /* 메뉴 헤더 (NEXT STEP | 분야명 | X) */
+    #mm-header {
       flex-shrink:0; display:flex; align-items:center;
-      justify-content:space-between; padding:16px 16px 5px;
-      position:sticky; top:0; z-index:10; background:#fff;
-      transition: box-shadow 0.2s ease;
+      justify-content:space-between; padding:16px 16px 0; position:relative;
     }
-    #mob-detail-nav.scrolled {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    #mm-logo { display:flex; align-items:center; cursor:pointer; }
+    #mm-logo img { height:30px; width:auto; }
+    #mm-cat-label {
+      position:absolute; left:50%; transform:translateX(-50%);
+      font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size:20px; color:#000; background:#FF3298; padding:0 6px;
+      white-space:nowrap; pointer-events:none;
     }
-    #mob-gate-label {
-      display:flex; align-items:center; gap:8px; cursor:pointer;
+    #mm-close { cursor:pointer; display:flex; align-items:center; }
+    /* 메뉴 헤더 숨김 — nav-mobile이 위에 떠있으므로 불필요 */
+    #mm-header { display:none; }
+    /* 메뉴 바디: nav-mobile 높이(약 52px) 아래에서 시작 */
+    #mm-body {
+      padding:60px 16px 40px;
+      display:flex; flex-direction:column; gap:56px;
+      opacity:0; transform:translateY(-8px);
+      transition:opacity 130ms ease, transform 130ms ease;
     }
-    #mob-close-btn {
-      cursor:pointer; display:flex; align-items:center;
-      width:40px; height:40px; justify-content:center; flex-shrink:0;
+    #left.mobile #mobile-menu.open #mm-body {
+      opacity:1; transform:translateY(0);
+      transition:opacity 240ms ease 240ms, transform 240ms ease 240ms;
     }
-    #mobile-detail-scroll {
-      flex:1; overflow-y:auto; padding:32px 16px 64px;
+    /* 섹션 (about/index .mp-section 동일 구조) */
+    .mm-section {
+      display:grid; grid-template-columns:100px 1fr 100px; align-items:flex-start;
     }
-    #mobile-detail-scroll::-webkit-scrollbar { display:none; }
+    .mm-section-label {
+      font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight:700; font-size:20px; line-height:1.2; color:#000;
+    }
+    .mm-section-label .kr-only { font-family:'Pretendard',sans-serif; font-weight:700; }
+    .mm-section-links {
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+    }
+    .mm-section-links a {
+      font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight:400; font-size:22px; line-height:1.3; color:#999;
+      text-decoration:none; cursor:pointer; transition:color 0.18s;
+    }
+    .mm-section-links a .kr-only { font-family:'Pretendard',sans-serif; font-weight:400; font-style:normal; }
+    .mm-section-links a:hover, .mm-section-links a:active { color:#000; }
+    .mm-section-links a.mm-active { font-style:normal; color:#FF3298; }
+    .mm-section-links a.oblique { font-style:oblique; }
+    .mm-section-links a#mm-motion:hover    { color:#FF3298; }
+    .mm-section-links a#mm-character:hover { color:#FFD000; }
+    .mm-section-links a#mm-package:hover   { color:#FF4E41; }
+    .mm-section-links a#mm-uxui:hover      { color:#00BFC4; }
+    /* 언어 섹션 */
+    .mm-section-lang { align-items:center; }
 
-    /* ── 모바일 카테고리 드롭다운 ── */
+    /* 언어 pill 토글 */
+    .mm-pill {
+      position:relative; width:72px; height:40px; border-radius:9999px;
+      margin:0 auto;
+      background:rgba(255,255,255,0.55);
+      border:1px solid rgba(0,0,0,0.12);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.8), 0 1px 4px rgba(0,0,0,0.08);
+      cursor:pointer; display:flex; align-items:center; user-select:none;
+      flex-shrink:0;
+    }
+    .mm-pill-track {
+      position:absolute; inset:0; display:flex; align-items:center;
+      justify-content:space-around; z-index:2;
+    }
+    .mm-pill-label {
+      font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size:13px; font-weight:700; color:#999;
+      transition:color 0.25s ease;
+    }
+    .mm-pill-thumb {
+      position:absolute; width:34px; height:34px; border-radius:9999px;
+      background:#fff;
+      box-shadow:0 1px 6px rgba(0,0,0,0.18);
+      top:2px; left:2px;
+      transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      z-index:1;
+    }
+    /* EN쪽으로 이동 */
+    .mm-pill.lang-en .mm-pill-thumb { transform:translateX(34px); }
+    .mm-pill.lang-en #mpl-en { color:#000; }
+    .mm-pill.lang-kr #mpl-ko { color:#000; }
+
+    /* ══ MOBILE CAT DROPDOWN ══ */
     #mob-cat-outer {
-      margin-left:auto; position:relative; width:184px; height:32px;
+      margin-left:auto; margin-right:16px;
+      position:relative; width:184px; height:32px;
     }
     #mob-cat-menu {
-      position:absolute; right:0; top:-2px; width:184px;
-      background:rgba(255,255,255,0.92);
+      position:absolute; right:0; top:-2px;
+      width:184px;
+      background:rgba(255,255,255,0.20);
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
       overflow:hidden; display:flex; flex-direction:column;
       max-height:32px;
       transition:max-height 0.3s cubic-bezier(0.4,0,0.2,1);
       z-index:5;
     }
-    #mob-cat-outer.open #mob-cat-menu { max-height:160px; }
+    #mob-cat-outer.open #mob-cat-menu { max-height:136px; }
     #mob-cat-trigger {
       display:flex; align-items:flex-end; padding-bottom:3px;
-      justify-content:space-between; height:32px; flex-shrink:0;
+      justify-content:space-between;
+      height:32px; flex-shrink:0; padding-left:0; padding-right:0;
       cursor:pointer; user-select:none;
       border-bottom:1px solid #000; box-sizing:border-box;
     }
@@ -384,20 +508,25 @@
     }
     #mob-cat-design {
       font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-      font-size:24px; font-weight:400; color:#000; margin-left:auto;
+      font-size:24px; font-weight:400; color:#000;
+      margin-left:auto;
       transition:opacity 0.25s, filter 0.25s;
     }
     #mob-cat-outer.open #mob-cat-design { opacity:0.25; filter:blur(3px); }
     .mob-cat-item {
-      display:flex; align-items:center; height:34px; flex-shrink:0;
+      display:flex; align-items:center;
       font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
       font-size:24px; font-weight:400; color:#000;
-      text-decoration:none; cursor:pointer;
-      transition:opacity 0.15s;
+      text-decoration:none; height:34px; flex-shrink:0;
+      padding-left:0; box-sizing:border-box;
+      cursor:pointer; transition:opacity 0.15s;
     }
     .mob-cat-item:hover { opacity:0.5; }
+    a.mob-cat-item[href*="motion"]:hover    { opacity:1; color:#FF3298; }
+    a.mob-cat-item[href*="character"]:hover { opacity:1; color:#fac000; }
+    a.mob-cat-item[href*="package"]:hover   { opacity:1; color:#FF4E41; }
+    a.mob-cat-item[href*="UXUI"]:hover      { opacity:1; color:#00BFC4; }
     .mob-cat-divider { height:0; border-top:1px solid #000; flex-shrink:0; }
-
   </style>
 </head>
 <body class="lang-kr">
@@ -406,32 +535,27 @@
 
   <!-- ══ 좌측 ══ -->
   <div id="left">
-
-    <!-- 모바일 nav: NEXT STEP!(좌) + category dropdown(우) -->
+    <!-- 모바일 프로필 nav (left < 860px) -->
     <div id="nav-mobile">
-      <div id="nm-logo" onclick="window.location.href='../../index.html'">
-        <img src="../navbar/next%20step.svg" alt="NEXT STEP!">
-      </div>
-      <div id="mob-cat-outer">
-        <span id="mob-cat-arrow" onclick="toggleMobCat()">
-          <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
-            <path d="M1 1l5 5 5-5" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <div id="mob-cat-menu">
-          <div id="mob-cat-trigger" onclick="toggleMobCat()">
-            <span id="mob-cat-label">motion</span>
-            <span id="mob-cat-design">design</span>
-          </div>
-          <a class="mob-cat-item" href="../character/index.html">character</a>
-          <div class="mob-cat-divider"></div>
-          <a class="mob-cat-item" href="../package/index.html">package</a>
-          <div class="mob-cat-divider"></div>
-          <a class="mob-cat-item" href="../UXUI/index.html">UXUI</a>
-          <div class="mob-cat-divider"></div>
+  <div id="nm-logo" onclick="window.location.href='../../index.html'" style="cursor:pointer;display:flex;align-items:center;padding-left:16px;flex-shrink:0;">
+    <img src="../navbar/next%20step.svg" alt="NEXT STEP!" style="height:28px;width:auto;">
+  </div>
+  <div id="mob-cat-outer">
+      <span id="mob-cat-arrow" onclick="toggleMobCat()"><svg width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1l5 5 5-5" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div id="mob-cat-menu">
+        <div id="mob-cat-trigger" onclick="toggleMobCat()">
+          <span id="mob-cat-label">motion</span>
+          <span id="mob-cat-design">design</span>
         </div>
+      <a class="mob-cat-item" href="../character/character.html">character</a>
+      <div class="mob-cat-divider"></div>
+      <a class="mob-cat-item" href="../package/package.html">package</a>
+      <div class="mob-cat-divider"></div>
+      <a class="mob-cat-item" href="../UXUI/UXUI.html">UXUI</a>
+      <div class="mob-cat-divider"></div>
       </div>
     </div>
+  </div>
 
     <nav id="nav">
       <div id="nav-logo" onclick="window.location.href='../../index.html'">
@@ -449,11 +573,11 @@
             <span id="cat-current">motion</span>
             <span id="cat-design-label">design</span>
           </div>
-          <a class="cat-menu-item" href="../character/index.html">character</a>
+          <a class="cat-menu-item" href="../character/character.html">character</a>
           <div class="cat-menu-divider"></div>
-          <a class="cat-menu-item" href="../package/index.html">package</a>
+          <a class="cat-menu-item" href="../package/package.html">package</a>
           <div class="cat-menu-divider"></div>
-          <a class="cat-menu-item" href="../UXUI/index.html">UXUI</a>
+          <a class="cat-menu-item" href="../UXUI/UXUI.html">UXUI</a>
           <div class="cat-menu-divider"></div>
         </div>
         <span id="cat-arrow" onclick="toggleCatMenu()">
@@ -466,22 +590,15 @@
 
     <div id="gallery"></div>
 
-    <!-- 모바일 작품 상세 패널 -->
+    <!-- 모바일 작품 상세 뷰 -->
     <div id="mobile-work">
+      <!-- 작품 상세 NAV BAR: 화살표+비행기+GATE1 (좌) / X (우) -->
       <div id="mob-detail-nav">
         <div id="mob-gate-label" onclick="hideDetailMobile()">
-          <div id="mob-nav-gate" style="display:flex;align-items:center;">
-            <img src="gate1.png" alt="GATE 1" style="height:40px;width:auto;display:block;">
-          </div>
-          <div id="mob-nav-info" style="display:none;">
-            <div id="mob-nav-work-kr" class="kr-only" style="font-size:16px;font-weight:600;line-height:1.3;color:#000;"></div>
-            <div id="mob-nav-work-en" class="en-only" style="font-size:16px;font-weight:600;line-height:1.3;color:#000;"></div>
-            <div id="mob-nav-author-kr" class="kr-only" style="font-size:13px;line-height:1.3;color:#000;"></div>
-            <div id="mob-nav-author-en" class="en-only" style="font-size:13px;line-height:1.3;color:#000;"></div>
-          </div>
+          <img src="gate1.png" alt="GATE 1" style="height:40px;width:auto;display:block;">
         </div>
         <div id="mob-close-btn" onclick="hideDetailMobile()">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
             <path d="M5 5L19 19M19 5L5 19" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </div>
@@ -512,6 +629,85 @@
       </div>
     </div>
 
+    <!-- 모바일 메뉴 overlay (about/index와 동일 섹션 구조) -->
+    <div id="mobile-menu">
+      <!-- 헤더: NEXT STEP | 분야명(배경색) | X -->
+      <div id="mm-header">
+        <div id="mm-logo" onclick="window.location.href='../../index.html'">
+          <img src="../navbar/next%20step.svg" alt="NEXT STEP!" style="height:20px;width:auto;">
+        </div>
+        <span id="mm-cat-label">Motion</span>
+        <div id="mm-close" onclick="closeMobileMenu()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M5 5L19 19M19 5L5 19" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <!-- 바디: 섹션들 -->
+      <div id="mm-body">
+        <!-- Menu 섹션 -->
+        <div class="mm-section">
+          <div class="mm-section-label">
+            <span class="en-only">Menu</span>
+            <span class="kr-only">메뉴</span>
+          </div>
+          <div class="mm-section-links">
+            <a href="../../about.html">
+              <span class="en-only">About</span>
+              <span class="kr-only">소개</span>
+            </a>
+            <a href="../../index.html">
+              <span class="en-only">Home</span>
+              <span class="kr-only">홈</span>
+            </a>
+            <a href="../../map.html">
+              <span class="en-only">Map</span>
+              <span class="kr-only">지도</span>
+            </a>
+          </div>
+          <div></div>
+        </div>
+        <!-- Design 섹션 -->
+        <div class="mm-section">
+          <div class="mm-section-label">
+            <span class="en-only">Design</span>
+            <span class="kr-only">디자인</span>
+          </div>
+          <div class="mm-section-links">
+            <a id="mm-motion"    class="oblique mm-active" href="motion.html">
+              <span class="en-only">motion</span>
+              <span class="kr-only">영상</span>
+            </a>
+            <a id="mm-character" class="oblique" href="../character/character.html">
+              <span class="en-only">character</span>
+              <span class="kr-only">캐릭터</span>
+            </a>
+            <a id="mm-package"   class="oblique" href="../package/package.html">
+              <span class="en-only">package</span>
+              <span class="kr-only">패키지</span>
+            </a>
+            <a id="mm-uxui"      class="oblique" href="../UXUI/UXUI.html">UXUI</a>
+          </div>
+          <div></div>
+        </div>
+        <!-- Language 섹션 -->
+        <div class="mm-section mm-section-lang">
+          <div class="mm-section-label">
+            <span class="en-only">Language</span>
+            <span class="kr-only">언어</span>
+          </div>
+          <div class="mm-pill lang-kr" id="mm-pill" onclick="toggleMenuLang()">
+            <div class="mm-pill-track">
+              <span class="mm-pill-label" id="mpl-ko">KO</span>
+              <span class="mm-pill-label" id="mpl-en">EN</span>
+            </div>
+            <div class="mm-pill-thumb"></div>
+          </div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- ══ 우측 사이드바 ══ -->
@@ -519,14 +715,8 @@
 
   <div id="right">
     <div id="gate-label" onclick="hideDetailDesktop()">
-      <svg width="31" height="31" viewBox="0 0 38 38" fill="none">
-        <path d="M21.0089 5.80886C21.4839 5.33394 22.1282 5.06714 22.7999 5.06714C23.4717 5.06714 24.1159 5.33394 24.591 5.80886L35.991 17.2089C36.4659 17.6839 36.7327 18.3282 36.7327 18.9999C36.7327 19.6717 36.4659 20.3159 35.991 20.791L24.591 32.191C24.1132 32.6525 23.4733 32.9078 22.8091 32.902C22.1448 32.8963 21.5094 32.6298 21.0397 32.1601C20.57 31.6904 20.3036 31.055 20.2978 30.3908C20.2921 29.7266 20.5474 29.0867 21.0089 28.6089L27.8666 21.5333H3.79993C3.12805 21.5333 2.48369 21.2664 2.0086 20.7913C1.53351 20.3162 1.2666 19.6718 1.2666 18.9999C1.2666 18.328 1.53351 17.6837 2.0086 17.2086C2.48369 16.7335 3.12805 16.4666 3.79993 16.4666H27.8666L21.0089 9.391C20.5339 8.91593 20.2671 8.27168 20.2671 7.59993C20.2671 6.92818 20.5339 6.28393 21.0089 5.80886Z" fill="#FF3298"/>
-      </svg>
-      <svg width="42" height="28" viewBox="0 0 43 29" fill="none">
-        <path d="M6.76148 21.375L0 12.6587L2.39923 10.7453L10.0332 14.3594L14.6135 11.5957C11.9962 9.18631 6.45612 4.11239 5.23469 3.09194C4.01327 2.0715 4.72577 1.2495 5.23469 0.96606C6.28163 -0.394536 8.8699 -0.0260409 10.0332 0.328281L23.7742 6.0683C24.8212 6.91867 25.6645 6.42262 25.9554 6.0683C28.2237 4.7077 32.5714 3.94236 34.4617 3.72977H42.75V6.0683L33.1531 11.5957L6.76148 21.375Z" fill="#FF3298"/>
-        <path d="M3.41992 24.4841C3.41992 23.7114 4.85541 23.085 6.62617 23.085H21.5887C23.3594 23.085 24.7949 23.7114 24.7949 24.4841V26.8159C24.7949 27.5886 23.3594 28.215 21.5887 28.215H6.62617C4.85541 28.215 3.41992 27.5886 3.41992 26.8159V24.4841Z" fill="#FF3298"/>
-      </svg>
-      <span id="gate-text">GATE 1</span>
+      <img src="gate1.png" alt="GATE 1" style="height:40px;width:auto;display:block;">
+      <img src="gate arrow.png" alt="arrow" style="height:16px;width:auto;display:block;">
     </div>
 
     <!-- 기본 상태 -->
@@ -603,9 +793,17 @@ function setLang(lang) {
     var el = document.getElementById(id);
     if (el) el.classList.toggle('active', id.endsWith('-'+lang));
   });
+  /* pill 동기화 */
+  var pill = document.getElementById('mm-pill');
+  if (pill) { pill.classList.toggle('lang-en', lang==='en'); pill.classList.toggle('lang-kr', lang==='kr'); }
+}
+function toggleMenuLang() {
+  var lang = localStorage.getItem('ns_lang') === 'en' ? 'kr' : 'en';
+  setLang(lang);
 }
 (function(){
-  setLang('kr');
+  var lang = localStorage.getItem('ns_lang_set') ? (localStorage.getItem('ns_lang')||'kr') : 'kr';
+  setLang(lang);
 })();
 
 /* ══════════════════════════════════════════
@@ -654,7 +852,10 @@ function renderGallery() {
     photo.className = 'module-photo';
     if (d.photo) {
       var img = document.createElement('img');
-      img.src = d.photo; img.alt = d.name;
+      var left = document.getElementById('left');
+      var isMob = left && left.classList.contains('mobile');
+      img.src = (isMob && d.photo && d.photo.indexOf('Profile/') === 0) ? 'Profile/m/' + d.photo.slice(8) : d.photo;
+      img.alt = d.name;
       photo.appendChild(img);
     }
     (function(designer, module){ photo.addEventListener('click', function(){ showDetail(designer, module); }); })(d, mod);
@@ -718,7 +919,14 @@ function _fillImg(id, src) {
   var el = document.getElementById(id); if (!el) return;
   el.innerHTML = '';
   if (src) {
-    var img = document.createElement('img'); img.src = src; img.alt = '';
+    var left = document.getElementById('left');
+    var isMob = left && left.classList.contains('mobile');
+    var actualSrc = src;
+    if (isMob) {
+      if (src.indexOf('image/') === 0) actualSrc = 'image/m/' + src.slice(6);
+      else if (src.indexOf('Profile/') === 0) actualSrc = 'Profile/m/' + src.slice(8);
+    }
+    var img = document.createElement('img'); img.src = actualSrc; img.alt = '';
     el.appendChild(img);
     el.style.display = '';
   } else {
@@ -735,24 +943,23 @@ function _fillSns(id, d) {
   }
 }
 function _populateDetail(p, d) {
+  /* p = '' for desktop IDs, 'mob-' for mobile IDs */
   var T = function(id, v) { var el=document.getElementById(id); if(el) el.textContent=v||''; };
+  T(p+'detail-work-title-en', d.workEN); T(p+'detail-work-title-kr', d.workKR);
+  T(p+'detail-author-en',     d.nameEN); T(p+'detail-author-kr',     d.name);
+  T(p+'detail-desc-en',       d.descEN); T(p+'detail-desc-kr',       d.descKR);
+  T(p+'detail-name-small-en', d.nameEN); T(p+'detail-name-small-kr', d.name);
+  /* mobile prefix uses shorter IDs */
   if (p === 'mob-') {
     T('mob-work-title-en', d.workEN); T('mob-work-title-kr', d.workKR);
-    T('mob-author-en', d.nameEN);    T('mob-author-kr', d.name);
-    T('mob-desc-en', d.descEN);      T('mob-desc-kr', d.descKR);
+    T('mob-author-en', d.nameEN);     T('mob-author-kr', d.name);
+    T('mob-desc-en', d.descEN);       T('mob-desc-kr', d.descKR);
     T('mob-name-small-en', d.nameEN); T('mob-name-small-kr', d.name);
     _fillImg('mob-logo', d.logo);
     _fillImg('mob-work-photo', d.imgA);
     _fillImg('mob-work-photo-2', d.imgB);
     _fillSns('mob-sns', d);
-    /* nav 스크롤 전환용 텍스트 */
-    T('mob-nav-work-kr', d.workKR); T('mob-nav-work-en', d.workEN);
-    T('mob-nav-author-kr', d.name); T('mob-nav-author-en', d.nameEN);
   } else {
-    T('detail-work-title-en', d.workEN); T('detail-work-title-kr', d.workKR);
-    T('detail-author-en', d.nameEN);     T('detail-author-kr', d.name);
-    T('detail-desc-en', d.descEN);       T('detail-desc-kr', d.descKR);
-    T('detail-name-small-en', d.nameEN); T('detail-name-small-kr', d.name);
     _fillImg('detail-logo', d.logo);
     _fillImg('detail-work-photo', d.imgA);
     _fillImg('detail-work-photo-2', d.imgB);
@@ -767,59 +974,37 @@ function showDetail(d, moduleEl) {
   moduleEl.classList.add('selected');
 
   var leftEl = document.getElementById('left');
-  if (window.innerWidth < 600) {
-    /* 모바일: 풀스크린 디테일 패널 */
+  var rightVisible = getComputedStyle(document.getElementById('right')).display !== 'none';
+
+  if (!rightVisible) {
+    /* 모바일 전용 뷰 (뷰포트 자체가 좁아 #right 숨겨진 상태) */
+    var menu = document.getElementById('mobile-menu');
+    if (menu.classList.contains('open')) {
+      menu.classList.remove('open');
+      var _btn = document.getElementById('nm-menu-btn'); if (_btn) _btn.classList.remove('is-open');
+      document.getElementById('nav-mobile').classList.remove('menu-open');
+      var g = document.getElementById('nm-gate');
+      if (g) g.textContent = 'GATE 1'; g.classList.remove('menu-open');
+    }
     _populateDetail('mob-', d);
     leftEl.classList.add('detail-open');
     document.getElementById('mobile-detail-scroll').scrollTop = 0;
   } else {
-    /* 데스크탑: 오른쪽 사이드바 */
+    /* #right가 보이는 상태 → 항상 오른쪽 패널에 표시 */
     _populateDetail('', d);
     document.getElementById('sidebar-default').style.display = 'none';
     document.getElementById('sidebar-detail').style.display  = 'block';
-    var rightEl = document.getElementById('right');
-    rightEl.style.display = 'block';
-    rightEl.scrollTop = 0;
+    document.getElementById('right').scrollTop = 0;
   }
 }
 
 function hideDetailMobile() {
-  document.getElementById('left').classList.remove('detail-open');
+  var leftEl = document.getElementById('left');
+  leftEl.classList.remove('detail-open');
   if (_selectedModule) _selectedModule.classList.remove('selected');
   _selectedModule = null;
   _selectedDesigner = null;
-  /* nav 원복 */
-  document.getElementById('mob-nav-gate').style.display = 'flex';
-  document.getElementById('mob-nav-info').style.display = 'none';
-  document.getElementById('mob-detail-nav').classList.remove('scrolled');
 }
-
-/* 스크롤 시 nav: gate → 작품명/작가명 전환 */
-(function() {
-  var scrollEl = document.getElementById('mobile-detail-scroll');
-  scrollEl.addEventListener('scroll', function() {
-    var authorEl = document.getElementById('mob-author-kr') ||
-                   document.getElementById('mob-author-en');
-    if (!authorEl) return;
-    /* 이름 하단이 나브바 하단을 지날 때 전환 */
-    var navEl = document.getElementById('mob-detail-nav');
-    var navBottom = navEl ? navEl.offsetHeight : 0;
-    var threshold = authorEl.offsetTop + authorEl.offsetHeight - navBottom;
-    var past = scrollEl.scrollTop > threshold;
-    document.getElementById('mob-nav-gate').style.display = past ? 'none' : 'flex';
-    document.getElementById('mob-nav-info').style.display = past ? 'block' : 'none';
-    document.getElementById('mob-detail-nav').classList.toggle('scrolled', past);
-  });
-})();
-
-function toggleMobCat() {
-  document.getElementById('mob-cat-outer').classList.toggle('open');
-}
-document.addEventListener('click', function(e) {
-  var outer = document.getElementById('mob-cat-outer');
-  if (outer && !outer.contains(e.target)) outer.classList.remove('open');
-});
-
 
 function hideDetailDesktop() {
   if (_selectedModule) _selectedModule.classList.remove('selected');
@@ -830,6 +1015,14 @@ function hideDetailDesktop() {
   document.getElementById('right').scrollTop = 0;
 }
 
+function toggleMobileMenu() {
+  var isOpen = document.getElementById('mobile-menu').classList.toggle('open');
+  document.getElementById('nm-menu-btn').classList.toggle('is-open', isOpen);
+  document.getElementById('nav-mobile').classList.toggle('menu-open', isOpen);
+  var g = document.getElementById('nm-gate');
+  if (isOpen) { g.textContent = 'Motion'; g.classList.add('menu-open'); }
+  else         { g.textContent = 'GATE 1'; g.classList.remove('menu-open'); }
+}
 
 /* ── 분할선 드래그 리사이즈 ── */
 (function() {
@@ -863,35 +1056,44 @@ function hideDetailDesktop() {
   });
 })();
 
-
-
-/* ── 모바일 클래스 관리 (window < 600px → #left.mobile) ── */
+/* ── Left 패널 너비 감지 → 모바일/데스크탑 전환 ── */
 (function() {
-  var leftEl = document.getElementById('left');
-  function updateMobile() {
-    var isMobile = window.innerWidth < 600;
+  var leftEl   = document.getElementById('left');
+  var _wasMobile = false;
+
+  function onResize(w) {
+    var isMobile = w < 860;
+    if (isMobile === _wasMobile) return;
+    _wasMobile = isMobile;
     leftEl.classList.toggle('mobile', isMobile);
 
-    /* 리사이즈 시 열려있는 디테일 뷰 재배치 */
     if (_selectedDesigner) {
-      if (isMobile) {
+      var rightNowVisible = getComputedStyle(document.getElementById('right')).display !== 'none';
+      if (!rightNowVisible) {
+        /* #right 숨겨진 상태 → 모바일 디테일로 전환 */
         document.getElementById('sidebar-default').style.display = '';
         document.getElementById('sidebar-detail').style.display  = 'none';
         _populateDetail('mob-', _selectedDesigner);
         leftEl.classList.add('detail-open');
         document.getElementById('mobile-detail-scroll').scrollTop = 0;
       } else {
+        /* #right 보임 → 오른쪽 패널 디테일로 전환 */
         leftEl.classList.remove('detail-open');
         _populateDetail('', _selectedDesigner);
         document.getElementById('sidebar-default').style.display = 'none';
         document.getElementById('sidebar-detail').style.display  = 'block';
-        document.getElementById('right').style.display = 'block';
         document.getElementById('right').scrollTop = 0;
       }
     }
   }
-  window.addEventListener('resize', updateMobile);
-  updateMobile();
+
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(function(entries) {
+      onResize(entries[0].contentRect.width);
+    }).observe(leftEl);
+  }
+  /* 초기 체크 */
+  onResize(leftEl.getBoundingClientRect().width);
 })();
 
 /* ── About 링크 전환 연출 ── */
@@ -906,6 +1108,15 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(function(){ window.location.href = '../../about.html'; }, 360);
     });
   });
+});
+
+/* ── 모바일 카테고리 드롭다운 ── */
+function toggleMobCat() {
+  document.getElementById('mob-cat-outer').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  var outer = document.getElementById('mob-cat-outer');
+  if (outer && !outer.contains(e.target)) outer.classList.remove('open');
 });
 </script>
 </body>
