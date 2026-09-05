@@ -235,7 +235,13 @@
 
     <!-- SVG 배경 (JS로 path 업데이트) -->
     <svg class="ticket-svg" xmlns="http://www.w3.org/2000/svg">
-      <path id="ticket-path" fill="#00ACEB"></path>
+      <defs>
+        <linearGradient id="ticket-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#7FCCE9"/>
+          <stop offset="100%" stop-color="#0086D9"/>
+        </linearGradient>
+      </defs>
+      <path id="ticket-path" fill="url(#ticket-grad)"></path>
     </svg>
 
     <!-- 콘텐츠 -->
