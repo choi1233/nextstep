@@ -778,7 +778,7 @@
     시각디자인학과 졸업전시
   </div>
   <div id="top-nav-right">
-    2026. 09. 16. (SUN)<br>— 09. 22. (SAT)
+    2026. 09. 16. (WED)<br>— 09. 22. (TUE)
   </div>
 </div>
 <!-- 어두운 배경 위 흰 텍스트 복사본 (clip-path로 어두운 영역만 노출) -->
@@ -788,7 +788,7 @@
     시각디자인학과 졸업전시
   </div>
   <div id="top-nav-right-w">
-    2026. 09. 16. (SUN)<br>— 09. 22. (SAT)
+    2026. 09. 16. (WED)<br>— 09. 22. (TUE)
   </div>
 </div>
 
@@ -824,7 +824,7 @@
     <img id="m-finger-tl" src="main/mobile/finger1.png" alt="">
     <img id="m-poster" src="main/mobile/POSTER.png" alt="NEXT STEP Poster">
     <img id="m-finger-br" src="main/mobile/finger2.png" alt="">
-    <p id="m-date">2026. 09. 01. (TUE)<br>- 09. 25. (SUN)</p>
+    <p id="m-date">2026. 09. 16. (WED)<br>- 09. 22. (TUE)</p>
   </div>
   </div><!-- /m-group -->
   <img id="m-pin" src="main/mobile/pin.png" alt="pin">
@@ -1753,7 +1753,7 @@ window.addEventListener('load', function() {
 
   /* 위 오버스크롤: viewport 위쪽 밖에서 시작 → pull과 함께 내려옴 */
   var topOv = document.createElement('div');
-  topOv.style.cssText = 'position:fixed;top:'+ (-OV_H) +'px;left:0;right:0;height:'+ OV_H +'px;z-index:9990;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:14px;opacity:0;';
+  topOv.style.cssText = 'position:fixed;top:'+ (-OV_H) +'px;left:0;right:0;height:'+ (OV_H + 4) +'px;z-index:9990;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:14px;opacity:0;';
   topOv.appendChild(makeRow());
   var topLbl = makeLabel();
   topLbl.style.marginTop = '10px';
@@ -1762,7 +1762,7 @@ window.addEventListener('load', function() {
 
   /* 아래 오버스크롤: viewport 아래쪽 밖에서 시작 → pull과 함께 올라옴 */
   var botOv = document.createElement('div');
-  botOv.style.cssText = 'position:fixed;bottom:'+ (-OV_H) +'px;left:0;right:0;height:'+ OV_H +'px;z-index:9990;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:14px;opacity:0;';
+  botOv.style.cssText = 'position:fixed;bottom:'+ (-OV_H) +'px;left:0;right:0;height:'+ (OV_H + 4) +'px;z-index:9990;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:14px;opacity:0;';
   var botLbl = makeLabel();
   botLbl.style.marginBottom = '10px';
   botOv.appendChild(botLbl);

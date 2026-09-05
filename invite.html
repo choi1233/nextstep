@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>NEXT STEP! — 초대장</title>
+  <meta property="og:title" content="NEXT STEP! — 초대장">
+  <meta property="og:description" content="제 76회 조선대학교 미술대학 시각디자인학과 졸업전시 · 2026. 09. 16 - 09. 22">
+  <meta property="og:image" content="http://cvcd2026.kro.kr/thumbnail.png">
+  <meta property="og:url" content="http://cvcd2026.kro.kr/invite.html">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://cvcd2026.kro.kr/thumbnail.png">
   <link rel="icon" href="CVCD.png" type="image/png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
@@ -15,18 +22,21 @@
 
     html, body {
       min-height: 100%;
-      background: #e8e8e8;
+      background: #c8c8c8;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 40px 20px;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'Pretendard', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
 
     .ticket-wrap {
       width: 100%;
       max-width: 360px;
       animation: slideUp 0.7s cubic-bezier(0.34,1.4,0.64,1) both;
+      filter:
+        drop-shadow(0 32px 80px rgba(0,0,0,0.32))
+        drop-shadow(0 8px 24px rgba(0,0,0,0.18));
     }
 
     @keyframes slideUp {
@@ -36,156 +46,185 @@
 
     /* ── TICKET CARD ── */
     .ticket {
-      background: #00ACEB;
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow:
-        0 2px 0 rgba(0,0,0,0.08) inset,
-        0 32px 80px rgba(0,0,0,0.32),
-        0 8px 24px rgba(0,0,0,0.18);
-      color: #000;
       position: relative;
+      color: #000;
+    }
+
+    .ticket-svg {
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .ticket-body {
+      position: relative;
+      z-index: 1;
     }
 
     /* ── HEADER ── */
     .tk-header {
-      padding: 22px 24px 18px;
+      padding: 22px 16px 16px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
     }
     .brand {
       font-family: 'HelveticaC', 'Helvetica Neue', sans-serif;
-      font-size: 24px;
+      font-size: 26px;
       letter-spacing: 0.01em;
       color: #000;
       line-height: 1;
     }
-    .brand em { color: #000; font-style: normal; }
     .class-tag {
+      font-family: 'Pretendard', sans-serif;
       font-size: 9px;
+      font-weight: 400;
       letter-spacing: 0.14em;
-      color: rgba(0,0,0,0.4);
-      margin-top: 5px;
+      color: rgba(0,0,0,0.5);
+      margin-top: 4px;
       text-transform: uppercase;
     }
-    .seat-wrap { text-align: right; }
-    .seat-label { font-size: 9px; color: rgba(0,0,0,0.4); letter-spacing: 0.1em; margin-bottom: 2px; }
-    .seat-num {
-      font-family: 'HelveticaC', sans-serif;
-      font-size: 32px;
+    .hd-info {
+      text-align: right;
+      font-family: 'Pretendard', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
       color: #000;
-      line-height: 1;
+      line-height: 1.6;
     }
 
     /* ── ROUTE ── */
     .tk-route {
-      padding: 22px 24px 10px;
+      padding: 20px 16px 16px;
+    }
+    .route-labels {
       display: flex;
-      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .route-label {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.5);
+      letter-spacing: 0.04em;
+    }
+    .route-main {
+      display: flex;
+      align-items: center;
       justify-content: space-between;
     }
-    .city-sub { font-size: 10px; color: rgba(0,0,0,0.4); margin-bottom: 2px; letter-spacing: 0.06em; }
     .city-code {
-      font-family: 'HelveticaC', sans-serif;
-      font-size: 62px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 300;
+      font-size: clamp(44px, 16vw, 72px);
       line-height: 1;
-      letter-spacing: -0.01em;
-      color: #000;
+      letter-spacing: -0.02em;
+      color: #fff;
     }
-    .city-name { font-size: 10px; color: rgba(0,0,0,0.5); margin-top: 3px; }
-    .route-mid {
+    .plane-icon {
       flex: 0 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      padding: 0 8px 10px;
+      color: #000;
+      padding: 0 4px;
+      transform: rotate(90deg);
     }
-    .route-line {
-      width: 60px;
-      height: 1px;
-      background: linear-gradient(to right, transparent, rgba(0,0,0,0.2), transparent);
-    }
-    .plane-svg { color: #000; }
-    .city-right { text-align: right; }
+
+    /* ── NOTCH MARKER (측정용, 보이지 않음) ── */
+    .notch-marker { height: 0; }
 
     /* ── DETAILS ── */
     .tk-details {
-      padding: 16px 24px 18px;
+      padding: 14px 16px 14px;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      border-bottom: 1px solid rgba(0,0,0,0.08);
+      grid-template-columns: 1fr 1.4fr 1fr;
     }
     .dt-col:last-child { text-align: right; }
-    .dt-label { font-size: 9px; color: rgba(0,0,0,0.4); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; }
-    .dt-val { font-size: 13px; color: #000; font-weight: 600; letter-spacing: 0.02em; }
-
-    /* ── PERFORATED DIVIDER ── */
-    .perforation {
-      position: relative;
-      display: flex;
-      align-items: center;
-      padding: 0 14px;
-      height: 28px;
+    .dt-label {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.5);
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
     }
-    .perforation::before,
-    .perforation::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 28px; height: 28px;
-      background: #e8e8e8;
-      border-radius: 50%;
-      z-index: 2;
-    }
-    .perforation::before { left: -14px; }
-    .perforation::after  { right: -14px; }
-    .perf-line {
-      flex: 1;
-      border-top: 1.5px dashed rgba(0,0,0,0.15);
+    .dt-val {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 15px;
+      color: #000;
+      font-weight: 600;
+      letter-spacing: 0.01em;
     }
 
     /* ── PASSENGER ── */
     .tk-passenger {
-      padding: 16px 24px 18px;
+      padding: 14px 16px 16px;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
+      grid-template-columns: 1fr 1.5fr 1fr;
     }
     .ps-col:last-child { text-align: right; }
-    .ps-label { font-size: 9px; color: rgba(0,0,0,0.4); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; }
-    .ps-val { font-size: 14px; color: #000; font-weight: 600; letter-spacing: 0.02em; }
+    .ps-label {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.5);
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .ps-val {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 15px;
+      color: #000;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      line-height: 1.1;
+    }
 
     /* ── QR ── */
     .tk-qr {
-      padding: 24px;
+      padding: 75px 16px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 18px;
+      gap: 12px;
+    }
+    .qr-label {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: rgba(0,0,0,0.5);
+      text-transform: uppercase;
+      text-align: center;
     }
     .qr-box {
       background: #fff;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 5px;
+      padding: 6px;
       display: inline-flex;
     }
-    #qrcode canvas, #qrcode img { display:block; border-radius:4px; }
+    #qrcode canvas, #qrcode img { display:block; }
+
+    /* ── FOOTER ── */
     .tk-footer {
-      text-align: center;
-      font-size: 10px;
-      color: rgba(0,0,0,0.4);
-      line-height: 1.8;
-      letter-spacing: 0.04em;
+      padding: 16px 16px 22px;
+      display: grid;
+      grid-template-columns: 28px 1fr 28px;
+      align-items: center;
     }
-    .tk-footer strong {
+    .tk-footer-logo img {
+      width: 28px;
+      height: auto;
       display: block;
-      color: rgba(0,0,0,0.7);
-      font-size: 11px;
-      margin-bottom: 2px;
+    }
+    .tk-footer-text {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.55);
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+      text-align: center;
     }
   </style>
 </head>
@@ -194,113 +233,165 @@
 <div class="ticket-wrap">
   <div class="ticket">
 
-    <!-- HEADER -->
-    <div class="tk-header">
-      <div>
-        <div class="brand">NEXT <em>STEP!</em></div>
-        <div class="class-tag">INVITATION</div>
-      </div>
-      <div class="seat-wrap">
-        <div class="seat-label">좌석</div>
-        <div class="seat-num">1A</div>
-      </div>
-    </div>
+    <!-- SVG 배경 (JS로 path 업데이트) -->
+    <svg class="ticket-svg" xmlns="http://www.w3.org/2000/svg">
+      <path id="ticket-path" fill="#00ACEB"></path>
+    </svg>
 
-    <!-- ROUTE -->
-    <div class="tk-route">
-      <div>
-        <div class="city-sub">출발</div>
-        <div class="city-code">CSU</div>
-        <div class="city-name">조선대학교</div>
-      </div>
-      <div class="route-mid">
-        <svg class="plane-svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/>
-        </svg>
-        <div class="route-line"></div>
-      </div>
-      <div class="city-right">
-        <div class="city-sub">도착</div>
-        <div class="city-code">NST</div>
-        <div class="city-name">NEXT STEP!</div>
-      </div>
-    </div>
+    <!-- 콘텐츠 -->
+    <div class="ticket-body">
 
-    <!-- DETAILS -->
-    <div class="tk-details">
-      <div class="dt-col">
-        <div class="dt-label">편명</div>
-        <div class="dt-val">NS-76</div>
+      <!-- HEADER -->
+      <div class="tk-header">
+        <div>
+          <div class="brand">NEXT STEP!</div>
+          <div class="class-tag">INVITATION</div>
+        </div>
+        <div class="hd-info">
+          제 76회 조선대학교 미술대학<br>
+          시각디자인학과 졸업전시
+        </div>
       </div>
-      <div class="dt-col">
-        <div class="dt-label">날짜</div>
-        <div class="dt-val">09.16</div>
-      </div>
-      <div class="dt-col">
-        <div class="dt-label">시간</div>
-        <div class="dt-val">10:00</div>
-      </div>
-      <div class="dt-col">
-        <div class="dt-label">탑승</div>
-        <div class="dt-val">09:30</div>
-      </div>
-      <div class="dt-col">
-        <div class="dt-label">SEQ</div>
-        <div class="dt-val">76</div>
-      </div>
-    </div>
 
-    <!-- PERFORATED -->
-    <div class="perforation"><div class="perf-line"></div></div>
+      <!-- ROUTE -->
+      <div class="tk-route">
+        <div class="route-labels">
+          <span class="route-label">출발</span>
+          <span class="route-label">도착</span>
+        </div>
+        <div class="route-main">
+          <div class="city-code">CSU</div>
+          <div class="plane-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/>
+            </svg>
+          </div>
+          <div class="city-code">NST</div>
+        </div>
+      </div>
 
-    <!-- PASSENGER -->
-    <div class="tk-passenger">
-      <div class="ps-col">
-        <div class="ps-label">이름</div>
-        <div class="ps-val" id="passenger-name">GUEST</div>
-      </div>
-      <div class="ps-col">
-        <div class="ps-label">터미널</div>
-        <div class="ps-val">3F</div>
-      </div>
-      <div class="ps-col">
-        <div class="ps-label">게이트</div>
-        <div class="ps-val">GATE 1</div>
-      </div>
-    </div>
+      <!-- NOTCH MARKER 1 (route ↔ details) -->
+      <div class="notch-marker" id="notch1"></div>
 
-    <!-- QR -->
-    <div class="tk-qr">
-      <div class="qr-box">
-        <div id="qrcode"></div>
+      <!-- DETAILS -->
+      <div class="tk-details">
+        <div class="dt-col">
+          <div class="dt-label">편명</div>
+          <div class="dt-val">2NS76</div>
+        </div>
+        <div class="dt-col">
+          <div class="dt-label">날짜</div>
+          <div class="dt-val">09.16 - 09.22</div>
+        </div>
+        <div class="dt-col">
+          <div class="dt-label">시간</div>
+          <div class="dt-val">10:00 -</div>
+        </div>
       </div>
+
+      <!-- NOTCH MARKER 2 (details ↔ passenger, 오른쪽만) -->
+      <div class="notch-marker" id="notch2"></div>
+
+      <!-- PASSENGER -->
+      <div class="tk-passenger">
+        <div class="ps-col">
+          <div class="ps-label">이름</div>
+          <div class="ps-val" id="passenger-name">GUEST</div>
+        </div>
+        <div class="ps-col">
+          <div class="ps-label">터미널</div>
+          <div class="ps-val">조선대학교<br>미술대학 3F (미술관)</div>
+        </div>
+        <div class="ps-col">
+          <div class="ps-label">탑승구</div>
+          <div class="ps-val">GATE 1</div>
+        </div>
+      </div>
+
+      <!-- QR -->
+      <div class="tk-qr">
+        <div class="qr-label">NEXT STEP! WEBSITE</div>
+        <a href="http://cvcd2026.kro.kr/" target="_blank" class="qr-box" style="text-decoration:none;">
+          <div id="qrcode"></div>
+        </a>
+      </div>
+
+      <!-- FOOTER -->
       <div class="tk-footer">
-        <strong>제76회 조선대학교 미술대학</strong>
-        시각디자인학과 졸업전시<br>
-        2026. 09. 16 (SUN) — 09. 22 (SAT)<br>
-        광주 동구 조선대길 108 · 미술대학 3F
+        <div class="tk-footer-logo">
+          <img src="CVCD2.png" alt="CVCD">
+        </div>
+        <div class="tk-footer-text">
+          2026. 09. 16 (Wed) - 09. 22 (Tue)<br>
+          광주전남 동구 조선대길 106 미술대학 3F
+        </div>
+        <div></div>
       </div>
-    </div>
 
-  </div>
-</div>
+    </div><!-- /ticket-body -->
+  </div><!-- /ticket -->
+</div><!-- /ticket-wrap -->
 
 <script>
-  /* URL ?name=홍길동 → 이름 표시 */
+  /* ── URL ?name= ── */
   var params = new URLSearchParams(window.location.search);
   var name = params.get('name');
   if (name) document.getElementById('passenger-name').textContent = name.toUpperCase();
 
-  /* QR 코드 — 아래 URL을 실제 전시 사이트 주소로 교체하세요 */
+  /* ── QR ── */
   var QR_URL = 'http://cvcd2026.kro.kr/';
+  var cardInnerW = document.querySelector('.ticket-body').offsetWidth - 32;
+  var qrSize = Math.round(cardInnerW * 0.35);
   new QRCode(document.getElementById('qrcode'), {
     text: QR_URL,
-    width: 200,
-    height: 200,
+    width: qrSize,
+    height: qrSize,
     colorDark: '#000000',
     colorLight: '#ffffff',
     correctLevel: QRCode.CorrectLevel.M
   });
+
+  /* ── SVG 티켓 배경 ── */
+  function drawTicket() {
+    var body   = document.querySelector('.ticket-body');
+    var W      = body.offsetWidth;
+    var H      = body.offsetHeight;
+    var R      = 22;   /* 모서리 반지름 */
+    var r      = 9;    /* 노치 반지름 */
+
+    /* 노치 Y 위치 (ticket-body 기준) */
+    var n1el = document.getElementById('notch1');
+    var n2el = document.getElementById('notch2');
+    var y1 = n1el.offsetTop;
+    var y2 = n2el.offsetTop;
+
+    /* SVG 크기 설정 */
+    var svg = document.querySelector('.ticket-svg');
+    svg.setAttribute('width',   W);
+    svg.setAttribute('height',  H);
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    /* 오른쪽: 노치 2개(y1, y2) / 왼쪽: 노치 1개(y1) */
+    var d = [
+      'M', R, 0,
+      'H', W - R, 'Q', W, 0, W, R,
+      'V', y1 - r,
+      'A', r, r, 0, 0, 0, W, y1 + r,
+      'V', y2 - r,
+      'A', r, r, 0, 0, 0, W, y2 + r,
+      'V', H - R, 'Q', W, H, W - R, H,
+      'H', R, 'Q', 0, H, 0, H - R,
+      'V', y1 + r,
+      'A', r, r, 0, 0, 0, 0, y1 - r,
+      'V', R, 'Q', 0, 0, R, 0, 'Z'
+    ].join(' ');
+
+    document.getElementById('ticket-path').setAttribute('d', d);
+  }
+
+  /* QR 생성 후 그리기 (약간 딜레이) */
+  setTimeout(drawTicket, 100);
+  window.addEventListener('resize', drawTicket);
 </script>
 </body>
 </html>
