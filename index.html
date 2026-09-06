@@ -1941,18 +1941,12 @@ window.addEventListener('load', function() {
 </div>
 <!-- Three.js carrier.glb -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-/* GLTFLoader r128 inline — CDN 의존성 제거 */
-(function(){if(!window.THREE)return;
-THREE.GLTFLoader=(function(){function e(e){this.manager=e||THREE.DefaultLoadingManager}e.prototype={constructor:e,load:function(e,t,i,n){var r=this,o=new THREE.FileLoader(r.manager);o.setResponseType('arraybuffer');o.load(e,function(e){r.parse(e,t)},i,n)},parse:function(data,t){var json,loader=this;if(typeof data==='string'){json=JSON.parse(data)}else if(data instanceof ArrayBuffer){var magic=THREE.LoaderUtils.decodeText(new Uint8Array(data,0,4));if(magic==='\x67\x6C\x54\x46'){loader._parseBinary(data,t);return;}else{json=JSON.parse(THREE.LoaderUtils.decodeText(new Uint8Array(data)));}}else{json=data;}loader._parseJSON(json,null,t)},_parseBinary:function(data,t){var loader=this;var headerView=new DataView(data,0,12);var magic=headerView.getUint32(0,true);var version=headerView.getUint32(4,true);var totalLength=headerView.getUint32(8,true);var chunkIndex=12,json=null,binaryChunk=null;while(chunkIndex<totalLength){var chunkLength=new DataView(data,chunkIndex,4).getUint32(0,true);var chunkType=new DataView(data,chunkIndex+4,4).getUint32(0,true);chunkIndex+=8;if(chunkType===0x4E4F534A){json=JSON.parse(THREE.LoaderUtils.decodeText(new Uint8Array(data,chunkIndex,chunkLength)));}else if(chunkType===0x004E4942){binaryChunk=data.slice(chunkIndex,chunkIndex+chunkLength);}chunkIndex+=chunkLength;}loader._parseJSON(json,binaryChunk,t)},_parseJSON:function(json,binaryChunk,callback){var scope=this;var path='';var manager=scope.manager;/* Minimal GLTF parser — use ObjectLoader fallback */console.warn('GLTFLoader: minimal parser active');callback(new THREE.Group());}};return e;})();
-});
-</script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js" onerror="console.warn('GLTFLoader CDN 실패')"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
 <script>
 (function() {
   if (window.innerWidth <= 500) return;
-  if (!window.THREE) { console.warn('Three.js 없음'); return; }
-  if (!THREE.GLTFLoader) { console.warn('GLTFLoader 없음'); return; }
+  if (!window.THREE || !THREE.GLTFLoader) { console.warn('Three.js/GLTFLoader 없음'); return; }
 
   var canvas = document.getElementById('carrier-canvas');
   if (!canvas) return;
@@ -1977,7 +1971,12 @@ THREE.GLTFLoader=(function(){function e(e){this.manager=e||THREE.DefaultLoadingM
   fill.position.set(-4, 1, 3);
   scene.add(fill);
 
+  var dracoLoader = new THREE.DRACOLoader();
+  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+
   var loader = new THREE.GLTFLoader();
+  loader.setDRACOLoader(dracoLoader);
+
   loader.load('main/s2/carrier.glb', function(gltf) {
     var model = gltf.scene;
     var box = new THREE.Box3().setFromObject(model);
@@ -1989,7 +1988,7 @@ THREE.GLTFLoader=(function(){function e(e){this.manager=e||THREE.DefaultLoadingM
     model.position.set(-center.x * s, -center.y * s, -center.z * s);
     scene.add(model);
     window._carrierModel = model;
-    console.log('carrier.glb 로드 완료, scale=' + s.toFixed(3));
+    console.log('carrier.glb 로드 완료');
   }, undefined, function(e) {
     console.warn('carrier.glb 로드 실패:', e);
   });
