@@ -252,7 +252,26 @@
         transition: opacity 0.4s ease;
         z-index: 9999;
       }
-      #m-poster-wrap { cursor: pointer; }
+      #m-poster-wrap { cursor: pointer; position: relative; }
+      #m-poster-tap-hint {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.38);
+        border-radius: 4px;
+        color: #fff;
+        font-family: 'Pretendard', sans-serif;
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: -0.2px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+      #m-poster-tap-hint.show { opacity: 1; }
       #m-scroll-hint {
         position: fixed;
         bottom: 24px;
@@ -823,6 +842,7 @@
     </div><!-- /m-content-group -->
   </div>
   <div id="m-poster-wrap" onclick="if(window.innerWidth<=500){location.href='designer/motion/index.html';}">
+    <div id="m-poster-tap-hint">탭하여 전시 보러가기</div>
     <img id="m-finger-tl" src="main/mobile/finger1.png" alt="">
     <img id="m-poster" src="main/mobile/POSTER.png" alt="NEXT STEP Poster">
     <img id="m-finger-br" src="main/mobile/finger2.png" alt="">
@@ -1878,6 +1898,29 @@ window.addEventListener('load', function() {
     } else {
       springBack();
     }
+  }, { passive: true });
+})();
+</script>
+
+<!-- 모바일 포스터 롱프레스 힌트 -->
+<script>
+(function() {
+  var wrap = document.getElementById('m-poster-wrap');
+  var hint = document.getElementById('m-poster-tap-hint');
+  if (!wrap || !hint) return;
+  var _timer = null;
+  function showHint() { hint.classList.add('show'); }
+  function hideHint() { hint.classList.remove('show'); }
+  wrap.addEventListener('touchstart', function() {
+    _timer = setTimeout(showHint, 350);
+  }, { passive: true });
+  wrap.addEventListener('touchend', function() {
+    clearTimeout(_timer);
+    hideHint();
+  }, { passive: true });
+  wrap.addEventListener('touchmove', function() {
+    clearTimeout(_timer);
+    hideHint();
   }, { passive: true });
 })();
 </script>
