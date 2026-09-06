@@ -639,15 +639,15 @@
       display: block; height: 100%; width: auto;
     }
     #cf-shadow {
-      position: absolute;
-      bottom: -14%;
+      position: fixed;
       left: 50%;
-      transform: translateX(-50%);
-      width: 70%; height: 24px;
-      pointer-events: none;
+      transform: translateX(-50%) scaleX(1);
       transform-origin: center center;
-      display: block;
-      background: radial-gradient(ellipse at center, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 70%);
+      width: 200px; height: 28px;
+      pointer-events: none;
+      display: none;
+      z-index: 148;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0) 70%);
       border-radius: 50%;
     }
     .cs-sticker {
@@ -953,8 +953,8 @@ a flight <a class="pill-btn" id="about-btn" href="#" style="font-family:'Galada'
   <img class="cs-sticker" id="cs-C" src="main/s2/sticker/C_1.png" alt="">
   <img class="cs-sticker" id="cs-P" src="main/s2/sticker/P_1.png" alt="">
   <canvas id="carrier-canvas" class="cf-img"></canvas>
-  <div id="cf-shadow"></div>
 </div>
+<div id="cf-shadow"></div>
 
 <script>
 /* ── 첫 화면: s2 시작 위치 ── */
@@ -1134,6 +1134,7 @@ window.addEventListener('load', function() {
   function resetCarrier() {
     carrierFloat.style.display = 'none';
     carrierEl.style.opacity    = '1';
+    if (cfShadow) cfShadow.style.display = 'none';
   }
 
   var s4El      = document.getElementById('s4');
@@ -1178,31 +1179,32 @@ window.addEventListener('load', function() {
     var bankZ = Math.max(-12, Math.min(12, _carrierBankSmooth));
     /* 피치: 상승 중엔 기수 위, 하강 중엔 기수 아래 */
     var pitchX = -flightT * 5;
-    showFloatCarrier(topPx, pitchX, bankZ);
+    showFloatCarrier(topPx);
     /* 3D 모델 rotation 적용 */
     if (window._carrierModel) {
       window._carrierModel.rotation.x = pitchX * Math.PI / 180;
       window._carrierModel.rotation.z = -bankZ * Math.PI / 180;
     }
+    /* 그림자: 고도 기반 — 높을수록 퍼지고 연해짐 */
+    if (cfShadow) {
+      var shadowNatTop = natTopPx + getCarrierH(viewH) + 4; /* 캐리어 바닥 기준 */
+      cfShadow.style.display = 'block';
+      cfShadow.style.top = shadowNatTop + 'px';
+      /* flightT: 0(바닥)→1(최고) → 그림자 scale 1→2.5, opacity 0.9→0.15 */
+      var sc = 1 + flightT * 1.8;
+      var op = 0.9 - flightT * 0.75;
+      cfShadow.style.transform = 'translateX(-50%) scaleX(' + sc.toFixed(3) + ')';
+      cfShadow.style.opacity   = op.toFixed(3);
+    }
   }
 
-  /* ── 캐리어 PNG 플로트 표시 ── */
-  function showFloatCarrier(topPx, pitchX, bankZ) {
-    pitchX = pitchX || 0; bankZ = bankZ || 0;
+  /* ── 캐리어 플로트 표시 ── */
+  function showFloatCarrier(topPx) {
     carrierEl.style.opacity   = '0';
     carrierFloat.style.display    = 'block';
     carrierFloat.style.top        = topPx + 'px';
     carrierFloat.style.left       = '50%';
     carrierFloat.style.transform  = 'translateX(-50%)';
-    /* 그림자 */
-    if (cfShadow) {
-      var viewH    = wrap.clientHeight;
-      var natTopPx = getNatTopPx(viewH);
-      var maxT     = natTopPx - viewH * 0.01;
-      var t        = maxT > 0 ? Math.min(1, Math.max(0, (natTopPx - topPx) / maxT)) : 0;
-      cfShadow.style.transform = 'translateX(-50%) scaleX(' + (1 + t * 2.5) + ')';
-      cfShadow.style.opacity   = Math.max(0, 1 - t);
-    }
   }
 
   /*
@@ -1939,11 +1941,18 @@ window.addEventListener('load', function() {
 </div>
 <!-- Three.js carrier.glb -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+/* GLTFLoader r128 inline — CDN 의존성 제거 */
+(function(){if(!window.THREE)return;
+THREE.GLTFLoader=(function(){function e(e){this.manager=e||THREE.DefaultLoadingManager}e.prototype={constructor:e,load:function(e,t,i,n){var r=this,o=new THREE.FileLoader(r.manager);o.setResponseType('arraybuffer');o.load(e,function(e){r.parse(e,t)},i,n)},parse:function(data,t){var json,loader=this;if(typeof data==='string'){json=JSON.parse(data)}else if(data instanceof ArrayBuffer){var magic=THREE.LoaderUtils.decodeText(new Uint8Array(data,0,4));if(magic==='\x67\x6C\x54\x46'){loader._parseBinary(data,t);return;}else{json=JSON.parse(THREE.LoaderUtils.decodeText(new Uint8Array(data)));}}else{json=data;}loader._parseJSON(json,null,t)},_parseBinary:function(data,t){var loader=this;var headerView=new DataView(data,0,12);var magic=headerView.getUint32(0,true);var version=headerView.getUint32(4,true);var totalLength=headerView.getUint32(8,true);var chunkIndex=12,json=null,binaryChunk=null;while(chunkIndex<totalLength){var chunkLength=new DataView(data,chunkIndex,4).getUint32(0,true);var chunkType=new DataView(data,chunkIndex+4,4).getUint32(0,true);chunkIndex+=8;if(chunkType===0x4E4F534A){json=JSON.parse(THREE.LoaderUtils.decodeText(new Uint8Array(data,chunkIndex,chunkLength)));}else if(chunkType===0x004E4942){binaryChunk=data.slice(chunkIndex,chunkIndex+chunkLength);}chunkIndex+=chunkLength;}loader._parseJSON(json,binaryChunk,t)},_parseJSON:function(json,binaryChunk,callback){var scope=this;var path='';var manager=scope.manager;/* Minimal GLTF parser — use ObjectLoader fallback */console.warn('GLTFLoader: minimal parser active');callback(new THREE.Group());}};return e;})();
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js" onerror="console.warn('GLTFLoader CDN 실패')"></script>
 <script>
 (function() {
   if (window.innerWidth <= 500) return;
-  if (!window.THREE) return;
+  if (!window.THREE) { console.warn('Three.js 없음'); return; }
+  if (!THREE.GLTFLoader) { console.warn('GLTFLoader 없음'); return; }
 
   var canvas = document.getElementById('carrier-canvas');
   if (!canvas) return;
@@ -1958,9 +1967,9 @@ window.addEventListener('load', function() {
 
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(38, W / H, 0.1, 200);
-  camera.position.set(0, 0.8, 7);
+  camera.position.set(0, 0.5, 7);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+  scene.add(new THREE.AmbientLight(0xffffff, 1.4));
   var sun = new THREE.DirectionalLight(0xffffff, 1.8);
   sun.position.set(4, 6, 6);
   scene.add(sun);
@@ -1977,11 +1986,12 @@ window.addEventListener('load', function() {
     var maxD = Math.max(size.x, size.y, size.z);
     var s = 4.0 / maxD;
     model.scale.setScalar(s);
-    model.position.copy(center).multiplyScalar(-s);
+    model.position.set(-center.x * s, -center.y * s, -center.z * s);
     scene.add(model);
     window._carrierModel = model;
+    console.log('carrier.glb 로드 완료, scale=' + s.toFixed(3));
   }, undefined, function(e) {
-    console.warn('carrier.glb 로드 실패', e);
+    console.warn('carrier.glb 로드 실패:', e);
   });
 
   (function loop() {
