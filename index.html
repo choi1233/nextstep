@@ -8,7 +8,8 @@
   <link rel="shortcut icon" href="CVCD.png?v=2" type="image/png">
   <meta property="og:title" content="NEXT STEP!">
   <meta property="og:description" content="제 76회 조선대학교 미술대학 시각디자인학과 졸업전시">
-  <meta property="og:image" content="thumbnail.png">
+  <meta property="og:image" content="http://cvcd2026.kro.kr/thumbnail.jpg">
+  <meta property="og:url" content="http://cvcd2026.kro.kr/">
   <meta property="og:type" content="website">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.12/pixi.min.js"></script>
   <style>
@@ -224,6 +225,7 @@
       color:#111;
       padding:0 32px;
       max-width:1100px;
+      transform: translateY(-15px);
     }
     .mobile-br { display: none; }
     #m-bg-sky, #m-bg-white, #m-bg-black, #m-group, #m-pin, #m-map-wrap { display: none; }
@@ -1130,13 +1132,43 @@ window.addEventListener('load', function() {
 
   var cfShadow = document.getElementById('cf-shadow');
 
+  /* ── 캐리어 3D 스크롤 상태 ── */
+  var _prevCarrierTopPx = null;
+  var _carrierBankSmooth = 0;
+
+  function _updateCarrier(p, rawPc) {
+    var viewH = wrap.clientHeight;
+    if (rawPc < -0.05 || rawPc > 1.05) {
+      resetCarrier();
+      _prevCarrierTopPx = null;
+      _carrierBankSmooth = 0;
+      return;
+    }
+    var natTopPx = getNatTopPx(viewH);
+    /* 사인 곡선: p=0에서 바닥, p=0.5에서 최고점, p=1에서 바닥 */
+    var flightT = Math.sin(p * Math.PI);
+    var topPx = natTopPx - viewH * 0.33 * flightT;
+    /* 속도 기반 뱅킹: 위로 올라가면 음수(왼쪽 뱅킹), 내려가면 양수 */
+    var rawBank = 0;
+    if (_prevCarrierTopPx !== null) {
+      rawBank = (topPx - _prevCarrierTopPx) * 0.5;
+    }
+    _prevCarrierTopPx = topPx;
+    _carrierBankSmooth += (rawBank - _carrierBankSmooth) * 0.2;
+    var bankZ = Math.max(-12, Math.min(12, _carrierBankSmooth));
+    /* 피치: 상승 중엔 기수 위, 하강 중엔 기수 아래 */
+    var pitchX = -flightT * 5;
+    showFloatCarrier(topPx, pitchX, bankZ);
+  }
+
   /* ── 캐리어 PNG 플로트 표시 ── */
-  function showFloatCarrier(topPx) {
+  function showFloatCarrier(topPx, pitchX, bankZ) {
+    pitchX = pitchX || 0; bankZ = bankZ || 0;
     carrierEl.style.opacity   = '0';
     carrierFloat.style.display    = 'block';
     carrierFloat.style.top        = topPx + 'px';
     carrierFloat.style.left       = '50%';
-    carrierFloat.style.transform  = 'translateX(-50%)';
+    carrierFloat.style.transform  = 'translateX(-50%) perspective(700px) rotateX(' + pitchX.toFixed(2) + 'deg) rotateZ(' + bankZ.toFixed(2) + 'deg)';
     /* 그림자 */
     if (cfShadow) {
       var viewH    = wrap.clientHeight;
@@ -1319,6 +1351,7 @@ window.addEventListener('load', function() {
       update(p);
     }
     updateNavColor();
+    if (window.innerWidth > 500) _updateCarrier(p, rawPc);
     if (p >= 0.995) {
       triggerLock();
     } else if (p < 0.98) {
