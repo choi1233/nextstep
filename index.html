@@ -636,7 +636,7 @@
       z-index: 150;
     }
     #carrier-float .cf-img {
-      width: 100%; height: 100%; object-fit: contain;
+      display: block; height: 100%; width: auto;
     }
     #cf-shadow {
       position: absolute;
@@ -952,7 +952,7 @@ a flight <a class="pill-btn" id="about-btn" href="#" style="font-family:'Galada'
   <img class="cs-sticker" id="cs-U" src="main/s2/sticker/U_1.png" alt="">
   <img class="cs-sticker" id="cs-C" src="main/s2/sticker/C_1.png" alt="">
   <img class="cs-sticker" id="cs-P" src="main/s2/sticker/P_1.png" alt="">
-  <img class="cf-img" src="main/s2/carrier.png?v=2" alt="">
+  <canvas id="carrier-canvas" class="cf-img"></canvas>
   <div id="cf-shadow"></div>
 </div>
 
@@ -1179,6 +1179,11 @@ window.addEventListener('load', function() {
     /* 피치: 상승 중엔 기수 위, 하강 중엔 기수 아래 */
     var pitchX = -flightT * 5;
     showFloatCarrier(topPx, pitchX, bankZ);
+    /* 3D 모델 rotation 적용 */
+    if (window._carrierModel) {
+      window._carrierModel.rotation.x = pitchX * Math.PI / 180;
+      window._carrierModel.rotation.z = -bankZ * Math.PI / 180;
+    }
   }
 
   /* ── 캐리어 PNG 플로트 표시 ── */
@@ -1188,7 +1193,7 @@ window.addEventListener('load', function() {
     carrierFloat.style.display    = 'block';
     carrierFloat.style.top        = topPx + 'px';
     carrierFloat.style.left       = '50%';
-    carrierFloat.style.transform  = 'translateX(-50%) perspective(700px) rotateX(' + pitchX.toFixed(2) + 'deg) rotateZ(' + bankZ.toFixed(2) + 'deg)';
+    carrierFloat.style.transform  = 'translateX(-50%)';
     /* 그림자 */
     if (cfShadow) {
       var viewH    = wrap.clientHeight;
@@ -1932,5 +1937,58 @@ window.addEventListener('load', function() {
     <path d="M1 5H9M9 5L6 2M9 5L6 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 </div>
+<!-- Three.js carrier.glb -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+(function() {
+  if (window.innerWidth <= 500) return;
+  if (!window.THREE) return;
+
+  var canvas = document.getElementById('carrier-canvas');
+  if (!canvas) return;
+
+  var W = 520, H = 260;
+  canvas.width = W; canvas.height = H;
+
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(38, W / H, 0.1, 200);
+  camera.position.set(0, 0.8, 7);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+  var sun = new THREE.DirectionalLight(0xffffff, 1.8);
+  sun.position.set(4, 6, 6);
+  scene.add(sun);
+  var fill = new THREE.DirectionalLight(0xaad4ff, 0.6);
+  fill.position.set(-4, 1, 3);
+  scene.add(fill);
+
+  var loader = new THREE.GLTFLoader();
+  loader.load('main/s2/carrier.glb', function(gltf) {
+    var model = gltf.scene;
+    var box = new THREE.Box3().setFromObject(model);
+    var center = box.getCenter(new THREE.Vector3());
+    var size = box.getSize(new THREE.Vector3());
+    var maxD = Math.max(size.x, size.y, size.z);
+    var s = 4.0 / maxD;
+    model.scale.setScalar(s);
+    model.position.copy(center).multiplyScalar(-s);
+    scene.add(model);
+    window._carrierModel = model;
+  }, undefined, function(e) {
+    console.warn('carrier.glb 로드 실패', e);
+  });
+
+  (function loop() {
+    requestAnimationFrame(loop);
+    renderer.render(scene, camera);
+  })();
+})();
+</script>
 </body>
 </html>
