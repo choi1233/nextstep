@@ -243,7 +243,13 @@
 </head>
 <body>
 
-<div class="ticket-wrap">
+<div style="position:relative; display:block; width:100%; max-width:624px; margin:0 auto; padding:0 8px; box-sizing:border-box; container-type:inline-size;">
+  <img src="ticket.png" style="display:block; width:100%;">
+  <span id="name-overlay" style="position:absolute; top:47.55%; left:8.5%; font-family:'Pretendard',sans-serif; font-size:4.3cqw; font-weight:600; color:#000;">김보희</span>
+</div>
+
+<!-- TICKET CODE (보존) -->
+<div class="ticket-wrap" style="display:none">
   <div class="ticket">
 
     <!-- SVG 배경 (JS로 path 업데이트) -->
@@ -415,5 +421,6 @@
   setTimeout(drawTicket, 100);
   window.addEventListener('resize', drawTicket);
 </script>
+
 </body>
 </html>
