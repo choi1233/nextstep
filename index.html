@@ -1958,8 +1958,8 @@ window.addEventListener('load', function() {
   renderer.outputEncoding = THREE.sRGBEncoding;
 
   var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(38, W / H, 0.1, 200);
-  camera.position.set(0, 0.5, 7);
+  var camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 200);
+  camera.position.set(0, 0.3, 10);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.4));
   var sun = new THREE.DirectionalLight(0xffffff, 0.6);
@@ -1981,7 +1981,7 @@ window.addEventListener('load', function() {
     var center = box.getCenter(new THREE.Vector3());
     var size = box.getSize(new THREE.Vector3());
     var maxD = Math.max(size.x, size.y, size.z);
-    var s = 4.0 / maxD;
+    var s = 3.0 / maxD;
     model.scale.setScalar(s);
     model.position.set(-center.x * s, -center.y * s, -center.z * s);
     scene.add(model);
