@@ -633,7 +633,7 @@
       display: none;
       left: 50%;
       transform: translateX(-50%);
-      height: 42vh; height: 42dvh; max-height: 340px;
+      height: 48vh; height: 48dvh; max-height: 400px;
       width: auto;
       pointer-events: none;
       z-index: 150;
@@ -1146,11 +1146,11 @@ window.addEventListener('load', function() {
    * #s2-carrier: bottom:1%, height:32dvh
    * natTopPx = viewH * (1 - 0.01 - 0.32) = viewH * 0.67 (항상 고정) */
   function getNatTopPx(viewH) {
-    var h = Math.min(viewH * 0.42, 340); /* max-height:340px 반영 */
+    var h = Math.min(viewH * 0.48, 400); /* max-height:400px 반영 */
     return viewH - viewH * 0.01 - h;
   }
   function getCarrierH(viewH) {
-    return Math.min(viewH * 0.42, 340);
+    return Math.min(viewH * 0.48, 400);
   }
 
   var cfShadow = document.getElementById('cf-shadow');
@@ -1965,7 +1965,7 @@ window.addEventListener('load', function() {
   var canvas = document.getElementById('carrier-canvas');
   if (!canvas) return;
 
-  var W = 520, H = 340;
+  var W = 520, H = 400;
   canvas.width = W; canvas.height = H;
 
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
