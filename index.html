@@ -1147,7 +1147,7 @@ window.addEventListener('load', function() {
    * natTopPx = viewH * (1 - 0.01 - 0.32) = viewH * 0.67 (항상 고정) */
   function getNatTopPx(viewH) {
     var h = Math.min(viewH * 0.48, 400);
-    return viewH - h + 100; /* 100px 아래 연장 — 바퀴 영역 확보 */
+    return viewH - h + 135; /* 135px 아래 연장 — 바퀴 영역 확보 */
   }
   function getCarrierH(viewH) {
     return Math.min(viewH * 0.48, 400);
@@ -2000,7 +2000,7 @@ window.addEventListener('load', function() {
     var maxD = Math.max(size.x, size.y, size.z);
     var s = 4.2 / maxD;
     model.scale.setScalar(s);
-    model.position.set(-center.x * s, -center.y * s + size.y * s * 0.18 - 3.0, -center.z * s);
+    model.position.set(-center.x * s, -center.y * s + size.y * s * 0.18 - 3.2, -center.z * s);
     scene.add(model);
     window._carrierModel = model;
     console.log('carrier.glb 로드 완료');
