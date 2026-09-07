@@ -623,6 +623,9 @@
       height:32vh; height:32dvh; max-height:260px;
       width:auto; -webkit-user-drag:none; pointer-events:none;
     }
+    @media (min-width: 501px) {
+      #s2-carrier { display: none !important; }
+    }
 
     /* ── 캐리어 플로트 (fixed 오버레이) ── */
     #carrier-float {
@@ -825,6 +828,7 @@
   <div id="m-overview">
     <div id="m-content-group">
       <div id="m-left-panel">
+        <img id="m-ns-logo" src="main/mobile/next%20step.svg" alt="NEXT STEP">
         <div id="m-committee-wrap">
           <p id="m-committee">제 76회 조선대학교 미술대학&nbsp;<br>시각디자인학과 졸업전시</p>
           <img id="m-committee-arrow" src="main/mobile/arrow.png" alt="">
@@ -1157,13 +1161,24 @@ window.addEventListener('load', function() {
 
   function _updateCarrier(p, rawPc) {
     var viewH = wrap.clientHeight;
-    if (rawPc < -0.05 || rawPc > 1.05) {
+    var natTopPx = getNatTopPx(viewH);
+    if (rawPc > 1.05) {
       resetCarrier();
       _prevCarrierTopPx = null;
       _carrierBankSmooth = 0;
       return;
     }
-    var natTopPx = getNatTopPx(viewH);
+    if (rawPc < 0) {
+      /* s2 진입 전: 자연 위치에 고정 표시 */
+      showFloatCarrier(natTopPx);
+      if (cfShadow) {
+        cfShadow.style.display = 'block';
+        cfShadow.style.top = (natTopPx + getCarrierH(viewH) + 4) + 'px';
+        cfShadow.style.transform = 'translateX(-50%) scaleX(1)';
+        cfShadow.style.opacity = '0.9';
+      }
+      return;
+    }
     /* 사인 곡선: p=0에서 바닥, p=0.5에서 최고점, p=1에서 바닥 */
     var flightT = Math.sin(p * Math.PI);
     var topPx = natTopPx - viewH * 0.33 * flightT;
@@ -1395,7 +1410,8 @@ window.addEventListener('load', function() {
   }
 
   update(getProgress());
-  updateNavColor();  /* 초기 적용 */
+  updateNavColor();
+  if (window.innerWidth > 500) _updateCarrier(getProgress(), getRawProgress());
 });
 
 
@@ -1959,7 +1975,8 @@ window.addEventListener('load', function() {
 
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 200);
-  camera.position.set(0, 0.3, 8);
+  camera.position.set(0, 2.5, 8);
+  camera.lookAt(0, 0, 0);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.4));
   var sun = new THREE.DirectionalLight(0xffffff, 0.6);
