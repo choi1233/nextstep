@@ -1965,7 +1965,7 @@ window.addEventListener('load', function() {
   var canvas = document.getElementById('carrier-canvas');
   if (!canvas) return;
 
-  var W = 520, H = 600;
+  var W = 520, H = 400;
   canvas.width = W; canvas.height = H;
 
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
@@ -1975,8 +1975,8 @@ window.addEventListener('load', function() {
 
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(18, W / H, 0.1, 200);
-  camera.position.set(0, 4.5, 20);
-  camera.lookAt(0, -2.0, 0);
+  camera.position.set(0, 3.5, 20);
+  camera.lookAt(0, -3.5, 0);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.4));
   var sun = new THREE.DirectionalLight(0xffffff, 0.6);
@@ -2000,7 +2000,7 @@ window.addEventListener('load', function() {
     var maxD = Math.max(size.x, size.y, size.z);
     var s = 4.2 / maxD;
     model.scale.setScalar(s);
-    model.position.set(-center.x * s, -center.y * s + size.y * s * 0.18 - 2.5, -center.z * s);
+    model.position.set(-center.x * s, -center.y * s + size.y * s * 0.18 - 3.0, -center.z * s);
     scene.add(model);
     window._carrierModel = model;
     console.log('carrier.glb 로드 완료');
