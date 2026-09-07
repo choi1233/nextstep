@@ -633,7 +633,7 @@
       display: none;
       left: 50%;
       transform: translateX(-50%);
-      height: 48vh; height: 48dvh; max-height: 400px;
+      height: 60vh; height: 60dvh; max-height: 600px;
       width: auto;
       pointer-events: none;
       z-index: 150;
@@ -1146,11 +1146,11 @@ window.addEventListener('load', function() {
    * #s2-carrier: bottom:1%, height:32dvh
    * natTopPx = viewH * (1 - 0.01 - 0.32) = viewH * 0.67 (항상 고정) */
   function getNatTopPx(viewH) {
-    var h = Math.min(viewH * 0.48, 400); /* max-height:400px 반영 */
-    return viewH - viewH * 0.01 - h;
+    var h = Math.min(viewH * 0.60, 600);
+    return viewH - h + 100; /* 100px 아래 연장 — 바퀴 영역 확보 */
   }
   function getCarrierH(viewH) {
-    return Math.min(viewH * 0.48, 400);
+    return Math.min(viewH * 0.60, 600);
   }
 
   var cfShadow = document.getElementById('cf-shadow');
@@ -1965,7 +1965,7 @@ window.addEventListener('load', function() {
   var canvas = document.getElementById('carrier-canvas');
   if (!canvas) return;
 
-  var W = 520, H = 400;
+  var W = 520, H = 600;
   canvas.width = W; canvas.height = H;
 
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
@@ -2000,7 +2000,7 @@ window.addEventListener('load', function() {
     var maxD = Math.max(size.x, size.y, size.z);
     var s = 4.2 / maxD;
     model.scale.setScalar(s);
-    model.position.set(-center.x * s, -center.y * s + size.y * s * 0.18 - 4.2, -center.z * s);
+    model.position.set(-center.x * s, -center.y * s + size.y * s * 0.18 - 2.5, -center.z * s);
     scene.add(model);
     window._carrierModel = model;
     console.log('carrier.glb 로드 완료');
