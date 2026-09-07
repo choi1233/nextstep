@@ -1974,7 +1974,7 @@ window.addEventListener('load', function() {
   renderer.outputEncoding = THREE.sRGBEncoding;
 
   var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(18, 520 / 400, 0.1, 200);
+  var camera = new THREE.PerspectiveCamera(18, W / H, 0.1, 200);
   camera.position.set(0, 4.5, 20);
   camera.lookAt(0, -2.0, 0);
 
