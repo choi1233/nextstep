@@ -21,9 +21,10 @@
     * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
 
     html, body {
+      width: 100%;
       min-height: 100%;
       background: #494949;
-      padding: 40px 16px;
+      padding: 40px 8px;
       font-family: 'Pretendard', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
 
@@ -81,7 +82,7 @@
       font-weight: 500;
       letter-spacing: -0.05em;
       color: rgba(0,0,0,0.5);
-      margin-top: -2px;
+      margin-top: 1px;
       text-transform: uppercase;
     }
     .hd-info {
@@ -146,7 +147,7 @@
       grid-template-columns: 1fr 1.4fr 1fr;
     }
     .dt-col { text-align: left; }
-    .dt-col:last-child { text-align: right; }
+    .dt-col:last-child { display: flex; flex-direction: column; align-items: flex-start; margin-left: auto; }
     .dt-label {
       font-family: 'Pretendard', sans-serif;
       font-size: 10px;
@@ -170,7 +171,7 @@
       grid-template-columns: 1fr 2.2fr 1fr;
     }
     .ps-col { text-align: left; }
-    .ps-col:last-child { text-align: right; }
+    .ps-col:last-child { display: flex; flex-direction: column; align-items: flex-start; margin-left: auto; }
     .ps-label {
       font-family: 'Pretendard', sans-serif;
       font-size: 10px;
