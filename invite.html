@@ -360,7 +360,7 @@
   /* ── QR ── */
   var QR_URL = 'http://cvcd2026.kro.kr/';
   var cardInnerW = document.querySelector('.ticket-body').offsetWidth - 32;
-  var qrSize = Math.round(cardInnerW * 0.35);
+  var qrSize = Math.round(document.querySelector('.ticket-body').offsetWidth / 3);
   new QRCode(document.getElementById('qrcode'), {
     text: QR_URL,
     width: qrSize,
