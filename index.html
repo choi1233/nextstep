@@ -633,7 +633,7 @@
       display: none;
       left: 50%;
       transform: translateX(-50%);
-      height: 60vh; height: 60dvh; max-height: 600px;
+      height: 48vh; height: 48dvh; max-height: 400px;
       width: auto;
       pointer-events: none;
       z-index: 150;
@@ -1146,11 +1146,11 @@ window.addEventListener('load', function() {
    * #s2-carrier: bottom:1%, height:32dvh
    * natTopPx = viewH * (1 - 0.01 - 0.32) = viewH * 0.67 (항상 고정) */
   function getNatTopPx(viewH) {
-    var h = Math.min(viewH * 0.60, 600);
+    var h = Math.min(viewH * 0.48, 400);
     return viewH - h + 100; /* 100px 아래 연장 — 바퀴 영역 확보 */
   }
   function getCarrierH(viewH) {
-    return Math.min(viewH * 0.60, 600);
+    return Math.min(viewH * 0.48, 400);
   }
 
   var cfShadow = document.getElementById('cf-shadow');
@@ -1974,7 +1974,7 @@ window.addEventListener('load', function() {
   renderer.outputEncoding = THREE.sRGBEncoding;
 
   var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(18, W / H, 0.1, 200);
+  var camera = new THREE.PerspectiveCamera(18, 520 / 400, 0.1, 200);
   camera.position.set(0, 4.5, 20);
   camera.lookAt(0, -2.0, 0);
 
