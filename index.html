@@ -2000,7 +2000,7 @@ window.addEventListener('load', function() {
     var maxD = Math.max(size.x, size.y, size.z);
     var s = 4.2 / maxD;
     model.scale.setScalar(s);
-    model.position.set(-center.x * s, -center.y * s + size.y * s * 0.18 - 3.2, -center.z * s);
+    model.position.set(-center.x * s, -center.y * s + size.y * s * 0.18 - 2.4, -center.z * s);
     scene.add(model);
     window._carrierModel = model;
     console.log('carrier.glb 로드 완료');
