@@ -156,7 +156,7 @@
     }
     .module-name-en {
       font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-size:20px; font-style:oblique; color:#000; line-height:1.3;
+      font-size:16px; font-style:oblique; color:#000; line-height:1.3;
     }
 
     /* 상징 스티커 셀 */
@@ -286,7 +286,7 @@
     /* ══ MOBILE MODE (left panel < 860px) ══ */
     #left.mobile #nav                { display:none; }
     #left.mobile #cat-dropdown-wrap  { display:none; }
-    #left.mobile #nav-mobile         { display:flex !important; min-height:40px; align-items:center; }
+    #left.mobile #nav-mobile         { display:flex !important; min-height:40px; align-items:flex-start; padding-top:16px; padding-bottom:8px; }
     #left.mobile #profiles-grid { grid-template-columns:repeat(2, 1fr); }
 
     /* 모바일 프로필 nav */
@@ -476,59 +476,48 @@
     /* ══ MOBILE CAT DROPDOWN ══ */
     #mob-cat-outer {
       margin-left:auto; margin-right:16px;
-      position:relative; width:184px; height:32px;
+      position:relative;
     }
     #mob-cat-menu {
-      position:absolute; right:0; top:-2px;
-      width:184px;
-      background:rgba(255,255,255,0.20);
-      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      position:absolute; right:0; top:-4px;
+      background:linear-gradient(to left, #fff 50%, rgba(255,255,255,0) 100%);
+      backdrop-filter:none; -webkit-backdrop-filter:none;
       overflow:hidden; display:flex; flex-direction:column;
-      max-height:32px;
+      align-items:flex-end;
+      max-height:36px;
       transition:max-height 0.3s cubic-bezier(0.4,0,0.2,1);
       z-index:5;
     }
-    #mob-cat-outer.open #mob-cat-menu { max-height:136px; }
+    #mob-cat-outer.open #mob-cat-menu { max-height:320px; }
     #mob-cat-trigger {
-      display:flex; align-items:flex-end; padding-bottom:3px;
-      justify-content:space-between;
-      height:32px; flex-shrink:0; padding-left:0; padding-right:0;
-      cursor:pointer; user-select:none;
-      border-bottom:1px solid #000; box-sizing:border-box;
+      display:flex; align-items:center;
+      height:36px; flex-shrink:0; cursor:pointer; user-select:none;
+      gap:8px; justify-content:flex-end;
     }
     #mob-cat-arrow {
-      position:absolute; right:188px; top:0;
-      height:32px; display:flex; align-items:center;
-      cursor:pointer; flex-shrink:0;
-      transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);
+      display:flex; align-items:center; padding-bottom:4px; flex-shrink:0;
+      transition:transform 0.25s cubic-bezier(0.4,0,0.2,1); cursor:pointer;
     }
     #mob-cat-outer.open #mob-cat-arrow { transform:rotate(180deg); }
     #mob-cat-label {
       font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
       font-size:24px; font-weight:400; color:#000;
-      margin-left:auto; text-transform:capitalize; letter-spacing:0.55em;
+      border-bottom:1.5px solid #000; padding-bottom:2px;
     }
-    #mob-cat-design { display:none !important; display:none !important; /* 합침 */ //
-      font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-      font-size:24px; font-weight:400; color:#000;
-      margin-left:auto;
-      transition:opacity 0.25s, filter 0.25s;
-    }
-    #mob-cat-outer.open #mob-cat-design { display:none !important; display:none !important; /* 합침 */ // opacity:0.25; filter:blur(3px); }
     .mob-cat-item {
-      display:flex; align-items:center;
+      display:flex; align-items:flex-end; padding-bottom:3px;
       font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
       font-size:24px; font-weight:400; color:#000;
       text-decoration:none; height:34px; flex-shrink:0;
-      padding-left:0; box-sizing:border-box;
-      cursor:pointer; transition:opacity 0.15s;
+      cursor:pointer; transition:opacity 0.15s; justify-content:flex-end;
     }
     .mob-cat-item:hover { opacity:0.5; }
     a.mob-cat-item[href*="motion"]:hover    { opacity:1; color:#FF3298; }
     a.mob-cat-item[href*="character"]:hover { opacity:1; color:#fac000; }
     a.mob-cat-item[href*="package"]:hover   { opacity:1; color:#FF4E41; }
     a.mob-cat-item[href*="UXUI"]:hover      { opacity:1; color:#00BFC4; }
-    .mob-cat-divider { height:0; border-top:1px solid #000; flex-shrink:0; }
+    .mob-cat-divider { border-top:1.5px solid #000; flex-shrink:0; align-self:flex-end; }
+    .mob-cat-about-gap { height:10px; flex-shrink:0; }
   </style>
 </head>
 <body class="lang-kr">
@@ -543,21 +532,26 @@
     <img src="../navbar/next%20step.svg" alt="NEXT STEP!" style="height:28px;width:auto;">
   </div>
   <div id="mob-cat-outer">
-      <span id="mob-cat-arrow" onclick="toggleMobCat()"><svg width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1l5 5 5-5" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <div id="mob-cat-menu">
-        <div id="mob-cat-trigger" onclick="toggleMobCat()">
-          <span id="mob-cat-label">UXUI</span>
-          <span id="mob-cat-design">design</span>
-        </div>
-      <a class="mob-cat-item" href="../motion/motion.html">motion</a>
-      <div class="mob-cat-divider"></div>
-      <a class="mob-cat-item" href="../character/character.html">character</a>
-      <div class="mob-cat-divider"></div>
-      <a class="mob-cat-item" href="../package/package.html">package</a>
-      <div class="mob-cat-divider"></div>
+    <div id="mob-cat-menu">
+      <div id="mob-cat-trigger" onclick="toggleMobCat()">
+        <span id="mob-cat-arrow"><svg width="13" height="8" viewBox="0 0 13 8" fill="none"><path d="M1 1L6.5 7L12 1" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span id="mob-cat-label" style="letter-spacing:0">UX/UI</span>
       </div>
+      <a class="mob-cat-item" href="../motion/index.html" style="letter-spacing:0">Motion</a>
+      <div class="mob-cat-divider"></div>
+      <a class="mob-cat-item" href="../character/index.html" style="letter-spacing:-0.04em">Character</a>
+      <div class="mob-cat-divider"></div>
+      <a class="mob-cat-item" href="../package/index.html" style="letter-spacing:-0.01em">Package</a>
+      <div class="mob-cat-divider"></div>
+      <div class="mob-cat-about-gap"></div>
+      <a class="mob-cat-item" href="../../main/mobile/index.html" style="letter-spacing:0">About</a>
+      <div class="mob-cat-divider"></div>
+      <a class="mob-cat-item" href="../../map.html" style="letter-spacing:0">Map</a>
+      <div class="mob-cat-divider"></div>
     </div>
   </div>
+
+    </div>
 
     <nav id="nav">
       <div id="nav-logo" onclick="window.location.href='../../index.html'">
@@ -575,11 +569,11 @@
             <span id="cat-current">UXUI</span>
             <span id="cat-design-label">design</span>
           </div>
-          <a class="cat-menu-item" href="../motion/motion.html">motion</a>
+          <a class="cat-menu-item" href="../motion/index.html">motion</a>
           <div class="cat-menu-divider"></div>
-          <a class="cat-menu-item" href="../character/character.html">character</a>
+          <a class="cat-menu-item" href="../character/index.html">character</a>
           <div class="cat-menu-divider"></div>
-          <a class="cat-menu-item" href="../package/package.html">package</a>
+          <a class="cat-menu-item" href="../package/index.html">package</a>
           <div class="cat-menu-divider"></div>
         </div>
         <span id="cat-arrow" onclick="toggleCatMenu()">
@@ -676,15 +670,15 @@
             <span class="kr-only">디자인</span>
           </div>
           <div class="mm-section-links">
-            <a id="mm-motion"    class="oblique" href="../motion/motion.html">
+            <a id="mm-motion"    class="oblique" href="../motion/index.html">
               <span class="en-only">motion</span>
               <span class="kr-only">영상</span>
             </a>
-            <a id="mm-character" class="oblique" href="../character/character.html">
+            <a id="mm-character" class="oblique" href="../character/index.html">
               <span class="en-only">character</span>
               <span class="kr-only">캐릭터</span>
             </a>
-            <a id="mm-package"   class="oblique" href="../package/package.html">
+            <a id="mm-package"   class="oblique" href="../package/index.html">
               <span class="en-only">package</span>
               <span class="kr-only">패키지</span>
             </a>
@@ -1112,6 +1106,23 @@ document.addEventListener('click', function(e) {
   var outer = document.getElementById('mob-cat-outer');
   if (outer && !outer.contains(e.target)) outer.classList.remove('open');
 });
+/* ── 모바일 카테고리 너비 설정 ── */
+function mobCatSetup() {
+  var label = document.getElementById('mob-cat-label');
+  var menu  = document.getElementById('mob-cat-menu');
+  if (!label || !menu) return;
+  var s = document.createElement('span');
+  s.style.cssText = 'position:absolute;visibility:hidden;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:24px;font-weight:400;letter-spacing:-0.04em;white-space:nowrap;';
+  s.textContent = 'Character';
+  document.body.appendChild(s);
+  var charW = s.offsetWidth;
+  document.body.removeChild(s);
+  menu.style.width = (charW + 21) + 'px'; /* arrow 13px + gap 8px */
+  var labelW = label.offsetWidth;
+  document.querySelectorAll('.mob-cat-divider').forEach(function(d) { d.style.width = labelW + 'px'; });
+}
+document.addEventListener('DOMContentLoaded', mobCatSetup);
+window.addEventListener('resize', mobCatSetup);
 </script>
 </body>
 </html>

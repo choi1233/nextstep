@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    if(window.innerWidth>=450){location.replace('../../index.html');}
+    window.addEventListener('resize',function(){if(window.innerWidth>=450){location.replace('../../index.html');}});
+  </script>
+  <title>NEXT STEP!</title>
+  <link rel="icon" href="../../CVCD.png?v=2" type="image/png">
+  <link rel="shortcut icon" href="../../CVCD.png?v=2" type="image/png">
+  <meta property="og:title" content="NEXT STEP!">
+  <meta property="og:description" content="제 76회 조선대학교 미술대학 시각디자인학과 졸업전시">
+  <meta property="og:image" content="http://cvcd2026.kro.kr/thumbnail.jpg">
+  <meta property="og:url" content="http://cvcd2026.kro.kr/">
+  <meta property="og:type" content="website">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.12/pixi.min.js"></script>
+  <style>
+    ::selection { background:#00ACEB; color:#FFFFFF; }
+    ::-moz-selection { background:#00ACEB; color:#FFFFFF; }
+
+    @font-face { font-family:'Pretendard'; src:url('../../font/Pretendard-SemiBold.ttf') format('truetype'); font-weight:600; }
+    @font-face { font-family:'Pretendard'; src:url('../../font/Pretendard-Regular.ttf')  format('truetype'); font-weight:400; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    /* ── 준비중 오버레이 ── */
+    #coming-soon {
+      position: fixed; inset: 0; z-index: 10000;
+      background: #00ACEB;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.5s ease;
+      gap: 32px;
+      padding-bottom: 20px;
+    }
+    #coming-soon.gone { opacity: 0; pointer-events: none; }
+    #coming-soon-date {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 16px; font-weight: 400; color: #fff; opacity: 0.85;
+    }
+    #coming-soon-text {
+      font-family: 'Pretendard', sans-serif;
+      font-weight: 600;
+      font-size: clamp(24px, 6vw, 64px);
+      color: #fff;
+      user-select: none;
+    }
+
+    /* ── 하늘 노이즈 배경 (PixiJS canvas가 fixed로 덮음) ── */
+    body {
+      background: #b8d8f0;
+      position: relative;
+    }
+    #sky-pixi-wrap {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+    /* 콘텐츠 sky 위로 */
+    #pre-hero, #hero, #page-content, #footer { position: relative; z-index: 1; }
+
+    /* ── 히어로 (포스터) ── */
+    #hero {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      display: block;
+    }
+    #hero-blue {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      background: linear-gradient(to bottom, #0094CA calc(85.71% + 5px), transparent calc(100% - 3px));
+      z-index: 0;
+      /* height는 JS로 설정 */
+    }
+    #hero-poster {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: block;
+    }
+
+    /* ── 상단 나브바 ── */
+    #topnav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 16px 0 8px 16px;
+      pointer-events: auto;
+    }
+    #nav-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: -1;
+      background: #ffffff;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      transition: height 0.3s cubic-bezier(0.4,0,0.2,1);
+      pointer-events: none;
+    }
+
+    #nav-logo img {
+      height: 28px;
+      width: auto;
+      display: block;
+    }
+
+    /* ── About 드롭다운 (mob-cat 스타일) ── */
+    #nav-about-outer {
+      margin-right: 16px;
+      position: relative;
+    }
+    #nav-about-menu {
+      position: absolute; right: 0; top: -7px;
+      background: transparent;
+      overflow: hidden; display: flex; flex-direction: column;
+      align-items: flex-end;
+      max-height: 36px;
+      transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1);
+      z-index: 5;
+    }
+    #nav-about-outer.open #nav-about-menu { max-height: 400px; }
+    #nav-about-trigger {
+      display: flex; align-items: center;
+      height: 36px; flex-shrink: 0; cursor: pointer; user-select: none;
+      gap: 8px; justify-content: flex-end;
+    }
+    #nav-about-arrow {
+      display: flex; align-items: center; flex-shrink: 0;
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    #nav-about-outer.open #nav-about-arrow { transform: rotate(180deg); }
+    #nav-about-label {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 24px; font-weight: 400; color: #000;
+      border-bottom: 1.5px solid #000; padding-bottom: 2px;
+      white-space: nowrap;
+    }
+    .nav-about-item {
+      display: flex; align-items: flex-end; padding-bottom: 3px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 24px; font-weight: 400; color: #000;
+      text-decoration: none; height: 34px; flex-shrink: 0;
+      cursor: pointer; transition: opacity 0.15s; justify-content: flex-end;
+    }
+    .nav-about-item:hover { opacity: 0.5; }
+    .nav-about-divider { border-top: 1.5px solid #000; flex-shrink: 0; align-self: flex-end; }
+    .nav-about-gap { height: 10px; flex-shrink: 0; }
+
+    /* ── 본문 ── */
+    #page-content {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 10px 32px 0;
+      background: transparent;
+    }
+
+    /* ── 인트로 텍스트 ── */
+    .intro-kr {
+      font-family: 'Pretendard', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 24px;
+      letter-spacing: -0.005em;
+      color: #000;
+    }
+    .intro-kr .inline-logo {
+      height: 40px;
+      width: auto;
+      display: inline;
+      vertical-align: middle;
+      transform: rotate(3deg) translateY(-8px) translateX(-4px);
+      margin: 0 2px;
+    }
+    .gap-8  { height: 8px; }
+    .gap-12 { height: 12px; }
+    .gap-16 { height: 16px; }
+    .gap-24 { height: 24px; }
+    .gap-80 { height: 80px; }
+    .gap-96 { height: 96px; }
+
+    .intro-en {
+      font-family: 'Pretendard', sans-serif;
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+      color: #000;
+    }
+
+    /* ── 섹션 헤더 이미지 ── */
+    .section-header {
+      display: block;
+      height: 30px;
+      width: auto;
+      margin-left: -6px;
+    }
+
+    /* ── 섹션 텍스트 ── */
+    .sec-bold {
+      font-family: 'Pretendard', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 24px;
+      letter-spacing: -0.005em;
+      color: #000;
+    }
+    .sec-regular {
+      font-family: 'Pretendard', sans-serif;
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 24px;
+      letter-spacing: -0.005em;
+      color: #000;
+    }
+
+    /* ── 푸터 ── */
+    #footer {
+      background: transparent;
+      padding: 0 32px 22px;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    #footer-line {
+      border-top: 1px solid #898989;
+      margin-bottom: 12px;
+      margin-left: -32px;
+      margin-right: -32px;
+    }
+    #footer-text {
+      font-family: 'Pretendard', sans-serif;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #898989;
+      margin-bottom: 16px;
+    }
+    #footer-icons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-left: -7px;
+      margin-top: -8px;
+    }
+    #footer-icons img {
+      width: 62px;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ 준비중 오버레이 ══ -->
+<div id="coming-soon">
+  <span id="coming-soon-text">아직 준비중입니다.</span>
+  <span id="coming-soon-date">2026. 09. 15 - am 10:00</span>
+</div>
+<script>
+(function() {
+  var cs = document.getElementById('coming-soon');
+  if (!cs) return;
+  function dismiss() {
+    cs.classList.add('gone');
+    setTimeout(function() { cs.style.display = 'none'; }, 500);
+  }
+  /* PC: v 키 2번 */
+  var vCount = 0, vTimer = null;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'v' || e.key === 'V') {
+      vCount++;
+      clearTimeout(vTimer);
+      if (vCount >= 2) { dismiss(); vCount = 0; return; }
+      vTimer = setTimeout(function() { vCount = 0; }, 2000);
+    }
+  });
+  /* 모바일: 5번 연속 터치 */
+  var tapCount = 0, tapTimer = null;
+  cs.addEventListener('touchstart', function() {
+    tapCount++;
+    clearTimeout(tapTimer);
+    if (tapCount >= 5) { dismiss(); tapCount = 0; return; }
+    tapTimer = setTimeout(function() { tapCount = 0; }, 3000);
+  });
+})();
+</script>
+
+<!-- ══ 하늘 노이즈 레이어 (PixiJS) ══ -->
+<div id="sky-pixi-wrap"></div>
+
+<!-- ══ 히어로 (포스터) ══ -->
+<div id="pre-hero" style="background:#fff;height:0;width:100%;max-width:500px;margin:0 auto;"></div>
+<div id="hero">
+  <div id="hero-blue"></div>
+  <img id="hero-poster" src="POSTER.png" alt="NEXT STEP! 포스터">
+</div>
+
+<!-- ══ 상단 나브바 ══ -->
+<nav id="topnav">
+  <div id="nav-bg"></div>
+  <div id="nav-logo">
+    <img src="next step.svg" alt="NEXT STEP!">
+  </div>
+  <div id="nav-about-outer">
+    <div id="nav-about-menu">
+      <div id="nav-about-trigger" onclick="toggleAboutMenu()">
+        <span id="nav-about-arrow">
+          <svg width="13" height="8" viewBox="0 0 13 8" fill="none">
+            <path d="M1 1L6.5 7L12 1" stroke="#000" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span id="nav-about-label">About</span>
+      </div>
+      <a class="nav-about-item" href="../../map-picker.html">Map</a>
+      <div class="nav-about-divider"></div>
+      <div class="nav-about-gap"></div>
+      <a class="nav-about-item" href="../../designer/motion/index.html">Motion</a>
+      <div class="nav-about-divider"></div>
+      <a class="nav-about-item" href="../../designer/character/index.html">Character</a>
+      <div class="nav-about-divider"></div>
+      <a class="nav-about-item" href="../../designer/package/index.html">Package</a>
+      <div class="nav-about-divider"></div>
+      <a class="nav-about-item" href="../../designer/UXUI/index.html">UX/UI</a>
+      <div class="nav-about-divider"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ 본문 ══ -->
+<div id="page-content">
+
+  <!-- 인트로 한국어 -->
+  <p class="intro-kr">본 전시&nbsp;&nbsp;<img class="inline-logo" src="NEXT STEP.png" alt="NEXT STEP!">은 여행을 떠나기 직전 꿈과 설렘이 가득한 공항을 컨셉으로 진행된다.</p>
+  <div class="gap-8"></div>
+  <p class="intro-kr">공항은 단순한 이동의 장소가 아니라, 각자가 선택한 목적지와 경로를 바탕으로 가장 높이 날아올라 다음 단계로 나아가기 위해 비행을 준비하고 출발하는 공간이다. 탑승을 준비하고 경로를 선택하며 출발에 이르는 일련의 과정은 곧 자신의 삶을 스스로 설계하고 관리하며 앞으로의 방향을 정해 나아가는 과정과 맞닿아 있다.</p>
+
+  <div class="gap-24"></div>
+
+  <!-- 인트로 영어 -->
+  <p class="intro-en">NEXT STEP! is an exhibition inspired by an airport filled with dreams and excitement just before a journey. An airport is more than a place of transit. It is where we prepare for takeoff, choose our destination and route, and begin moving toward the next step. This journey reflects how we design our own lives, choosing our direction and moving forward on our own path.</p>
+
+  <div class="gap-96"></div>
+
+  <!-- 오시는길 -->
+  <img class="section-header" src="오시는길.png" alt="오시는길">
+  <div class="gap-16"></div>
+  <p class="sec-bold">주소</p>
+  <p class="sec-regular">전남광주 동구 조선대길 108</p>
+  <div class="gap-12"></div>
+  <p class="sec-bold">Address</p>
+  <p class="sec-regular">108, Chosundae-gil, Dong-gu, Gwangju</p>
+
+  <div class="gap-96"></div>
+
+  <!-- 졸업준비위원회 -->
+  <img class="section-header" src="졸업준비위원회.png" alt="졸업준비위원회">
+  <div class="gap-16"></div>
+  <p class="sec-bold">위원장</p>
+  <p class="sec-regular">공창원</p>
+  <div class="gap-12"></div>
+  <p class="sec-bold">디자인팀</p>
+  <p class="sec-regular">송진하, 김보희, 이유민</p>
+  <div class="gap-12"></div>
+  <p class="sec-bold">홍보팀</p>
+  <p class="sec-regular">류설, 설하민</p>
+  <div class="gap-16"></div>
+  <p class="sec-bold">웹 디자인</p>
+  <p class="sec-regular">최동원</p>
+
+  <div class="gap-80"></div>
+
+</div><!-- /page-content -->
+
+<!-- ══ 푸터 ══ -->
+<div id="footer">
+  <div id="footer-line"></div>
+  <p id="footer-text">2026 조선대학교 미술대학 시각디자인학과 졸업전시</p>
+  <div id="footer-icons">
+    <img src="symbol_1.png" alt="symbol">
+    <img src="inst_1.png" alt="Instagram">
+  </div>
+  <div style="height:32px"></div>
+</div>
+
+<script>
+/* ── 나브바 스크롤 연동 ── */
+(function() {
+  var nav = document.getElementById('topnav');
+  var navH = 0;
+  var shown = false; /* 한 번 나오면 다시 안 숨김 */
+
+  function getNavH() { navH = nav.offsetHeight; }
+
+  function updateNav() {
+    if (shown) return; /* 이미 나왔으면 유지 */
+    var scrollY = window.scrollY || window.pageYOffset;
+    if (navH === 0) getNavH();
+    var ty = Math.min(0, scrollY - navH);
+    nav.style.transform = 'translateY(' + ty + 'px)';
+    if (scrollY >= navH) {
+      shown = true;
+      nav.style.transform = 'translateY(0)';
+      /* 포스터 위에 나브바 영역 추가 — 흰색 배경 */
+      var preHero = document.getElementById('pre-hero');
+      if (preHero) { preHero.style.height = navH + 'px'; }
+    }
+  }
+
+  /* 초기: 완전히 위로 숨김 */
+  getNavH();
+  nav.style.transform = 'translateY(-' + navH + 'px)';
+
+  window.addEventListener('scroll', updateNav, { passive: true });
+  window.addEventListener('resize', function() { if (!shown) { getNavH(); updateNav(); } });
+})();
+
+/* ── About 드롭다운 ── */
+var _navBg    = document.getElementById('nav-bg');
+var _topnav   = document.getElementById('topnav');
+var _aboutOuter = document.getElementById('nav-about-outer');
+var _aboutMenu  = document.getElementById('nav-about-menu');
+
+function updateNavBg() {
+  var isOpen = _aboutOuter.classList.contains('open');
+  var navH   = _topnav.offsetHeight;
+  if (isOpen) {
+    var menuH = _aboutMenu.scrollHeight;
+    _navBg.style.height = (navH + menuH + 16) + 'px';
+  } else {
+    _navBg.style.height = navH + 'px';
+  }
+}
+
+function toggleAboutMenu() {
+  _aboutOuter.classList.toggle('open');
+  updateNavBg();
+}
+document.addEventListener('click', function(e) {
+  if (_aboutOuter && !_aboutOuter.contains(e.target)) {
+    _aboutOuter.classList.remove('open');
+    updateNavBg();
+  }
+});
+/* 초기 높이 설정 */
+document.addEventListener('DOMContentLoaded', function() { updateNavBg(); });
+
+/* ── 히어로 블루 박스 높이 + 콘텐츠 마진 설정 ── */
+(function() {
+  var poster  = document.getElementById('hero-poster');
+  var blue    = document.getElementById('hero-blue');
+  var content = document.getElementById('page-content');
+
+  function updateLayout() {
+    var h = poster.offsetHeight;
+    blue.style.height = (h * 7 / 6) + 'px';
+    /* 블루 박스 하단(= 포스터 1/6 아래) + 40px 간격 */
+    content.style.marginTop = (Math.round(h / 6) + 40) + 'px';
+  }
+
+  if (poster.complete) { updateLayout(); }
+  poster.addEventListener('load', updateLayout);
+  window.addEventListener('resize', updateLayout);
+})();
+
+/* ── About 메뉴 너비 + divider 너비 설정 ── */
+(function() {
+  var menu  = document.getElementById('nav-about-menu');
+  var label = document.getElementById('nav-about-label');
+  if (!menu || !label) return;
+
+  /* 메뉴 너비: Character(가장 넓은 항목) + 화살표(13) + gap(8) */
+  var s = document.createElement('span');
+  s.style.cssText = 'position:absolute;visibility:hidden;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:24px;font-weight:400;white-space:nowrap;';
+  s.textContent = 'Character';
+  document.body.appendChild(s);
+  var charW = s.offsetWidth;
+  document.body.removeChild(s);
+  menu.style.width = (charW + 21) + 'px';
+
+  /* divider 너비: About 라벨 너비 */
+  function setDividers() {
+    var labelW = label.offsetWidth;
+    document.querySelectorAll('.nav-about-divider').forEach(function(d) {
+      d.style.width = labelW + 'px';
+    });
+  }
+  setTimeout(setDividers, 50);
+  window.addEventListener('resize', setDividers);
+})();
+</script>
+
+<script>
+/* ── PixiJS 하늘 노이즈 배경 ── */
+(function() {
+  var _P=[];for(var i=0;i<256;i++)_P[i]=i;for(var i=255;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=_P[i];_P[i]=_P[j];_P[j]=tmp;}for(var i=0;i<256;i++)_P[i+256]=_P[i];
+  function _f(t){return t*t*t*(t*(t*6-15)+10);}
+  function _g(h,x,y){h&=3;return((h<2)?x:-x)+((h===0||h===3)?y:-y);}
+  function _l(a,b,t){return a+(b-a)*t;}
+  function perlin(x,y){var X=Math.floor(x)&255,Y=Math.floor(y)&255;x-=Math.floor(x);y-=Math.floor(y);var u=_f(x),v=_f(y),A=_P[X]+Y,B=_P[X+1]+Y;return _l(_l(_g(_P[A],x,y),_g(_P[B],x-1,y),u),_l(_g(_P[A+1],x,y-1),_g(_P[B+1],x-1,y-1),u),v);}
+  function fbm(x,y,oct){var v=0,a=0.5,f=1;for(var i=0;i<(oct||4);i++){v+=perlin(x*f,y*f)*a;a*=0.5;f*=2;}return v*0.9+0.5;}
+  function createCloudCanvas(w,h){
+    var S=256,tmp=document.createElement('canvas');tmp.width=S;tmp.height=S;
+    var tc=tmp.getContext('2d'),d=tc.createImageData(S,S);
+    for(var y=0;y<S;y++)for(var x=0;x<S;x++){
+      var nx=x/S*1.5,ny=y/S*1.5,q0=(fbm(nx,ny,3)-.5)*.8,q1=(fbm(nx+3.5,ny+1.2,3)-.5)*.8;
+      var v=fbm(nx+q0,ny+q1,4),c=Math.max(0,Math.min(1,(v-.35)/.45)),i4=(y*S+x)*4;
+      d.data[i4]=Math.round(255-c*255);d.data[i4+1]=Math.round(255-c*(255-170));d.data[i4+2]=Math.round(255-c*(255-233));d.data[i4+3]=255;
+    }
+    tc.putImageData(d,0,0);
+    var out=document.createElement('canvas');out.width=w;out.height=h;
+    var oc=out.getContext('2d');
+    oc.fillStyle='#b8d8f0';oc.fillRect(0,0,w,h);
+    oc.filter='blur(36px)';oc.drawImage(tmp,0,0,w,h);oc.filter='none';
+    return out;
+  }
+  function createOrganicNRM(size){
+    var canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
+    var ctx=canvas.getContext('2d'),d=ctx.createImageData(size,size);
+    function sf(px,py,freq,oct,ox,oy){function s(nx,ny){var v=0,a=0.5,f=1;for(var i=0;i<oct;i++){var X=Math.floor(nx*f*freq+ox)&255,Y=Math.floor(ny*f*freq+oy)&255,lx=(nx*f*freq+ox)-Math.floor(nx*f*freq+ox),ly=(ny*f*freq+oy)-Math.floor(ny*f*freq+oy),u=_f(lx),vv=_f(ly),A=_P[X]+Y,B=_P[X+1]+Y;v+=(_l(_l(_g(_P[A],lx,ly),_g(_P[B],lx-1,ly),u),_l(_g(_P[A+1],lx,ly-1),_g(_P[B+1],lx-1,ly-1),u),vv))*a;a*=0.5;f*=2;}return v;}var v00=s(px,py),v10=s(px-1,py),v01=s(px,py-1),v11=s(px-1,py-1),wx=px*px*(3-2*px),wy=py*py*(3-2*py);return v00*(1-wx)*(1-wy)+v10*wx*(1-wy)+v01*(1-wx)*wy+v11*wx*wy;}
+    for(var y=0;y<size;y++)for(var x=0;x<size;x++){var px=x/size,py=y/size,i4=(y*size+x)*4;d.data[i4]=Math.max(0,Math.min(255,Math.round((sf(px,py,3.5,5,0,0)/1.4+.5)*255)));d.data[i4+1]=Math.max(0,Math.min(255,Math.round((sf(px,py,3.5,5,13.7,7.3)/1.4+.5)*255)));d.data[i4+2]=128;d.data[i4+3]=255;}
+    ctx.putImageData(d,0,0);return canvas;
+  }
+  window.addEventListener('load', function() {
+    var wrap = document.getElementById('sky-pixi-wrap');
+    if (!wrap || typeof PIXI === 'undefined') return;
+    var W = window.innerWidth, H = window.innerHeight;
+    var app = new PIXI.Application({width:W,height:H,transparent:true,antialias:false,resolution:1,autoDensity:true});
+    app.view.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
+    wrap.appendChild(app.view);
+    var bgTex=PIXI.Texture.from(createCloudCanvas(W,H));
+    var bgSprite=new PIXI.Sprite(bgTex);bgSprite.width=W;bgSprite.height=H;
+    var nrmSize=512;
+    var nrmTex=PIXI.Texture.from(createOrganicNRM(nrmSize));
+    var nrmTiling=new PIXI.TilingSprite(nrmTex,W,H);
+    var dispRT=PIXI.RenderTexture.create({width:W,height:H});
+    var dispSprite=new PIXI.Sprite(dispRT);dispSprite.renderable=false;
+    app.stage.addChild(dispSprite);app.stage.addChild(bgSprite);
+    var dispFilter=new PIXI.filters.DisplacementFilter(dispSprite);
+    dispFilter.scale.set(180,160);bgSprite.filters=[dispFilter];
+    var flowX=0,flowY=0,FLOW_SPEED=2.2,FLOW_ANGLE=-35*Math.PI/180;
+    app.renderer.plugins.interaction.destroy();
+    app.ticker.add(function(delta){
+      flowX+=Math.cos(FLOW_ANGLE)*FLOW_SPEED*delta;
+      flowY+=Math.sin(FLOW_ANGLE)*FLOW_SPEED*delta;
+      nrmTiling.tilePosition.x=flowX;
+      nrmTiling.tilePosition.y=flowY;
+      app.renderer.render(nrmTiling,dispRT,true);
+    });
+    window.addEventListener('resize',function(){
+      W=window.innerWidth;H=window.innerHeight;
+      app.renderer.resize(W,H);bgSprite.width=W;bgSprite.height=H;
+      nrmTiling.width=W;nrmTiling.height=H;dispRT.resize(W,H);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
