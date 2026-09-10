@@ -23,7 +23,7 @@
     html, body {
       width: 100%;
       min-height: 100%;
-      background: #2C3438;
+      background: #000;
       padding: 60px 8px 40px;
       font-family: 'Pretendard', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
@@ -251,7 +251,7 @@
             display:block; box-sizing:border-box; aspect-ratio:1;"></a>
   <span id="name-overlay" style="position:absolute; top:47.55%; left:9%; font-family:'Pretendard',sans-serif; font-size:4.3cqw; font-weight:600; color:#000;">GUEST</span>
 <script>
-  var _n = location.hash.slice(1);
+  var _n = decodeURIComponent(location.hash.slice(1));
   if (_n) document.getElementById('name-overlay').textContent = _n.toUpperCase();
 </script>
 </div>
@@ -368,7 +368,7 @@
 <script>
   /* ── URL ?name= ── */
   var params = new URLSearchParams(window.location.search);
-  var name = location.hash.slice(1);
+  var name = decodeURIComponent(location.hash.slice(1));
   if (name) document.getElementById('passenger-name').textContent = name.toUpperCase();
 
   /* ── QR ── */

@@ -72,9 +72,7 @@
     /* ── 준비중 오버레이 ── */
     #coming-soon {
       position: fixed; inset: 0; z-index: 10000;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
+      background: #00ACEB;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       transition: opacity 0.5s ease;
       gap: 32px;
@@ -312,7 +310,7 @@
 </div>
 <script>
 (function() {
-  var name = location.hash.slice(1);
+  var name = decodeURIComponent(location.hash.slice(1));
   if (!name) return; /* 파라미터 없으면 팝업 안 뜸 */
 
   var inv = document.getElementById('invite-overlay');
