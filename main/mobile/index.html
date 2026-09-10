@@ -213,12 +213,18 @@
       letter-spacing: -0.005em;
       color: #000;
     }
+    .intro-kr .inline-logo-wrap {
+      display: inline-block;
+      height: 0;
+      overflow: visible;
+      vertical-align: middle;
+      line-height: 0;
+    }
     .intro-kr .inline-logo {
       height: 40px;
       width: auto;
-      display: inline;
-      vertical-align: middle;
-      transform: rotate(3deg) translateY(-8px) translateX(-4px);
+      display: block;
+      transform: rotate(3deg) translateY(-30px) translateX(-7px);
       margin: 0 2px;
     }
     .gap-8  { height: 8px; }
@@ -232,7 +238,7 @@
       font-family: 'Pretendard', sans-serif;
       font-weight: 400;
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 24px;
       letter-spacing: -0.01em;
       color: #000;
     }
@@ -266,13 +272,13 @@
     /* ── 푸터 ── */
     #footer {
       background: transparent;
-      padding: 0 32px 22px;
+      padding: 0 32px 12px;
       width: 100%;
       max-width: 500px;
       margin: 0 auto;
     }
     #footer-line {
-      border-top: 1px solid #898989;
+      border-top: 1px solid rgba(0,0,0,0.5);
       margin-bottom: 12px;
       margin-left: -32px;
       margin-right: -32px;
@@ -282,7 +288,7 @@
       font-weight: 400;
       font-size: 12px;
       line-height: 1.5;
-      color: #898989;
+      color: rgba(0,0,0,0.5);
       margin-bottom: 16px;
     }
     #footer-icons {
@@ -293,7 +299,7 @@
       margin-top: -8px;
     }
     #footer-icons img {
-      width: 62px;
+      width: 48px;
       height: auto;
       display: block;
     }
@@ -407,7 +413,7 @@
 <div id="page-content">
 
   <!-- 인트로 한국어 -->
-  <p class="intro-kr">본 전시&nbsp;&nbsp;<img class="inline-logo" src="NEXT STEP.png" alt="NEXT STEP!">은 여행을 떠나기 직전 꿈과 설렘이 가득한 공항을 컨셉으로 진행된다.</p>
+  <p class="intro-kr">본 전시&nbsp;&nbsp;<span class="inline-logo-wrap"><img class="inline-logo" src="NEXT STEP.png" alt="NEXT STEP!"></span>은 여행을 떠나기 직전 꿈과 설렘이 가득한 공항을 컨셉으로 진행된다.</p>
   <div class="gap-8"></div>
   <p class="intro-kr">공항은 단순한 이동의 장소가 아니라, 각자가 선택한 목적지와 경로를 바탕으로 가장 높이 날아올라 다음 단계로 나아가기 위해 비행을 준비하고 출발하는 공간이다. 탑승을 준비하고 경로를 선택하며 출발에 이르는 일련의 과정은 곧 자신의 삶을 스스로 설계하고 관리하며 앞으로의 방향을 정해 나아가는 과정과 맞닿아 있다.</p>
 
@@ -453,8 +459,8 @@
   <div id="footer-line"></div>
   <p id="footer-text">2026 조선대학교 미술대학 시각디자인학과 졸업전시</p>
   <div id="footer-icons">
-    <img src="symbol_1.png" alt="symbol">
-    <img src="inst_1.png" alt="Instagram">
+    <a href="https://visual.chosun.ac.kr/visual/index.do" target="_blank"><img src="symbol_1.png" alt="symbol"></a>
+    <a href="https://www.instagram.com/cvcd_76th?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw==" target="_blank"><img src="inst_1.png" alt="Instagram" style="margin-left:-4px;"></a>
   </div>
   <div style="height:32px"></div>
 </div>
