@@ -394,9 +394,6 @@
         </span>
         <span id="nav-about-label">About</span>
       </div>
-      <a class="nav-about-item" href="../../map-picker.html">Map</a>
-      <div class="nav-about-divider"></div>
-      <div class="nav-about-gap"></div>
       <a class="nav-about-item" href="../../designer/motion/index.html">Motion</a>
       <div class="nav-about-divider"></div>
       <a class="nav-about-item" href="../../designer/character/index.html">Character</a>
@@ -508,7 +505,7 @@ function updateNavBg() {
   var navH   = _topnav.offsetHeight;
   if (isOpen) {
     var menuH = _aboutMenu.scrollHeight;
-    _navBg.style.height = (navH + menuH + 16) + 'px';
+    _navBg.style.height = (navH + menuH + 1) + 'px';
   } else {
     _navBg.style.height = navH + 'px';
   }
