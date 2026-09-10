@@ -1584,7 +1584,7 @@ window.addEventListener('load', function() {
 </div><!-- /pc-view -->
 
 <!-- ── 준비중 오버레이 (화면 크기 무관) ── -->
-<div id="coming-soon">
+<div id="coming-soon" tabindex="0">
   <span id="coming-soon-text">아직 준비중입니다.</span>
   <span id="coming-soon-date">2026. 09. 15 - am 10:00</span>
 </div>
@@ -1592,20 +1592,24 @@ window.addEventListener('load', function() {
 (function() {
   var cs = document.getElementById('coming-soon');
   if (!cs) return;
+
+  // 키보드 포커스 확보
+  cs.focus();
+
   function dismiss() {
     cs.classList.add('gone');
     setTimeout(function() {
       cs.style.display = 'none';
-      // 모바일에서 mob-view 강제 표시
       if (window.innerWidth < 500) {
         var mv = document.getElementById('mob-view');
         if (mv) mv.style.setProperty('display', 'block', 'important');
       }
     }, 500);
   }
+
   /* PC: v 키 2번 */
   var vCount = 0, vTimer = null;
-  document.addEventListener('keydown', function(e) {
+  cs.addEventListener('keydown', function(e) {
     if (e.key === 'v' || e.key === 'V') {
       vCount++;
       clearTimeout(vTimer);
@@ -1613,7 +1617,18 @@ window.addEventListener('load', function() {
       vTimer = setTimeout(function() { vCount = 0; }, 2000);
     }
   });
-  /* 모바일: 6번 클릭/탭 */
+  // document에도 걸어서 포커스 빠져도 작동
+  document.addEventListener('keydown', function(e) {
+    if (cs.style.display === 'none') return;
+    if (e.key === 'v' || e.key === 'V') {
+      vCount++;
+      clearTimeout(vTimer);
+      if (vCount >= 2) { dismiss(); vCount = 0; return; }
+      vTimer = setTimeout(function() { vCount = 0; }, 2000);
+    }
+  });
+
+  /* 모바일: 6번 탭 */
   var tapCount = 0, tapTimer = null;
   cs.addEventListener('click', function() {
     tapCount++;
