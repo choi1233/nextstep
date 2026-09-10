@@ -1254,34 +1254,6 @@ window.addEventListener('load', function() {
 </script>
 <script>
 (function() {
-  var cs = document.getElementById('coming-soon');
-  if (!cs) return;
-  function dismiss() {
-    cs.classList.add('gone');
-    setTimeout(function() { cs.style.display = 'none'; }, 500);
-  }
-  /* PC: v 키 2번 */
-  var vCount = 0, vTimer = null;
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'v' || e.key === 'V') {
-      vCount++;
-      clearTimeout(vTimer);
-      if (vCount >= 2) { dismiss(); vCount = 0; return; }
-      vTimer = setTimeout(function() { vCount = 0; }, 2000);
-    }
-  });
-  /* 모바일: 6번 연속 터치 */
-  var tapCount = 0, tapTimer = null;
-  cs.addEventListener('touchstart', function() {
-    tapCount++;
-    clearTimeout(tapTimer);
-    if (tapCount >= 6) { dismiss(); tapCount = 0; return; }
-    tapTimer = setTimeout(function() { tapCount = 0; }, 3000);
-  });
-})();
-</script>
-<script>
-(function() {
   var MAP_POSITIONS = {
    1: { x: 0.4495, y: 0.2515 },
     2: { x: 0.4338, y: 0.2078 },
@@ -1616,6 +1588,41 @@ window.addEventListener('load', function() {
   <span id="coming-soon-text">아직 준비중입니다.</span>
   <span id="coming-soon-date">2026. 09. 15 - am 10:00</span>
 </div>
+<script>
+(function() {
+  var cs = document.getElementById('coming-soon');
+  if (!cs) return;
+  function dismiss() {
+    cs.classList.add('gone');
+    setTimeout(function() {
+      cs.style.display = 'none';
+      // 모바일에서 mob-view 강제 표시
+      if (window.innerWidth < 500) {
+        var mv = document.getElementById('mob-view');
+        if (mv) mv.style.setProperty('display', 'block', 'important');
+      }
+    }, 500);
+  }
+  /* PC: v 키 2번 */
+  var vCount = 0, vTimer = null;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'v' || e.key === 'V') {
+      vCount++;
+      clearTimeout(vTimer);
+      if (vCount >= 2) { dismiss(); vCount = 0; return; }
+      vTimer = setTimeout(function() { vCount = 0; }, 2000);
+    }
+  });
+  /* 모바일: 6번 클릭/탭 */
+  var tapCount = 0, tapTimer = null;
+  cs.addEventListener('click', function() {
+    tapCount++;
+    clearTimeout(tapTimer);
+    if (tapCount >= 6) { dismiss(); tapCount = 0; return; }
+    tapTimer = setTimeout(function() { tapCount = 0; }, 3000);
+  });
+})();
+</script>
 
 <!-- ── 초대장 오버레이 (화면 크기 무관) ── -->
 <div id="invite-overlay" style="display:none">
