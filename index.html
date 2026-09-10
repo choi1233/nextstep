@@ -9,8 +9,14 @@
     var START = Date.now();
     var MIN_MS = 3000;
 
-    // 초대장 링크면 스플래시 건너뜀
-    if (decodeURIComponent(location.hash.slice(1))) return;
+    // 초대장 링크면 스플래시 대신 검정 커버 즉시 씌움
+    if (decodeURIComponent(location.hash.slice(1))) {
+      var cover = document.createElement('div');
+      cover.id = 'invite-cover';
+      cover.style.cssText = 'position:fixed;inset:0;z-index:9400;background:#000;';
+      document.documentElement.appendChild(cover);
+      return;
+    }
 
     var splash = document.createElement('div');
     splash.id = 'splash-screen';
@@ -1660,6 +1666,10 @@ window.addEventListener('load', function() {
   var nameEl = document.getElementById('invite-name');
   nameEl.textContent = name.toUpperCase();
   inv.style.display = 'flex';
+
+  // 검정 커버 제거 (invite-overlay가 대신 덮음)
+  var cover = document.getElementById('invite-cover');
+  if (cover) cover.parentNode.removeChild(cover);
 
 })();
 </script>
