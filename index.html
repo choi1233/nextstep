@@ -22,7 +22,8 @@
     video.setAttribute('autoplay','');
     video.preload = 'auto';
     video.src = 'Splash%20Screen/loading.mp4';
-    video.style.cssText = 'height:80px;width:auto;display:block;transform:translateX(-3px);';
+    video.style.cssText = 'height:80px;width:auto;display:block;transform:translateX(-3px);opacity:0;transition:opacity 0.3s;';
+    video.addEventListener('playing', function(){ video.style.opacity='1'; }, {once:true});
     splash.appendChild(video);
     document.documentElement.appendChild(splash);
 
@@ -1251,11 +1252,6 @@ window.addEventListener('load', function() {
   });
 })();
 </script>
-<!-- ── 모바일 로딩 오버레이 ── -->
-<div id="coming-soon">
-  <span id="coming-soon-text">아직 준비중입니다.</span>
-  <span id="coming-soon-date">2026. 09. 15 - am 10:00</span>
-</div>
 <script>
 (function() {
   var cs = document.getElementById('coming-soon');
@@ -1615,6 +1611,12 @@ window.addEventListener('load', function() {
 
 </div><!-- /pc-view -->
 
+<!-- ── 준비중 오버레이 (화면 크기 무관) ── -->
+<div id="coming-soon">
+  <span id="coming-soon-text">아직 준비중입니다.</span>
+  <span id="coming-soon-date">2026. 09. 15 - am 10:00</span>
+</div>
+
 <!-- ── 초대장 오버레이 (화면 크기 무관) ── -->
 <div id="invite-overlay" style="display:none">
   <div id="invite-ticket-wrap">
@@ -1628,7 +1630,9 @@ window.addEventListener('load', function() {
   var name = decodeURIComponent(location.hash.slice(1));
   if (!name) return;
 
-  // 메인 컨텐츠 + 커밍순 숨김
+  // 메인 컨텐츠 + 커밍순 숨김, body 검정 고정
+  document.documentElement.style.background = '#000';
+  document.body.style.cssText += 'background:#000!important;overflow:hidden;';
   var pcView = document.getElementById('pc-view');
   var mobView = document.getElementById('mob-view');
   var cs = document.getElementById('coming-soon');
