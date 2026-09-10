@@ -1598,6 +1598,9 @@ window.addEventListener('load', function() {
 
   function dismiss() {
     cs.classList.add('gone');
+    // 혹시 남은 스플래시도 제거
+    var sp = document.getElementById('splash-screen');
+    if (sp) { sp.style.opacity = '0'; setTimeout(function(){ sp.parentNode && sp.parentNode.removeChild(sp); }, 650); }
     setTimeout(function() {
       cs.style.display = 'none';
       if (window.innerWidth < 500) {
@@ -1609,17 +1612,8 @@ window.addEventListener('load', function() {
 
   /* PC: v 키 2번 */
   var vCount = 0, vTimer = null;
-  cs.addEventListener('keydown', function(e) {
-    if (e.key === 'v' || e.key === 'V') {
-      vCount++;
-      clearTimeout(vTimer);
-      if (vCount >= 2) { dismiss(); vCount = 0; return; }
-      vTimer = setTimeout(function() { vCount = 0; }, 2000);
-    }
-  });
-  // document에도 걸어서 포커스 빠져도 작동
   document.addEventListener('keydown', function(e) {
-    if (cs.style.display === 'none') return;
+    if (cs.classList.contains('gone') || cs.style.display === 'none') return;
     if (e.key === 'v' || e.key === 'V') {
       vCount++;
       clearTimeout(vTimer);
