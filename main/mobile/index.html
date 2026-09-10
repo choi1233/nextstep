@@ -67,7 +67,7 @@
 
     /* ── 스플래시 스크린 ── */
     #splash-screen {
-      position: fixed; inset: 0; z-index: 10000;
+      position: fixed; inset: 0; z-index: 5000;
       background: #000;
       display: flex; align-items: center; justify-content: center;
       transition: opacity 0.6s ease;
@@ -320,7 +320,7 @@
 
 <!-- ══ 스플래시 스크린 ══ -->
 <div id="splash-screen">
-  <video id="splash-video" muted playsinline preload="auto"
+  <video id="splash-video" muted playsinline autoplay loop preload="auto"
     src="../../Splash%20Screen/loading.mp4"></video>
 </div>
 <script>
@@ -332,7 +332,12 @@
   var START  = Date.now();
   var MIN_MS = 3000;
   var _loadP = 0;
+  var _pageLoaded = false;
+  var _minDone = false;
+  var _released = false;
   var _finished = false;
+
+  vid.play().catch(function(){});
 
   function dismiss() {
     if (_finished) return;
@@ -341,38 +346,25 @@
     setTimeout(function() { sp.style.display = 'none'; }, 650);
   }
 
-  function frame() {
-    if (_finished) return;
-    var timeP = Math.min(1, (Date.now() - START) / MIN_MS);
-    var p = Math.min(_loadP, timeP);
-    if (vid.readyState >= 1 && vid.duration > 0) {
-      vid.currentTime = p * vid.duration;
+  function tryRelease() {
+    if (!(_pageLoaded && _minDone) || _released) return;
+    _released = true;
+    vid.loop = false;
+    if (!vid.duration || vid.ended) { dismiss(); return; }
+    if (vid.duration > 0 && vid.currentTime / vid.duration < 0.7) {
+      vid.currentTime = vid.duration * 0.7;
     }
-    if (_loadP >= 1 && timeP >= 1) { dismiss(); return; }
-    requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
 
-  var _imgTotal = 0, _imgDone = 0;
-  function imgLoaded() {
-    _imgDone = Math.min(_imgDone + 1, _imgTotal);
-    _loadP = _imgTotal > 0 ? 0.5 + (_imgDone / _imgTotal) * 0.5 : 1;
+  vid.addEventListener('ended', function() { dismiss(); });
+
+  setTimeout(function() { _minDone = true; tryRelease(); }, MIN_MS);
+
+  function onLoaded() {
+    _loadP = 1; _pageLoaded = true; tryRelease();
   }
-  document.addEventListener('DOMContentLoaded', function() {
-    _loadP = 0.5;
-    var imgs = Array.from(document.querySelectorAll('img[src]'));
-    _imgTotal = imgs.length;
-    if (!_imgTotal) { _loadP = 1; return; }
-    imgs.forEach(function(img) {
-      if (img.complete) { imgLoaded(); }
-      else {
-        img.addEventListener('load', imgLoaded, { once: true });
-        img.addEventListener('error', imgLoaded, { once: true });
-      }
-    });
-  });
-  window.addEventListener('load', function() { _loadP = 1; });
-  setTimeout(function() { _loadP = 1; }, 10000);
+  window.addEventListener('load', onLoaded);
+  setTimeout(onLoaded, 10000);
 })();
 </script>
 

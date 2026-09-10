@@ -10,36 +10,56 @@
     var MIN_MS = 3000;
 
     var splash = document.createElement('div');
-    splash.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#000;transition:opacity 0.6s ease;display:flex;align-items:center;justify-content:center;';
+    splash.style.cssText = 'position:fixed;inset:0;z-index:5000;background:#000;transition:opacity 0.6s ease;display:flex;align-items:center;justify-content:center;';
 
     var video = document.createElement('video');
     video.muted = true;
     video.setAttribute('playsinline','');
+    video.setAttribute('autoplay','');
     video.preload = 'auto';
     video.src = 'Splash%20Screen/loading.mp4';
-    video.style.cssText = 'height:80px;width:auto;display:block;transform:translateX(5px);';
+    video.style.cssText = 'height:80px;width:auto;display:block;transform:translateX(-3px);';
     splash.appendChild(video);
     document.documentElement.appendChild(splash);
 
+    video.loop = true;
+    video.play().catch(function(){});
+
     var _loadP = 0;
+    var _pageLoaded = false;
+    var _minDone = false;
+    var _released = false;
     var _finished = false;
 
-    function frame() {
+    function dismiss() {
       if (_finished) return;
-      var timeP = Math.min(1, (Date.now() - START) / MIN_MS);
-      var p = Math.min(_loadP, timeP);
-      if (video.readyState >= 1 && video.duration > 0) {
-        video.currentTime = p * video.duration;
-      }
-      if (_loadP >= 1 && timeP >= 1) {
-        _finished = true;
-        splash.style.opacity = '0';
-        setTimeout(function() { splash.parentNode && splash.parentNode.removeChild(splash); }, 650);
-        return;
-      }
-      requestAnimationFrame(frame);
+      _finished = true;
+      splash.style.opacity = '0';
+      setTimeout(function() { splash.parentNode && splash.parentNode.removeChild(splash); }, 650);
     }
-    requestAnimationFrame(frame);
+
+    // 조건 충족 시 loop 해제 → 현재 사이클 끝나면 ended 발화
+    function tryRelease() {
+      if (!(_pageLoaded && _minDone) || _released) return;
+      _released = true;
+      video.loop = false;
+      // 이미 끝났거나 duration 없으면 바로 dismiss
+      if (!video.duration || video.ended) { dismiss(); return; }
+      // 남은 재생 시간이 너무 길면 70% 지점으로 점프 후 끝까지
+      if (video.duration > 0 && video.currentTime / video.duration < 0.7) {
+        video.currentTime = video.duration * 0.7;
+      }
+    }
+
+    video.addEventListener('ended', function() { dismiss(); });
+
+    setTimeout(function() { _minDone = true; tryRelease(); }, MIN_MS);
+
+    function onLoaded() {
+      _loadP = 1; _pageLoaded = true; tryRelease();
+    }
+    window.addEventListener('load', onLoaded);
+    setTimeout(onLoaded, 10000);
 
     var _imgTotal = 0, _imgDone = 0;
     function imgLoaded() {
@@ -81,6 +101,8 @@
     @font-face { font-family:'Galada'; src:url('font/Galada-Regular.ttf') format('truetype'); font-weight:400; }
 
     * { margin:0; padding:0; box-sizing:border-box; }
+
+    #pc-view { width:100%; height:100%; overflow:hidden; }
 
     html, body {
       width:100%; height:100%;
