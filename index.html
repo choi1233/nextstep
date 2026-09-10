@@ -9,12 +9,13 @@
     var START = Date.now();
     var MIN_MS = 3000;
 
-    // 초대장 링크면 스플래시 대신 검정 커버 즉시 씌움
+    // 초대장 링크면 스플래시 대신 검정 커버 즉시 씌움 + 티켓 이미지 선로딩
     if (decodeURIComponent(location.hash.slice(1))) {
       var cover = document.createElement('div');
       cover.id = 'invite-cover';
       cover.style.cssText = 'position:fixed;inset:0;z-index:9400;background:#000;';
       document.documentElement.appendChild(cover);
+      var preImg = new Image(); preImg.src = 'ticket.png';
       return;
     }
 
