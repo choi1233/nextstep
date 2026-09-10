@@ -312,7 +312,7 @@
 </div>
 <script>
 (function() {
-  var name = new URLSearchParams(window.location.search).get('name');
+  var name = location.hash.slice(1);
   if (!name) return; /* 파라미터 없으면 팝업 안 뜸 */
 
   var inv = document.getElementById('invite-overlay');

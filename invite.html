@@ -251,7 +251,7 @@
             display:block; box-sizing:border-box; aspect-ratio:1;"></a>
   <span id="name-overlay" style="position:absolute; top:47.55%; left:9%; font-family:'Pretendard',sans-serif; font-size:4.3cqw; font-weight:600; color:#000;">GUEST</span>
 <script>
-  var _n = new URLSearchParams(window.location.search).get('name');
+  var _n = location.hash.slice(1);
   if (_n) document.getElementById('name-overlay').textContent = _n.toUpperCase();
 </script>
 </div>
@@ -368,7 +368,7 @@
 <script>
   /* ── URL ?name= ── */
   var params = new URLSearchParams(window.location.search);
-  var name = params.get('name');
+  var name = location.hash.slice(1);
   if (name) document.getElementById('passenger-name').textContent = name.toUpperCase();
 
   /* ── QR ── */
