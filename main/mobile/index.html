@@ -3,10 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script>
-    if(window.innerWidth>=450){location.replace('../../index.html');}
-    window.addEventListener('resize',function(){if(window.innerWidth>=450){location.replace('../../index.html');}});
-  </script>
   <title>NEXT STEP!</title>
   <link rel="icon" href="../../CVCD.png?v=2" type="image/png">
   <link rel="shortcut icon" href="../../CVCD.png?v=2" type="image/png">
@@ -69,27 +65,15 @@
       to   { opacity:1; transform:translateY(0) scale(1); }
     }
 
-    /* ── 준비중 오버레이 ── */
-    #coming-soon {
+    /* ── 스플래시 스크린 ── */
+    #splash-screen {
       position: fixed; inset: 0; z-index: 10000;
-      background: #00ACEB;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      transition: opacity 0.5s ease;
-      gap: 32px;
-      padding-bottom: 20px;
+      background: #000;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.6s ease;
     }
-    #coming-soon.gone { opacity: 0; pointer-events: none; }
-    #coming-soon-date {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-size: 16px; font-weight: 400; color: #fff; opacity: 0.85;
-    }
-    #coming-soon-text {
-      font-family: 'Pretendard', sans-serif;
-      font-weight: 600;
-      font-size: clamp(24px, 6vw, 64px);
-      color: #fff;
-      user-select: none;
-    }
+    #splash-screen.gone { opacity: 0; pointer-events: none; }
+    #splash-video { height: 80px; width: auto; display: block; }
 
     /* ── 하늘 노이즈 배경 (PixiJS canvas가 fixed로 덮음) ── */
     body {
@@ -193,7 +177,7 @@
     }
     .nav-about-item:hover { opacity: 0.5; }
     .nav-about-divider { border-top: 1.5px solid #000; flex-shrink: 0; align-self: flex-end; }
-    .nav-about-gap { height: 10px; flex-shrink: 0; }
+    .nav-about-gap { height: 8px; flex-shrink: 0; }
 
     /* ── 본문 ── */
     #page-content {
@@ -334,37 +318,61 @@
 })();
 </script>
 
-<!-- ══ 준비중 오버레이 ══ -->
-<div id="coming-soon">
-  <span id="coming-soon-text">아직 준비중입니다.</span>
-  <span id="coming-soon-date">2026. 09. 15 - am 10:00</span>
+<!-- ══ 스플래시 스크린 ══ -->
+<div id="splash-screen">
+  <video id="splash-video" muted playsinline preload="auto"
+    src="../../Splash%20Screen/loading.mp4"></video>
 </div>
 <script>
 (function() {
-  var cs = document.getElementById('coming-soon');
-  if (!cs) return;
+  var sp  = document.getElementById('splash-screen');
+  var vid = document.getElementById('splash-video');
+  if (!sp || !vid) return;
+
+  var START  = Date.now();
+  var MIN_MS = 3000;
+  var _loadP = 0;
+  var _finished = false;
+
   function dismiss() {
-    cs.classList.add('gone');
-    setTimeout(function() { cs.style.display = 'none'; }, 500);
+    if (_finished) return;
+    _finished = true;
+    sp.classList.add('gone');
+    setTimeout(function() { sp.style.display = 'none'; }, 650);
   }
-  /* PC: v 키 2번 */
-  var vCount = 0, vTimer = null;
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'v' || e.key === 'V') {
-      vCount++;
-      clearTimeout(vTimer);
-      if (vCount >= 2) { dismiss(); vCount = 0; return; }
-      vTimer = setTimeout(function() { vCount = 0; }, 2000);
+
+  function frame() {
+    if (_finished) return;
+    var timeP = Math.min(1, (Date.now() - START) / MIN_MS);
+    var p = Math.min(_loadP, timeP);
+    if (vid.readyState >= 1 && vid.duration > 0) {
+      vid.currentTime = p * vid.duration;
     }
+    if (_loadP >= 1 && timeP >= 1) { dismiss(); return; }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  var _imgTotal = 0, _imgDone = 0;
+  function imgLoaded() {
+    _imgDone = Math.min(_imgDone + 1, _imgTotal);
+    _loadP = _imgTotal > 0 ? 0.5 + (_imgDone / _imgTotal) * 0.5 : 1;
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    _loadP = 0.5;
+    var imgs = Array.from(document.querySelectorAll('img[src]'));
+    _imgTotal = imgs.length;
+    if (!_imgTotal) { _loadP = 1; return; }
+    imgs.forEach(function(img) {
+      if (img.complete) { imgLoaded(); }
+      else {
+        img.addEventListener('load', imgLoaded, { once: true });
+        img.addEventListener('error', imgLoaded, { once: true });
+      }
+    });
   });
-  /* 모바일: 5번 연속 터치 */
-  var tapCount = 0, tapTimer = null;
-  cs.addEventListener('touchstart', function() {
-    tapCount++;
-    clearTimeout(tapTimer);
-    if (tapCount >= 5) { dismiss(); tapCount = 0; return; }
-    tapTimer = setTimeout(function() { tapCount = 0; }, 3000);
-  });
+  window.addEventListener('load', function() { _loadP = 1; });
+  setTimeout(function() { _loadP = 1; }, 10000);
 })();
 </script>
 
@@ -394,6 +402,7 @@
         </span>
         <span id="nav-about-label">About</span>
       </div>
+      <div class="nav-about-gap"></div>
       <a class="nav-about-item" href="../../designer/motion/index.html">Motion</a>
       <div class="nav-about-divider"></div>
       <a class="nav-about-item" href="../../designer/character/index.html">Character</a>

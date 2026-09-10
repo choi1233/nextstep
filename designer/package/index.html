@@ -133,7 +133,7 @@
       grid-template-columns:repeat(3, 1fr);
       column-gap:8px;
     }
-    @media (max-width:860px) {
+    @media (max-width:650px) {
       #profiles-grid { grid-template-columns:repeat(2, 1fr); }
     }
 
@@ -350,10 +350,16 @@
     #left.mobile.detail-open #nav-mobile { display:none !important; }
     #mob-detail-nav {
       flex-shrink:0; display:flex; align-items:center;
-      justify-content:space-between; padding:16px 16px 0;
+      justify-content:space-between; padding:16px 16px 10px;
+      background:rgba(255,255,255,0.85);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
     }
-    #mob-gate-label { display:flex; align-items:center; gap:10px; cursor:pointer; }
+    #mob-gate-label { display:flex; align-items:center; gap:10px; cursor:pointer; overflow:hidden; }
     #gate-label { cursor:pointer; }
+    #mob-nav-title { display:none; flex-direction:column; gap:1px; }
+    #mob-nav-title-work { font-family:'Pretendard',sans-serif; font-weight:600; font-size:15px; color:#000; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #mob-nav-title-name { font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:400; font-size:13px; color:#555; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     #mob-close-btn {
       cursor:pointer; display:flex; align-items:center;
       width:40px; height:40px; justify-content:center; flex-shrink:0;
@@ -362,7 +368,7 @@
     #mobile-detail-scroll::-webkit-scrollbar { display:none; }
 
     /* ══ 뷰포트 자체가 좁을 때 — 오른쪽 패널 숨기기 ══ */
-    @media (max-width:860px) {
+    @media (max-width:650px) {
       #divider { display:none !important; }
       #right   { display:none !important; }
       #left    { flex:1 !important; }
@@ -589,7 +595,11 @@
       <!-- 작품 상세 NAV BAR: 화살표+비행기+GATE1 (좌) / X (우) -->
       <div id="mob-detail-nav">
         <div id="mob-gate-label" onclick="hideDetailMobile()">
-          <img src="gate3.png" alt="GATE 3" style="height:40px;width:auto;display:block;">
+          <img id="mob-gate-img" src="gate3.png" alt="GATE 3" style="height:40px;width:auto;display:block;">
+          <div id="mob-nav-title">
+            <div id="mob-nav-title-work"></div>
+            <div id="mob-nav-title-name"></div>
+          </div>
         </div>
         <div id="mob-close-btn" onclick="hideDetailMobile()">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
@@ -853,6 +863,11 @@ function renderGallery() {
       kr.addEventListener('mouseenter', function(){ this.textContent = '시디1짱'; });
       kr.addEventListener('mouseleave', function(){ this.textContent = d.name; });
     }
+    if (d.id === 'ryusul') {
+      kr.style.width = 'fit-content';
+      kr.addEventListener('mouseenter', function(){ this.textContent = '포포'; });
+      kr.addEventListener('mouseleave', function(){ this.textContent = d.name; });
+    }
     mod.appendChild(kr);
 
     /* 영어 이름 */
@@ -989,6 +1004,41 @@ function hideDetailMobile() {
   _selectedDesigner = null;
 }
 
+(function() {
+  var scroller, navImg, navTitle, navWork, navName;
+  function initDetailScroll() {
+    scroller = document.getElementById('mobile-detail-scroll');
+    navImg   = document.getElementById('mob-gate-img');
+    navTitle = document.getElementById('mob-nav-title');
+    navWork  = document.getElementById('mob-nav-title-work');
+    navName  = document.getElementById('mob-nav-title-name');
+    if (!scroller) return;
+    scroller.addEventListener('scroll', onDetailScroll);
+  }
+  function onDetailScroll() {
+    var titleKr  = document.getElementById('mob-work-title-kr');
+    var titleEn  = document.getElementById('mob-work-title-en');
+    var authorKr = document.getElementById('mob-author-kr');
+    var authorEn = document.getElementById('mob-author-en');
+    var titleRef = (titleKr && titleKr.offsetParent) ? titleKr : titleEn;
+    var authorRef= (authorKr && authorKr.offsetParent) ? authorKr : authorEn;
+    if (!titleRef) return;
+    var navH = document.getElementById('mob-detail-nav').offsetHeight;
+    var authorBottom = (authorRef ? authorRef.offsetTop + authorRef.offsetHeight : titleRef.offsetTop + titleRef.offsetHeight);
+    var passed = scroller.scrollTop > authorBottom - navH;
+    if (passed) {
+      navImg.style.display   = 'none';
+      navTitle.style.display = 'flex';
+      if (navWork) navWork.textContent = titleRef.textContent;
+      if (navName && authorRef) navName.textContent = authorRef.textContent;
+    } else {
+      navImg.style.display   = 'block';
+      navTitle.style.display = 'none';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', initDetailScroll);
+})();
+
 function hideDetailDesktop() {
   if (_selectedModule) _selectedModule.classList.remove('selected');
   _selectedModule = null;
@@ -1045,7 +1095,7 @@ function toggleMobileMenu() {
   var _wasMobile = false;
 
   function onResize(w) {
-    var isMobile = w < 860;
+    var isMobile = w < 650;
     if (isMobile === _wasMobile) return;
     _wasMobile = isMobile;
     leftEl.classList.toggle('mobile', isMobile);
@@ -1075,8 +1125,10 @@ function toggleMobileMenu() {
       onResize(entries[0].contentRect.width);
     }).observe(leftEl);
   }
-  /* 초기 체크 */
-  onResize(leftEl.getBoundingClientRect().width);
+  /* 초기 체크 — 레이아웃 완료 후 */
+  window.requestAnimationFrame(function() {
+    onResize(leftEl.getBoundingClientRect().width);
+  });
 })();
 
 /* ── About 링크 전환 연출 ── */
@@ -1116,7 +1168,7 @@ function mobCatSetup() {
   var labelW = label.offsetWidth;
   document.querySelectorAll('.mob-cat-divider').forEach(function(d) { d.style.width = labelW + 'px'; });
 }
-document.addEventListener('DOMContentLoaded', mobCatSetup);
+document.addEventListener('DOMContentLoaded', function() { window.requestAnimationFrame(mobCatSetup); });
 window.addEventListener('resize', mobCatSetup);
 </script>
 </body>
