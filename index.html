@@ -1620,7 +1620,7 @@ window.addEventListener('load', function() {
   <div id="invite-ticket-wrap">
     <img id="invite-ticket-img" src="ticket.png" alt="초대장">
     <span id="invite-name"></span>
-    <span id="invite-qr-tap"></span>
+    <a id="invite-qr-tap" href="http://cvcd2026.kro.kr/" target="_blank"></a>
   </div>
 </div>
 <script>
@@ -1628,25 +1628,19 @@ window.addEventListener('load', function() {
   var name = decodeURIComponent(location.hash.slice(1));
   if (!name) return;
 
-  // 메인 컨텐츠 숨김
+  // 메인 컨텐츠 + 커밍순 숨김
   var pcView = document.getElementById('pc-view');
   var mobView = document.getElementById('mob-view');
+  var cs = document.getElementById('coming-soon');
   if (pcView) pcView.style.setProperty('display','none','important');
   if (mobView) mobView.style.setProperty('display','none','important');
+  if (cs) cs.style.setProperty('display','none','important');
 
   var inv = document.getElementById('invite-overlay');
   var nameEl = document.getElementById('invite-name');
   nameEl.textContent = name.toUpperCase();
   inv.style.display = 'flex';
 
-  // QR 영역 클릭하면 메인 페이지로 이동
-  var qrTap = document.getElementById('invite-qr-tap');
-  if (qrTap) {
-    qrTap.addEventListener('click', function() {
-      inv.classList.add('gone');
-      setTimeout(function() { location.href = location.pathname; }, 400);
-    });
-  }
 })();
 </script>
 
