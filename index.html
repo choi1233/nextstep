@@ -927,7 +927,7 @@ window.addEventListener('load', function() {
    * carrier-float bottom:20% → natTopPx = viewH * 0.80 - h */
   function getNatTopPx(viewH) {
     var h = Math.min(viewH * 0.48, 400);
-    return viewH * 0.80 - h;
+    return viewH * 0.80 - h - 40;
   }
   function getCarrierH(viewH) {
     return Math.min(viewH * 0.48, 400);
