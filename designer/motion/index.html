@@ -909,7 +909,7 @@ function renderGallery() {
   var upImg = document.createElement('img');
   upImg.src = '../UP.png';
   upImg.alt = 'UP';
-  upImg.style.cssText = 'width:auto; max-width:100%; height:auto; display:block;';
+  upImg.style.cssText = 'width:auto; max-width:100%; height:160px; display:block;';
   upImg.onclick = function() { document.getElementById('gallery').scrollTo({ top: 0, behavior: 'smooth' }); };
   upCell.appendChild(upImg);
   grid.appendChild(upCell);
