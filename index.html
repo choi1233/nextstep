@@ -924,11 +924,10 @@ window.addEventListener('load', function() {
   var s5El      = document.getElementById('s5-about');
 
   /* 캐리어 CSS 기반 고정 위치 (DOM 측정 없음 → 흔들림 없음)
-   * #s2-carrier: bottom:1%, height:32dvh
-   * natTopPx = viewH * (1 - 0.01 - 0.32) = viewH * 0.67 (항상 고정) */
+   * carrier-float bottom:20% → natTopPx = viewH * 0.80 - h */
   function getNatTopPx(viewH) {
     var h = Math.min(viewH * 0.48, 400);
-    return viewH - h + 135; /* 135px 아래 연장 — 바퀴 영역 확보 */
+    return viewH * 0.80 - h;
   }
   function getCarrierH(viewH) {
     return Math.min(viewH * 0.48, 400);
