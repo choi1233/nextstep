@@ -155,7 +155,7 @@
       /* sky */
       body { position:relative; }
       #mob-sky-wrap { position:fixed; inset:0; z-index:0; pointer-events:none; }
-      #mob-pre-hero, #mob-hero, #mob-page-content, #mob-footer { position:relative; z-index:1; will-change:transform; transform:translateZ(0); }
+      #mob-pre-hero, #mob-hero, #mob-page-content, #mob-footer { position:relative; z-index:1; }
 
       /* hero */
       #mob-hero { position:relative; z-index:1; width:100%; max-width:500px; margin:0 auto; display:block; }
@@ -181,7 +181,7 @@
       .mob-nav-about-gap { height:8px; flex-shrink:0; }
 
       /* page content */
-      #mob-page-content { width:100%; max-width:500px; margin:0 auto; padding:10px 32px 0; background:#fff; }
+      #mob-page-content { width:100%; max-width:500px; margin:0 auto; padding:10px 32px 0; background:transparent; }
       .mob-intro-kr { font-family:'Pretendard',sans-serif; font-weight:600; font-size:15px; line-height:24px; letter-spacing:-0.005em; color:#000; }
       .mob-intro-kr .mob-inline-logo-wrap { display:inline-block; height:0; overflow:visible; vertical-align:middle; line-height:0; }
       .mob-intro-kr .mob-inline-logo { height:40px; width:auto; display:block; transform:rotate(3deg) translateY(-30px) translateX(-7px); margin:0 2px; }
@@ -1187,7 +1187,7 @@ window.addEventListener('load', function() {
       var s5In  = (st - (s5Top - viewH)) / viewH;
       if (s5In > 0) {
         s5In = Math.min(1, s5In);
-        var destTop  = viewH * 0.35 - carrierH * 0.5;
+        var destTop  = viewH * 0.60 - carrierH * 0.5;
         var topPx5   = destTop + (1 - Math.min(1, s5In * 2)) * (viewH - destTop);
         render3d(topPx5, carrierH, unifiedTilt, true, 0);
         carrierFloat.style.display = 'none';
