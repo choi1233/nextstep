@@ -1187,7 +1187,7 @@ window.addEventListener('load', function() {
       var s5In  = (st - (s5Top - viewH)) / viewH;
       if (s5In > 0) {
         s5In = Math.min(1, s5In);
-        var destTop  = viewH * 0.5 - carrierH * 0.5;
+        var destTop  = viewH * 0.35 - carrierH * 0.5;
         var topPx5   = destTop + (1 - Math.min(1, s5In * 2)) * (viewH - destTop);
         render3d(topPx5, carrierH, unifiedTilt, true, 0);
         carrierFloat.style.display = 'none';
