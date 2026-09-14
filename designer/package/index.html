@@ -891,6 +891,18 @@ function renderGallery() {
     grid.appendChild(mod);
   });
 
+  /* 마지막 칸 — UP.png (우상단 정렬) */
+  var upCell = document.createElement('div');
+  upCell.className = 'sticker-cell';
+  upCell.style.cssText = 'align-items:flex-start; justify-content:flex-end; margin-bottom:0; cursor:pointer;';
+  var upImg = document.createElement('img');
+  upImg.src = '../up.png';
+  upImg.alt = 'UP';
+  upImg.style.cssText = 'width:auto; max-width:100%; height:130px; display:block; margin-right:20px;';
+  upImg.onclick = function() { document.getElementById('gallery').scrollTo({ top: 0, behavior: 'smooth' }); };
+  upCell.appendChild(upImg);
+  grid.appendChild(upCell);
+
   g.appendChild(grid);
 }
 
