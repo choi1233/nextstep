@@ -155,7 +155,7 @@
       /* sky */
       body { position:relative; }
       #mob-sky-wrap { position:fixed; inset:0; z-index:0; pointer-events:none; }
-      #mob-pre-hero, #mob-hero, #mob-page-content, #mob-footer { position:relative; z-index:1; }
+      #mob-pre-hero, #mob-hero, #mob-page-content, #mob-footer { position:relative; z-index:1; will-change:transform; transform:translateZ(0); }
 
       /* hero */
       #mob-hero { position:relative; z-index:1; width:100%; max-width:500px; margin:0 auto; display:block; }
