@@ -104,6 +104,9 @@
   <meta property="og:url" content="http://cvcd2026.kro.kr/">
   <meta property="og:type" content="website">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.12/pixi.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
   <style>
     ::selection { background:#00ACEB; color:#FFFFFF; }
     ::-moz-selection { background:#00ACEB; color:#FFFFFF; }
@@ -455,13 +458,21 @@
       display: none;
       left: 50%;
       transform: translateX(-50%);
-      height: 48vh; height: 48dvh; max-height: 400px;
+      height: 32vh; height: 32dvh; max-height: 260px;
       width: auto;
       pointer-events: none;
       z-index: 150;
     }
     #carrier-float .cf-img {
-      display: block; height: 100%; width: auto;
+      display: none !important; /* GLB 전용 — PNG 폴백 비활성화 */
+    }
+    #carrier-3d {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 149;
+      display: none;
     }
     #cf-shadow {
       position: fixed;
@@ -482,11 +493,11 @@
       -webkit-user-drag: none;
       transition: opacity 0.2s;
     }
-    /* 위-중앙(M), 중앙-왼쪽(U), 아래-중앙(C), 중앙-오른쪽(P) */
-    #cs-M { top: 4%; left: -5%; transform: translateX(-50%); }
-    #cs-U { top: 50%;  right: -24%; transform: translateY(-50%); }
-    #cs-C { bottom: 7%; left: 10%; transform: translateX(-50%); }
-    #cs-P { top: 40%;  left: -24%; transform: translateY(-50%); }
+    /* U=왼쪽중앙, M=위쪽중앙, C=아래쪽중앙, P=오른쪽중앙 */
+    #cs-U { top: 50%; left: -24%; transform: translateY(-50%); }
+    #cs-M { top: -15%; left: 50%; transform: translateX(-50%); }
+    #cs-C { bottom: -15%; left: 50%; transform: translateX(-50%); }
+    #cs-P { top: 50%; right: -24%; transform: translateY(-50%); }
 
     /* ── S4: Dark ── */
     #s4 {
@@ -731,13 +742,14 @@ a flight <a class="pill-btn" id="about-btn" href="#" style="font-family:'Galada'
 </div><!-- /scroll-wrap -->
 
 
+<canvas id="carrier-3d" width="0" height="0"></canvas>
 <!-- 캐리어 플로트: 애니메이션용 fixed 복사본 -->
 <div id="carrier-float">
   <img class="cs-sticker" id="cs-M" src="main/s2/sticker/M_1.png" alt="">
   <img class="cs-sticker" id="cs-U" src="main/s2/sticker/U_1.png" alt="">
   <img class="cs-sticker" id="cs-C" src="main/s2/sticker/C_1.png" alt="">
   <img class="cs-sticker" id="cs-P" src="main/s2/sticker/P_1.png" alt="">
-  <canvas id="carrier-canvas" class="cf-img"></canvas>
+  <img class="cf-img" src="main/s2/carrier.png" alt="">
 </div>
 <div id="cf-shadow"></div>
 
@@ -814,10 +826,12 @@ window.addEventListener('load', function() {
   var csP = document.getElementById('cs-P');
 
   /* 스티커 발사 추적 */
+  /* 위로 스크롤(p 감소) 시 부착 순서: U → M → C → P
+   * thresh: 이 p값 아래로 내려오면(위로 스크롤 중) launchSticker 발동 */
   var stickerDefs = [
-    { key:'U', textId:'st-U', csId:'cs-U', thresh:0.70 },
-    { key:'M', textId:'st-M', csId:'cs-M', thresh:0.665 },
-    { key:'C', textId:'st-C', csId:'cs-C', thresh:0.57 },
+    { key:'U', textId:'st-U', csId:'cs-U', thresh:0.80 },
+    { key:'M', textId:'st-M', csId:'cs-M', thresh:0.65 },
+    { key:'C', textId:'st-C', csId:'cs-C', thresh:0.50 },
     { key:'P', textId:'st-P', csId:'cs-P', thresh:0.35 },
   ];
   var stickerLaunched = { M:false, U:false, C:false, P:false };
@@ -926,78 +940,218 @@ window.addEventListener('load', function() {
   /* 캐리어 CSS 기반 고정 위치 (DOM 측정 없음 → 흔들림 없음)
    * carrier-float bottom:20% → natTopPx = viewH * 0.80 - h */
   function getNatTopPx(viewH) {
-    var h = Math.min(viewH * 0.48, 400);
-    return viewH * 0.80 - h - 40;
+    var h = Math.min(viewH * 0.32, 260);
+    return viewH * 0.80 - h + 120;
   }
   function getCarrierH(viewH) {
-    return Math.min(viewH * 0.48, 400);
+    return Math.min(viewH * 0.32, 260);
   }
 
-  var cfShadow = document.getElementById('cf-shadow');
+  var cfShadow   = document.getElementById('cf-shadow');
+  var canvas3d   = document.getElementById('carrier-3d');
+  var renderer3d = null, scene3d = null, camera3d = null;
+  var pivot3d    = null;
+  var model3d    = null;
+  var modelOrigH = 1;
+  var hasSeenFull    = false;
+  var glbLoadProgress = 0;
+  var glbLoadDone     = false;
 
-  /* ── 캐리어 3D 스크롤 상태 ── */
-  var _prevCarrierTopPx = null;
-  var _carrierBankSmooth = 0;
+  function init3D() {
+    var vw = window.innerWidth, vh = window.innerHeight;
+    renderer3d = new THREE.WebGLRenderer({ canvas: canvas3d, alpha: true, antialias: true });
+    renderer3d.setPixelRatio(window.devicePixelRatio);
+    renderer3d.outputEncoding = THREE.sRGBEncoding;
+    renderer3d.setSize(vw, vh);
 
-  function _updateCarrier(p, rawPc) {
-    var viewH = wrap.clientHeight;
-    var natTopPx = getNatTopPx(viewH);
-    if (rawPc > 1.05) {
-      resetCarrier();
-      _prevCarrierTopPx = null;
-      _carrierBankSmooth = 0;
-      return;
-    }
-    if (rawPc < 0) {
-      /* s2 진입 전: 자연 위치에 고정 표시 */
-      showFloatCarrier(natTopPx);
-      if (cfShadow) {
-        cfShadow.style.display = 'block';
-        cfShadow.style.top = (natTopPx + getCarrierH(viewH) + 4) + 'px';
-        cfShadow.style.transform = 'translateX(-50%) scaleX(1)';
-        cfShadow.style.opacity = '0.9';
-      }
-      return;
-    }
-    /* 사인 곡선: p=0에서 바닥, p=0.5에서 최고점, p=1에서 바닥 */
-    var flightT = Math.sin(p * Math.PI);
-    var topPx = natTopPx - viewH * 0.33 * flightT;
-    /* 속도 기반 뱅킹: 위로 올라가면 음수(왼쪽 뱅킹), 내려가면 양수 */
-    var rawBank = 0;
-    if (_prevCarrierTopPx !== null) {
-      rawBank = (topPx - _prevCarrierTopPx) * 0.5;
-    }
-    _prevCarrierTopPx = topPx;
-    _carrierBankSmooth += (rawBank - _carrierBankSmooth) * 0.2;
-    var bankZ = Math.max(-12, Math.min(12, _carrierBankSmooth));
-    /* 피치: 상승 중엔 기수 위, 하강 중엔 기수 아래 */
-    var pitchX = -flightT * 5;
-    showFloatCarrier(topPx);
-    /* 3D 모델 rotation 적용 */
-    if (window._carrierModel) {
-      window._carrierModel.rotation.x = pitchX * Math.PI / 180;
-      window._carrierModel.rotation.z = -bankZ * Math.PI / 180;
-    }
-    /* 그림자: 고도 기반 — 높을수록 퍼지고 연해짐 */
-    if (cfShadow) {
-      var shadowNatTop = natTopPx + getCarrierH(viewH) + 4; /* 캐리어 바닥 기준 */
-      cfShadow.style.display = 'block';
-      cfShadow.style.top = shadowNatTop + 'px';
-      /* flightT: 0(바닥)→1(최고) → 그림자 scale 1→2.5, opacity 0.9→0.15 */
-      var sc = 1 + flightT * 1.8;
-      var op = 0.9 - flightT * 0.75;
-      cfShadow.style.transform = 'translateX(-50%) scaleX(' + sc.toFixed(3) + ')';
-      cfShadow.style.opacity   = op.toFixed(3);
-    }
+    /* Ortho camera: 1 world unit = 1 px */
+    camera3d = new THREE.OrthographicCamera(-vw/2, vw/2, vh/2, -vh/2, -2000, 2000);
+    camera3d.position.z = 1000;
+
+    scene3d = new THREE.Scene();
+    scene3d.add(new THREE.AmbientLight(0xffffff, 0.6));
+    var dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    dirLight.position.set(1, 2, 3);
+    scene3d.add(dirLight);
+    var fillLight = new THREE.DirectionalLight(0xffffff, 0.25);
+    fillLight.position.set(-1, -2, 1);
+    scene3d.add(fillLight);
+
+    var dracoLoader = new THREE.DRACOLoader();
+    dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
+    var loader = new THREE.GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
+    loader.load('main/s2/carrier.glb', function(gltf) {
+      glbLoadDone = true; window._mlDone = true;
+      model3d = gltf.scene;
+      var box    = new THREE.Box3().setFromObject(model3d);
+      var size   = new THREE.Vector3(); box.getSize(size);
+      var center = new THREE.Vector3(); box.getCenter(center);
+      modelOrigH = size.y || 1;
+      pivot3d = new THREE.Group();
+      model3d.position.sub(center);
+      pivot3d.add(model3d);
+      rescale3D();
+      scene3d.add(pivot3d);
+      carrierEl.style.display = 'none';
+      updateCarrier();
+    }, function(xhr) {
+      if (xhr.total > 0) { glbLoadProgress = xhr.loaded / xhr.total; window._mlProgress = glbLoadProgress; }
+    }, function(e){ console.warn('GLB 로드 실패:', e); });
+
+    window.addEventListener('resize', function() {
+      var vw2 = window.innerWidth, vh2 = window.innerHeight;
+      renderer3d.setSize(vw2, vh2);
+      camera3d.left = -vw2/2; camera3d.right = vw2/2;
+      camera3d.top  =  vh2/2; camera3d.bottom = -vh2/2;
+      camera3d.updateProjectionMatrix();
+      rescale3D();
+    });
+  }
+
+  function rescale3D() {
+    if (!pivot3d) return;
+    var vh = window.innerHeight;
+    var targetH = Math.min(vh * 0.32, 260);
+    pivot3d.scale.setScalar(targetH / modelOrigH);
+  }
+
+  /* RAF 기반 3D 렌더링 */
+  var _r3d = { topPx:0, carrierH:260, tilt:0, visible:false, rotZDeg:0 };
+  var _r3dRafId = null;
+
+  function _doRender3d() {
+    _r3dRafId = null;
+    if (!renderer3d || !pivot3d) return;
+    if (!_r3d.visible) { canvas3d.style.display = 'none'; return; }
+    canvas3d.style.display = 'block';
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var cx = vw / 2 - vw / 2;           /* center = 0 */
+    var cy = vh / 2 - _r3d.topPx - _r3d.carrierH / 2;
+    pivot3d.position.set(cx, cy, 0);
+    pivot3d.rotation.x = (Math.PI / 180) * (10 - _r3d.tilt * 40);
+    pivot3d.rotation.z = (Math.PI / 180) * (_r3d.rotZDeg || 0);
+    renderer3d.render(scene3d, camera3d);
+  }
+
+  function render3d(topPx, carrierH, tilt, visible, rotZDeg) {
+    _r3d.topPx = topPx; _r3d.carrierH = carrierH; _r3d.tilt = tilt;
+    _r3d.visible = visible; _r3d.rotZDeg = rotZDeg || 0;
+    if (!_r3dRafId) _r3dRafId = requestAnimationFrame(_doRender3d);
+  }
+
+  init3D();
+
+  /* 그림자 업데이트 */
+  function updateShadow(topPx, natTopPx, viewH) {
+    if (!cfShadow) return;
+    var maxT  = natTopPx - viewH * 0.01;
+    var travel = natTopPx - topPx;
+    var t = maxT > 0 ? Math.min(1, Math.max(0, travel / maxT)) : 0;
+    cfShadow.style.transform = 'translateX(-50%) scaleX(' + (1 + t * 2.5) + ')';
+    cfShadow.style.opacity   = Math.max(0, 1 - t).toFixed(3);
   }
 
   /* ── 캐리어 플로트 표시 ── */
-  function showFloatCarrier(topPx) {
-    carrierEl.style.opacity   = '0';
-    carrierFloat.style.display    = 'block';
-    carrierFloat.style.top        = topPx + 'px';
-    carrierFloat.style.left       = '50%';
-    carrierFloat.style.transform  = 'translateX(-50%)';
+  function showFloatCarrier(topPx, tilt) {
+    carrierEl.style.opacity      = '0';
+    carrierFloat.style.display   = 'block';
+    carrierFloat.style.top       = topPx + 'px';
+    carrierFloat.style.left      = '50%';
+    carrierFloat.style.transform = 'translateX(-50%)';
+    var carrierH = getCarrierH(wrap.clientHeight);
+    render3d(topPx, carrierH, tilt !== undefined ? tilt : 0, true);
+  }
+
+  /* ── 메인 캐리어 업데이트 (rawP 기반) ── */
+  function updateCarrier() {
+    var viewH     = wrap.clientHeight;
+    var st        = wrap.scrollTop;
+    var zoneTop   = zone.offsetTop;
+    var zoneH     = zone.offsetHeight;
+    var animEndST = zoneTop + zoneH - viewH;
+    var natTopPx  = getNatTopPx(viewH);
+    var carrierH  = getCarrierH(viewH);
+    var riseEndPx = viewH * 0.5 - carrierH * 0.5;
+    var THRESH    = natTopPx - riseEndPx;
+
+    /* 통합 tilt: s2 끝(tilt=0) → dark/s5 끝(tilt=-1.75) */
+    var darkEnd = s5El
+      ? (s5El.offsetTop + s5El.offsetHeight - viewH)
+      : (animEndST + THRESH * 4);
+    var darkProgress = darkEnd > animEndST
+      ? Math.min(1, Math.max(0, (st - animEndST) / (darkEnd - animEndST)))
+      : 0;
+    var unifiedTilt = -darkProgress * 1.75;
+
+    /* s5 풋터: 캐리어 중앙 위치 */
+    if (s5El) {
+      var s5Top = s5El.offsetTop;
+      var s5In  = (st - (s5Top - viewH)) / viewH;
+      if (s5In > 0) {
+        s5In = Math.min(1, s5In);
+        var destTop  = viewH * 0.5 - carrierH * 0.5;
+        var topPx5   = destTop + (1 - Math.min(1, s5In * 2)) * (viewH - destTop);
+        render3d(topPx5, carrierH, unifiedTilt, true, 0);
+        carrierFloat.style.display = 'none';
+        carrierEl.style.opacity = '0';
+        if (cfShadow) cfShadow.style.display = 'none';
+        return;
+      }
+    }
+
+    var rawP = getRawProgress();
+
+    if (rawP >= -0.5 && rawP <= 1.01) {
+      if (hasSeenFull && rawP < 0.83) {
+        /* 위로 스크롤 후 화면 위로 탈출
+         * rawP=0.83 → natTopPx(제자리), rawP=0.10 → -carrierH(화면 밖) */
+        var topPx = -carrierH + ((rawP - 0.10) / (0.83 - 0.10)) * (natTopPx + carrierH);
+        carrierEl.style.opacity = '0';
+        if (topPx < -carrierH) {
+          carrierFloat.style.display = 'none';
+          if (canvas3d) canvas3d.style.display = 'none';
+        } else {
+          var maxT2 = natTopPx - viewH * 0.01;
+          var tilt3d = maxT2 > 0 ? Math.min(1, Math.max(0, (natTopPx - topPx) / maxT2)) : 0;
+          showFloatCarrier(topPx, tilt3d);
+          if (cfShadow) {
+            cfShadow.style.display = 'block';
+            updateShadow(topPx, natTopPx, viewH);
+          }
+        }
+        /* 스티커: rawP 기반 부착/복귀 */
+        stickerDefs.forEach(function(def) {
+          if (rawP < def.thresh) launchSticker(def);
+          else resetSticker(def);
+        });
+      } else if (hasSeenFull) {
+        /* rawP 0.83~1.01: 제자리 대기 */
+        carrierEl.style.opacity = '0';
+        showFloatCarrier(natTopPx, 0);
+        if (cfShadow) {
+          cfShadow.style.display = 'block';
+          updateShadow(natTopPx, natTopPx, viewH);
+        }
+      } else {
+        resetCarrier();
+      }
+
+    } else if (rawP > 1.01) {
+      /* 아래로 진행: Phase1 위로, Phase2 아래로 */
+      var downPx = st - animEndST;
+      var topPx2 = downPx <= THRESH
+        ? natTopPx - downPx
+        : riseEndPx + (downPx - THRESH) * 1.5;
+      showFloatCarrier(topPx2, unifiedTilt);
+      csM.style.opacity = csU.style.opacity = csC.style.opacity = csP.style.opacity = '0';
+      showAllTextStickers();
+      if (cfShadow) cfShadow.style.display = 'none';
+
+    } else {
+      /* rawP < -0.01: s1(파란 하늘) — 숨김 */
+      resetCarrier();
+    }
   }
 
   /*
@@ -1155,8 +1309,9 @@ window.addEventListener('load', function() {
 
     update(p);
     updateNavColor();
-    _updateCarrier(p, rawPc);
+    updateCarrier();
     if (p >= 0.995) {
+      hasSeenFull = true;
       triggerLock();
     } else if (p < 0.98) {
       lockState = 'idle';
@@ -1175,7 +1330,7 @@ window.addEventListener('load', function() {
 
   update(getProgress());
   updateNavColor();
-  _updateCarrier(getProgress(), getRawProgress());
+  updateCarrier();
 });
 
 
@@ -1508,84 +1663,6 @@ window.addEventListener('load', function() {
     <path d="M1 5H9M9 5L6 2M9 5L6 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 </div>
-<!-- Three.js carrier.glb -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-<script>
-(function() {
-  if (!window.THREE || !THREE.GLTFLoader) { console.warn('Three.js/GLTFLoader 없음'); return; }
-
-  var canvas = document.getElementById('carrier-canvas');
-  if (!canvas) return;
-
-  var W = 520, H = 400;
-  canvas.width = W; canvas.height = H;
-
-  var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-  renderer.setSize(W, H);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.outputEncoding = THREE.sRGBEncoding;
-
-  var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(18, W / H, 0.1, 200);
-  camera.position.set(0, 3.5, 20);
-  camera.lookAt(0, -3.5, 0);
-
-  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-  var sun = new THREE.DirectionalLight(0xffffff, 0.6);
-  sun.position.set(4, 6, 6);
-  scene.add(sun);
-  var fill = new THREE.DirectionalLight(0xaad4ff, 0.15);
-  fill.position.set(-4, 1, 3);
-  scene.add(fill);
-
-  var dracoLoader = new THREE.DRACOLoader();
-  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-
-  var loader = new THREE.GLTFLoader();
-  loader.setDRACOLoader(dracoLoader);
-
-  loader.load('main/s2/carrier.glb', function(gltf) {
-    var model = gltf.scene;
-    var box = new THREE.Box3().setFromObject(model);
-    var center = box.getCenter(new THREE.Vector3());
-    var size = box.getSize(new THREE.Vector3());
-    var maxD = Math.max(size.x, size.y, size.z);
-    var s = 4.2 / maxD;
-    model.scale.setScalar(s);
-    model.position.set(-center.x * s, -center.y * s + size.y * s * 0.18 - 3.2, -center.z * s);
-    scene.add(model);
-    window._carrierModel = model;
-    console.log('carrier.glb 로드 완료');
-  }, undefined, function(e) {
-    console.warn('carrier.glb 로드 실패:', e);
-  });
-
-  /* OrbitControls — 드래그 회전, 줌/패닝 비활성화 */
-  var controls = null;
-  if (THREE.OrbitControls) {
-    controls = new THREE.OrbitControls(camera, canvas);
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.08;
-    controls.rotateSpeed = 0.6;
-    /* 캔버스에서 포인터 이벤트 활성화 */
-    canvas.style.pointerEvents = 'auto';
-    canvas.style.cursor = 'grab';
-    canvas.addEventListener('mousedown', function() { canvas.style.cursor = 'grabbing'; });
-    canvas.addEventListener('mouseup',   function() { canvas.style.cursor = 'grab'; });
-  }
-
-  (function loop() {
-    requestAnimationFrame(loop);
-    if (controls) controls.update();
-    renderer.render(scene, camera);
-  })();
-})();
-</script>
 
 </div><!-- /pc-view -->
 
