@@ -53,6 +53,11 @@
     // 조건 충족 시 loop 해제 → 현재 사이클 끝나면 ended 발화
     function tryRelease() {
       if (!(_pageLoaded && _minDone) || _released) return;
+      /* GLB 아직 로딩 중이면 대기 (최대 15초) */
+      if (window._glbReady === false) {
+        window._splashTryRelease = tryRelease;
+        return;
+      }
       _released = true;
       video.loop = false;
       // 이미 끝났거나 duration 없으면 바로 dismiss
@@ -62,6 +67,13 @@
         video.currentTime = video.duration * 0.7;
       }
     }
+    /* GLB 타임아웃 (10초): GLB 실패해도 스플래시는 닫힘 */
+    setTimeout(function() {
+      if (window._glbReady === false) {
+        window._glbReady = true;
+        if (window._splashTryRelease) { window._splashTryRelease(); }
+      }
+    }, 10000);
 
     video.addEventListener('ended', function() { dismiss(); });
 
@@ -956,6 +968,7 @@ window.addEventListener('load', function() {
   var hasSeenFull    = false;
   var glbLoadProgress = 0;
   var glbLoadDone     = false;
+  window._glbReady = false; /* 스플래시 대기용 */
 
   function init3D() {
     var vw = window.innerWidth, vh = window.innerHeight;
@@ -983,6 +996,8 @@ window.addEventListener('load', function() {
     loader.setDRACOLoader(dracoLoader);
     loader.load('main/s2/carrier.glb', function(gltf) {
       glbLoadDone = true; window._mlDone = true;
+      window._glbReady = true;
+      if (window._splashTryRelease) { window._splashTryRelease(); window._splashTryRelease = null; }
       model3d = gltf.scene;
       var box    = new THREE.Box3().setFromObject(model3d);
       var size   = new THREE.Vector3(); box.getSize(size);
@@ -1020,16 +1035,25 @@ window.addEventListener('load', function() {
   var _r3d = { topPx:0, carrierH:260, tilt:0, visible:false, rotZDeg:0 };
   var _r3dRafId = null;
 
+  /* ── 드래그 회전 상태 ── */
+  var _dragActive = false;
+  var _dragLastX = 0, _dragLastY = 0;
+  var _userRotY = 0, _userRotX = 0;   /* 드래그로 추가된 회전 (radians) */
+  var _velY = 0, _velX = 0;           /* 스프링 속도 */
+  var _springRafId = null;
+
   function _doRender3d() {
     _r3dRafId = null;
     if (!renderer3d || !pivot3d) return;
     if (!_r3d.visible) { canvas3d.style.display = 'none'; return; }
     canvas3d.style.display = 'block';
     var vw = window.innerWidth, vh = window.innerHeight;
-    var cx = vw / 2 - vw / 2;           /* center = 0 */
+    var cx = vw / 2 - vw / 2;
     var cy = vh / 2 - _r3d.topPx - _r3d.carrierH / 2;
     pivot3d.position.set(cx, cy, 0);
-    pivot3d.rotation.x = (Math.PI / 180) * (10 - _r3d.tilt * 40);
+    /* 기본 회전 + 드래그 오프셋 */
+    pivot3d.rotation.x = (Math.PI / 180) * (10 - _r3d.tilt * 40) + _userRotX;
+    pivot3d.rotation.y = _userRotY;
     pivot3d.rotation.z = (Math.PI / 180) * (_r3d.rotZDeg || 0);
     renderer3d.render(scene3d, camera3d);
   }
@@ -1039,6 +1063,79 @@ window.addEventListener('load', function() {
     _r3d.visible = visible; _r3d.rotZDeg = rotZDeg || 0;
     if (!_r3dRafId) _r3dRafId = requestAnimationFrame(_doRender3d);
   }
+
+  /* 스프링 복귀 애니메이션 */
+  function _springBack() {
+    var SPRING = 0.12, DAMP = 0.72;
+    _velY = _velY * DAMP - _userRotY * SPRING;
+    _velX = _velX * DAMP - _userRotX * SPRING;
+    _userRotY += _velY;
+    _userRotX += _velX;
+    if (!_r3dRafId) _r3dRafId = requestAnimationFrame(_doRender3d);
+    var done = Math.abs(_userRotY) < 0.0005 && Math.abs(_userRotX) < 0.0005 &&
+               Math.abs(_velY) < 0.0005 && Math.abs(_velX) < 0.0005;
+    if (done) {
+      _userRotY = 0; _userRotX = 0; _velY = 0; _velX = 0;
+      _springRafId = null;
+      if (!_r3dRafId) _r3dRafId = requestAnimationFrame(_doRender3d);
+    } else {
+      _springRafId = requestAnimationFrame(_springBack);
+    }
+  }
+
+  /* 마우스 드래그 */
+  document.addEventListener('mousedown', function(e) {
+    if (!_r3d.visible) return;
+    _dragActive = true;
+    _dragLastX = e.clientX; _dragLastY = e.clientY;
+    if (_springRafId) { cancelAnimationFrame(_springRafId); _springRafId = null; }
+    _velY = 0; _velX = 0;
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (!_dragActive) return;
+    var dx = e.clientX - _dragLastX;
+    var dy = e.clientY - _dragLastY;
+    _dragLastX = e.clientX; _dragLastY = e.clientY;
+    _velY = dx * 0.012;
+    _velX = dy * 0.012;
+    _userRotY += _velY;
+    _userRotX += _velX;
+    if (!_r3dRafId) _r3dRafId = requestAnimationFrame(_doRender3d);
+  });
+  document.addEventListener('mouseup', function() {
+    if (!_dragActive) return;
+    _dragActive = false;
+    if (_springRafId) cancelAnimationFrame(_springRafId);
+    _springRafId = requestAnimationFrame(_springBack);
+  });
+
+  /* 터치 드래그 */
+  document.addEventListener('touchstart', function(e) {
+    if (!_r3d.visible) return;
+    var t = e.touches[0];
+    _dragActive = true;
+    _dragLastX = t.clientX; _dragLastY = t.clientY;
+    if (_springRafId) { cancelAnimationFrame(_springRafId); _springRafId = null; }
+    _velY = 0; _velX = 0;
+  }, { passive: true });
+  document.addEventListener('touchmove', function(e) {
+    if (!_dragActive) return;
+    var t = e.touches[0];
+    var dx = t.clientX - _dragLastX;
+    var dy = t.clientY - _dragLastY;
+    _dragLastX = t.clientX; _dragLastY = t.clientY;
+    _velY = dx * 0.012;
+    _velX = dy * 0.012;
+    _userRotY += _velY;
+    _userRotX += _velX;
+    if (!_r3dRafId) _r3dRafId = requestAnimationFrame(_doRender3d);
+  }, { passive: true });
+  document.addEventListener('touchend', function() {
+    if (!_dragActive) return;
+    _dragActive = false;
+    if (_springRafId) cancelAnimationFrame(_springRafId);
+    _springRafId = requestAnimationFrame(_springBack);
+  });
 
   init3D();
 
