@@ -29,7 +29,7 @@
     video.setAttribute('autoplay','');
     video.preload = 'auto';
     video.src = 'Splash%20Screen/loading.mp4';
-    video.style.cssText = 'height:80px;width:auto;display:block;transform:translateX(-3px);opacity:0;transition:opacity 0.3s;';
+    video.style.cssText = 'height:80px;width:auto;display:block;transform:translateX(1px);opacity:0;transition:opacity 0.3s;';
     video.addEventListener('playing', function(){ video.style.opacity='1'; }, {once:true});
     splash.appendChild(video);
     document.documentElement.appendChild(splash);
