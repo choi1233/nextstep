@@ -288,7 +288,6 @@
     #left.mobile #cat-dropdown-wrap  { display:none; }
     #left.mobile #nav-mobile         { display:flex !important; min-height:40px; align-items:flex-start; padding-top:16px; padding-bottom:8px; }
     #left.mobile #profiles-grid { grid-template-columns:repeat(2, 1fr); }
-    #left.mobile .mob-exhibition-label { display:block; }
 
     /* 모바일 프로필 nav */
     #nav-mobile {
@@ -377,7 +376,7 @@
     }
     #mobile-detail-scroll { flex:1; overflow-y:auto; padding:32px 16px 64px; }
     #mobile-detail-scroll::-webkit-scrollbar { display:none; }
-    .mob-exhibition-label { display:none; font-size:8px; opacity:0.15; text-align:center; letter-spacing:0.02em; padding:16px 0 24px; }
+    .detail-exhibition-footer { font-size:8px; opacity:0.15; text-align:center; letter-spacing:0.02em; }
 
     /* ══ 뷰포트 자체가 좁을 때 — 오른쪽 패널 숨기기 ══ */
     @media (max-width:650px) {
@@ -609,7 +608,6 @@
     </div>
 
     <div id="gallery"></div>
-    <div class="mob-exhibition-label">2026 CVCD graduation exhibition ⦁ NEXT STEP!</div>
 
     <!-- 모바일 작품 상세 뷰 -->
     <div id="mobile-work">
@@ -919,6 +917,11 @@ function renderGallery() {
   grid.appendChild(upCell);
 
   g.appendChild(grid);
+  var ef = document.createElement('div');
+  ef.className = 'detail-exhibition-footer';
+  ef.style.padding = '24px 0 16px';
+  ef.textContent = '2026 CVCD graduation exhibition ⦿ NEXT STEP!';
+  g.appendChild(ef);
 }
 
 /* ── 사이드바 이름 목록 ── */
