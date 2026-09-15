@@ -75,11 +75,18 @@
       if (_released || _finished) return;
       video.pause();
       var syncFrom = SYNC_START_MS / 1000;
+      var _videoSnapped = false; /* 영상 처음 준비됐을 때 스냅 여부 */
       function syncTime() {
         if (!_syncActive) return;
         if (video.readyState >= 1 && video.duration > 0) {
           var target = syncFrom + effectiveP() * SYNC_VIDEO_SEC;
-          video.currentTime += (target - video.currentTime) * 0.18;
+          if (!_videoSnapped) {
+            /* 영상이 늦게 로딩됐으면 현재 진행률 위치로 바로 스냅 (lerp 없이) */
+            _videoSnapped = true;
+            video.currentTime = Math.min(target, video.duration);
+          } else {
+            video.currentTime += (target - video.currentTime) * 0.18;
+          }
         }
         requestAnimationFrame(syncTime);
       }
