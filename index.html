@@ -45,9 +45,14 @@
     var _syncActive = true;
     var _startTime = Date.now();
 
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
     function dismiss() {
       if (_finished) return;
       _finished = true;
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
       splash.style.opacity = '0';
       setTimeout(function() { splash.parentNode && splash.parentNode.removeChild(splash); }, 650);
     }
