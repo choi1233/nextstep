@@ -2020,12 +2020,13 @@ window.addEventListener('load', function() {
     var bgSprite=new PIXI.Sprite(bgTex);bgSprite.width=W;bgSprite.height=H;
     var nrmSize=512;
     var nrmTex=PIXI.Texture.from(createOrganicNRM(nrmSize));
+    nrmTex.baseTexture.wrapMode = PIXI.WRAP_MODES.MIRRORED_REPEAT; /* 타일 경계 제거 */
     var nrmTiling=new PIXI.TilingSprite(nrmTex,W,H);
     var dispRT=PIXI.RenderTexture.create({width:W,height:H});
     var dispSprite=new PIXI.Sprite(dispRT);dispSprite.renderable=false;
     app.stage.addChild(dispSprite);app.stage.addChild(bgSprite);
     var dispFilter=new PIXI.filters.DisplacementFilter(dispSprite);
-    dispFilter.scale.set(180,160);bgSprite.filters=[dispFilter];
+    dispFilter.scale.set(140,120);bgSprite.filters=[dispFilter];
     var flowX=0,flowY=0,FLOW_SPEED=2.2,FLOW_ANGLE=-35*Math.PI/180;
     app.renderer.plugins.interaction.destroy();
     app.ticker.add(function(delta){flowX+=Math.cos(FLOW_ANGLE)*FLOW_SPEED*delta;flowY+=Math.sin(FLOW_ANGLE)*FLOW_SPEED*delta;nrmTiling.tilePosition.x=flowX;nrmTiling.tilePosition.y=flowY;app.renderer.render(nrmTiling,dispRT,true);});
