@@ -288,6 +288,7 @@
     #left.mobile #cat-dropdown-wrap  { display:none; }
     #left.mobile #nav-mobile         { display:flex !important; min-height:40px; align-items:flex-start; padding-top:16px; padding-bottom:8px; }
     #left.mobile #profiles-grid { grid-template-columns:repeat(2, 1fr); }
+    #left.mobile .mob-exhibition-label { display:block; }
 
     /* 모바일 프로필 nav */
     #nav-mobile {
@@ -366,7 +367,7 @@
     }
     #mobile-detail-scroll { flex:1; overflow-y:auto; padding:32px 16px 64px; }
     #mobile-detail-scroll::-webkit-scrollbar { display:none; }
-    .detail-exhibition-footer { font-size:8px; opacity:0.15; text-align:center; letter-spacing:0.02em; }
+    .mob-exhibition-label { display:none; font-size:8px; opacity:0.15; text-align:center; letter-spacing:0.02em; padding:16px 0 24px; }
 
     /* ══ 뷰포트 자체가 좁을 때 — 오른쪽 패널 숨기기 ══ */
     @media (max-width:650px) {
@@ -598,6 +599,7 @@
     </div>
 
     <div id="gallery"></div>
+    <div class="mob-exhibition-label">2026 CVCD graduation exhibition ⦁ NEXT STEP!</div>
 
     <!-- 모바일 작품 상세 뷰 -->
     <div id="mobile-work">
@@ -640,8 +642,6 @@
         <div class="detail-gap-16"></div>
         <div id="mob-sns" class="detail-sns"></div>
         <div class="detail-gap-32"></div>
-        <div class="detail-exhibition-footer">2026 CVCD graduation exhibition ⦁ NEXT STEP!</div>
-        <div class="detail-gap-16"></div>
       </div>
     </div>
 
