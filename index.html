@@ -47,6 +47,7 @@
     document.documentElement.appendChild(splash);
 
     video.loop = false;
+    video.addEventListener('error', function() { if (!_released) { _released = true; dismiss(); } });
     video.play().catch(function(){});
 
     var _loadP = 0;
@@ -58,16 +59,21 @@
     var _startTime = Date.now();
 
     document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!_finished && document.body) document.body.style.overflow = 'hidden';
+    });
 
     function dismiss() {
       if (_finished) return;
       _finished = true;
       document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
+      if (document.body) document.body.style.overflow = '';
       splash.style.opacity = '0';
       setTimeout(function() { splash.parentNode && splash.parentNode.removeChild(splash); }, 650);
     }
+
+    /* 절대 안전망: 12초 후 강제 dismiss */
+    setTimeout(function() { dismiss(); }, 12000);
 
     var SYNC_START_MS  = 500;   /* 첫 0.5초 자연 재생 */
     var SYNC_VIDEO_SEC = 2.0;   /* 동기화 구간: 영상 2초 */
